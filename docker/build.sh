@@ -32,15 +32,15 @@ source $DIR/utils.sh
 
 BUILD_DIR="`pwd`"
 DIST_FILE="target/release/calcu"
-CRUST_VER=`head -n 10 runtime/Cargo.toml|awk '/version/{print $3}' |sed  s"/'//g"`
-IMAGEID="calcuio/calcu:${CRUST_VER}"
+CALST_VER=`head -n 10 runtime/Cargo.toml|awk '/version/{print $3}' |sed  s"/'//g"`
+IMAGEID="calcuio/calcu:${CALST_VER}"
 
 if [ ! -f "$DIST_FILE" ]; then
     log_err "Binary from $DIST_FILE doesn't exist, please build calcu binary first."
     exit 1
 fi
 
-log_info "Building calcu image, version: ${CRUST_VER}, bin file $DIST_FILE"
+log_info "Building calcu image, version: ${CALST_VER}, bin file $DIST_FILE"
 
 cp -f $DIST_FILE docker/calcu/calcu
 

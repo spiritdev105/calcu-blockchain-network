@@ -13,11 +13,11 @@ use calcu_runtime::{
 use cstrml_staking::Forcing;
 use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_consensus_babe::AuthorityId as BabeId;
-use primitives::{constants::currency::CRUS, *};
+use primitives::{constants::currency::CALS, *};
 use sc_service::ChainType;
 use sp_runtime::{traits::{Verify, IdentifyAccount}, Perbill};
 
-const DEFAULT_PROTOCOL_ID: &str = "cru";
+const DEFAULT_PROTOCOL_ID: &str = "cal";
 // Note this is the URL for the telemetry server
 //const STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
 
@@ -203,8 +203,8 @@ fn testnet_genesis(
     endowed_accounts: Vec<AccountId>,
     _enable_println: bool,
 ) -> GenesisConfig {
-    const ENDOWMENT: u128 = 1_000_000 * CRUS;
-    const STASH: u128 = 20_000 * CRUS;
+    const ENDOWMENT: u128 = 1_000_000 * CALS;
+    const STASH: u128 = 20_000 * CALS;
 	let num_endowed_accounts = endowed_accounts.len();
     GenesisConfig {
         pallet_sudo: Some(SudoConfig {
@@ -326,8 +326,8 @@ fn rocky_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
     )];
 
     // Constants
-    const ENDOWMENT: u128 = 2_500_000 * CRUS;
-    const STASH: u128 = 1_250_000 * CRUS;
+    const ENDOWMENT: u128 = 2_500_000 * CALS;
+    const STASH: u128 = 1_250_000 * CALS;
 
     GenesisConfig {
         pallet_sudo: Some(SudoConfig {
@@ -448,8 +448,8 @@ fn maxwell_staging_testnet_config_genesis(wasm_binary: &[u8]) -> GenesisConfig {
     )];
 
     // Constants
-    const ENDOWMENT: u128 = 2_500_000 * CRUS;
-    const STASH: u128 = 1_250_000 * CRUS;
+    const ENDOWMENT: u128 = 2_500_000 * CALS;
+    const STASH: u128 = 1_250_000 * CALS;
 
     GenesisConfig {
         pallet_sudo: Some(SudoConfig {

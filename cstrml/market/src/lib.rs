@@ -268,7 +268,7 @@ pub trait Config: system::Config {
     /// File base replica. Use 4 for now
     type FileReplica: Get<u32>;
 
-    /// File Base Fee. Use 0.001 CRU for now
+    /// File Base Fee. Use 0.001 CAL for now
     type FileBaseFee: Get<BalanceOf<Self>>;
 
     /// File Base Price.

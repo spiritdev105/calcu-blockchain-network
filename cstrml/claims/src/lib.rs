@@ -137,7 +137,7 @@ decl_event!(
         SetLimitSuccess(Balance),
         /// Mint claims successfully
         MintSuccess(EthereumTxHash, EthereumAddress, Balance),
-        /// Someone claimed some CRUs. [who, ethereum_address, amount]
+        /// Someone claimed some CALs. [who, ethereum_address, amount]
         Claimed(AccountId, EthereumAddress, Balance),
         /// Ethereum address was bonded to account. [who, ethereum_address]
         BondEthSuccess(AccountId, EthereumAddress),

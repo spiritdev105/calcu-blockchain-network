@@ -1463,8 +1463,8 @@ impl<T: Config> Module<T> {
         }*/
 
         // Now, we apply directly mapping algorithm for the early stage:
-        // 1. Maxwell 1.0: 1 terabytes -> 80,000 CRUs
-        // 2. Olympus 1.0: 1 terabytes -> 30 CRUs(tmp)
+        // 1. Maxwell 1.0: 1 terabytes -> 80,000 CALs
+        // 2. Olympus 1.0: 1 terabytes -> 30 CALs(tmp)
         // ps: we treat 1 terabytes as 1_000_000_000_000 for make `mapping_ratio = 1`
         if let Some(storage_stakes) = own_workloads.checked_mul(T::SPowerRatio::get()) {
             storage_stakes.try_into().ok().unwrap()

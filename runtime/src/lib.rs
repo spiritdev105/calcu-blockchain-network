@@ -315,7 +315,7 @@ impl pallet_grandpa::Config for Runtime {
 }
 
 parameter_types! {
-	// Minimum 100 bytes/CRU deposited (1 CENT/byte)
+	// Minimum 100 bytes/CAL deposited (1 CENT/byte)
 	pub const BasicDeposit: Balance = 5 * DOLLARS;       // 258 bytes on-chain
 	pub const FieldDeposit: Balance = 1 * DOLLARS;        // 66 bytes on-chain
 	pub const SubAccountDeposit: Balance = 2 * DOLLARS;   // 53 bytes on-chain
@@ -398,7 +398,7 @@ parameter_types! {
     pub const BondingDuration: staking::EraIndex = 28;
     // 28 eras in which slashes can be cancelled (14 hours).
     pub const SlashDeferDuration: staking::EraIndex = 28;
-    // 1 * CRUs / TB, since we treat 1 TB = 1_000_000_000_000, so the ratio = `1`
+    // 1 * CALs / TB, since we treat 1 TB = 1_000_000_000_000, so the ratio = `1`
     pub const SPowerRatio: u128 = 1;
     // 64 guarantors for one validator.
     pub const MaxGuarantorRewardedPerValidator: u32 = 64;
@@ -692,7 +692,7 @@ impl candy::Config for Runtime {
 }
 
 parameter_types! {
-	pub Prefix: &'static [u8] = b"Pay CRUs to the Calcu account:";
+	pub Prefix: &'static [u8] = b"Pay CALs to the Calcu account:";
 }
 
 impl claims::Config for Runtime {

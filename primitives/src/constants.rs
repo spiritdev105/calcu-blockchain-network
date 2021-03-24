@@ -5,20 +5,20 @@
 pub mod currency {
     use crate::Balance;
 
-    pub const CRUS: Balance = 1_000_000_000_000;
-    pub const DOLLARS: Balance = CRUS;
+    pub const CALS: Balance = 1_000_000_000_000;
+    pub const DOLLARS: Balance = CALS;
     pub const CENTS: Balance = DOLLARS / 100;
     pub const MILLICENTS: Balance = CENTS / 1_000;
 
-    pub const INITIAL_ISSUANCE: Balance = 15_000_000 * CRUS;
+    pub const INITIAL_ISSUANCE: Balance = 15_000_000 * CALS;
     // Staking rewards in the first year
-    pub const FIRST_YEAR_REWARDS: Balance = 5_000_000 * CRUS;
+    pub const FIRST_YEAR_REWARDS: Balance = 5_000_000 * CALS;
     // Block authoring rewards per year
-    pub const BLOCK_AUTHORING_REWARDS: Balance = 100_000 * CRUS;
+    pub const BLOCK_AUTHORING_REWARDS: Balance = 100_000 * CALS;
     // Staking rewards in the first quarter
-    pub const FIRST_QUARTER_STAKING_REWARDS: Balance = 216_000 * CRUS;
+    pub const FIRST_QUARTER_STAKING_REWARDS: Balance = 216_000 * CALS;
     // Block authoring rewards in the first quarter
-    pub const FIRST_QUARTER_AUTHORING_REWARDS: Balance = 54_000 * CRUS;
+    pub const FIRST_QUARTER_AUTHORING_REWARDS: Balance = 54_000 * CALS;
 }
 
 /// Time and blocks.

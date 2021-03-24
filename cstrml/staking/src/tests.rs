@@ -2396,7 +2396,7 @@ fn bond_with_little_staked_value_bounded_by_total_stakes() {
             assert_eq!(Staking::eras_total_stakes(1), 2002);
             payout_all_stakers(0);
             Staking::reward_stakers(Origin::signed(10), 1, 0).unwrap();
-            // Old ones are rewarded, round to 0.000001 CRU
+            // Old ones are rewarded, round to 0.000001 CAL
             assert_eq!(
                 Balances::free_balance(&10) / 1000000,
                 (init_balance_10 + total_authoring_payout / 3 + total_staking_payout_0 * 1000 / 2001) / 1000000
@@ -2413,12 +2413,12 @@ fn bond_with_little_staked_value_bounded_by_total_stakes() {
             assert_eq!(Staking::eras_total_stakes(2), /*29154172864502*/ 29154172864502);
             payout_all_stakers(1);
             Staking::reward_stakers(Origin::signed(10), 1, 1).unwrap();
-            // round to 0.000001 CRU
+            // round to 0.000001 CAL
             assert_eq!(
                 Balances::free_balance(&2) / 1000000,
                 (init_balance_2 + total_authoring_payout / 3 + total_staking_payout_1 * 2 / 2002) / 1000000,
             );
-            // round to 0.000001 CRU
+            // round to 0.000001 CAL
             assert_eq!(
                 Balances::free_balance(&10) / 1000000,
                 (init_balance_10 + total_authoring_payout / 3 * 2 +

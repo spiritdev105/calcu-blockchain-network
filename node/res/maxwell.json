@@ -12,7 +12,7 @@
   "protocolId": "crumwl",
   "properties": {
     "ss58Format": 22,
-    "tokenSymbol": "CRU",
+    "tokenSymbol": "CAL",
     "tokenDecimals": 12
   },
   "consensusEngine": null,
