@@ -1,0 +1,30 @@
+[package]
+name = "cst-primitives"
+version = "0.11.1"
+authors = ["calcuio"]
+edition = "2018"
+license = "GPL-3.0"
+homepage = "https://calcu.network"
+repository = "https://github.com/calcuio/calcu/"
+
+[dependencies]
+# third party dependencies
+serde = { optional = true, features = ["derive"], version = "1.0.116" }
+parity-scale-codec = { default-features = false, features = ["bit-vec", "derive"], version = "2.0.0" }
+
+# substrate primitives
+sp-runtime = { default-features = false, version = "3.0.0" }
+sp-core = { default-features = false, version = "3.0.0" }
+sp-std = { default-features = false, version = "3.0.0" }
+frame-support = { default-features = false, version = "3.0.0" }
+
+[features]
+default = ["std"]
+std = [
+	"parity-scale-codec/std",
+	"sp-runtime/std",
+	"sp-core/std",
+	"sp-std/std",
+	"frame-support/std",
+	"serde",
+]
