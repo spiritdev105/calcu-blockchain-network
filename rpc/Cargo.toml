@@ -1,0 +1,38 @@
+[package]
+authors = ["calcuio"]
+edition = "2018"
+name = "calcu-rpc"
+version = "0.11.1"
+license = "GPL-3.0"
+homepage = "https://calcu.network"
+repository = "https://github.com/calcuio/calcu/"
+
+[dependencies]
+jsonrpc-core = "15.1.0"
+frame-rpc-system = { package = "substrate-frame-rpc-system", version = "3.0.0"  }
+codec = { default-features = false, package = "parity-scale-codec", version = "2.0.0" }
+
+# substrate client dependencies
+sc-client-api = "3.0.0"
+sc-rpc = "3.0.0"
+sc-consensus-babe = "0.9.0"
+sc-consensus-babe-rpc = "0.9.0"
+sc-consensus-epochs = "0.9.0"
+sc-finality-grandpa = "0.9.0"
+sc-finality-grandpa-rpc = "0.9.0"
+sc-keystore = "3.0.0"
+
+# substrate pallet dependencies
+sp-keystore = "0.9.0"
+sp-blockchain = "3.0.0"
+sp-runtime = "3.0.0"
+sp-api = "3.0.0"
+sp-consensus = "0.9.0"
+sp-consensus-babe = "0.9.0"
+txpool-api = { package = "sp-transaction-pool", version = "3.0.0" }
+pallet-transaction-payment-rpc = "3.0.0"
+sp-block-builder = "3.0.0"
+
+# calcu dependent
+calcu-primitives = { package = "cst-primitives", path="../primitives", version = "0.11.1" }
+calcu-runtime = { package = "calcu-runtime", path = "../runtime", version = "0.11.1" }
