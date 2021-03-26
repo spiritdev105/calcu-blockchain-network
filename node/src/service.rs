@@ -15,7 +15,6 @@ use sp_inherents::InherentDataProviders;
 use sc_consensus::LongestChain;
 
 // Our native executor instance.
-// TODO: Bring benchmarks back
 native_executor_instance!(
     pub CalcuExecutor,
     calcu_runtime::api::dispatch,
