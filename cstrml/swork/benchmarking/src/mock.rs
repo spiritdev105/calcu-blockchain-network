@@ -95,7 +95,7 @@ impl market::Config for Test {
     type ModuleId = MarketModuleId;
     type Currency = balances::Module<Self>;
     type CurrencyToBalance = ();
-    type SworkerInterface = Swork;
+    type TarsInterface = Swork;
     type Event = ();
     /// File duration.
     type FileDuration = FileDuration;
