@@ -38,10 +38,10 @@ mod tests;
 pub mod benchmarking;
 
 use primitives::{
-    MerkleRoot, BlockNumber, SworkerAnchor,
+    MerkleRoot, BlockNumber, TarsAnchor,
     traits::{
         UsableCurrency, MarketInterface,
-        SworkerInterface
+        TarsInterface
     }
 };
 
@@ -94,7 +94,7 @@ pub struct Replica<AccountId> {
     // The last bloch number when the node reported works
     pub valid_at: BlockNumber,
     // The anchor associated to the node mapping with file
-    pub anchor: SworkerAnchor,
+    pub anchor: TarsAnchor,
     // Is reported in the last check
     pub is_reported: bool
 }
@@ -110,7 +110,7 @@ pub struct UsedInfo {
     // The count of valid group in the previous report slot
     pub reported_group_count: u32,
     // Anchors which is counted as contributor for this file in its own group, bool means in the last check the group is calculated as reported_group_count
-    pub groups: BTreeMap<SworkerAnchor, bool>
+    pub groups: BTreeMap<TarsAnchor, bool>
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Encode, Decode, Default)]
@@ -136,7 +136,7 @@ impl<T: Config> MarketInterface<<T as system::Config>::AccountId, BalanceOf<T>> 
     fn upsert_replica(who: &<T as system::Config>::AccountId,
                       cid: &MerkleRoot,
                       reported_file_size: u64,
-                      anchor: &SworkerAnchor,
+                      anchor: &TarsAnchor,
                       valid_at: BlockNumber,
                       maybe_members: &Option<BTreeSet<<T as system::Config>::AccountId>>
     ) -> u64 {
@@ -153,7 +153,7 @@ impl<T: Config> MarketInterface<<T as system::Config>::AccountId, BalanceOf<T>> 
             if let Some(members) = maybe_members {
                 for replica in file_info.replicas.iter() {
                     if used_info.groups.contains_key(&replica.anchor) && members.contains(&replica.who) {
-                        if T::SworkerInterface::check_anchor(&replica.who, &replica.anchor) {
+                        if T::TarsInterface::check_anchor(&replica.who, &replica.anchor) {
                             // duplicated in group and set is_counted to false
                             is_counted = false;
                         }
@@ -192,7 +192,7 @@ impl<T: Config> MarketInterface<<T as system::Config>::AccountId, BalanceOf<T>> 
     /// Node who delete the replica
     /// Accept id(who, anchor), cid and current block number
     /// Returns the real used size of this file
-    fn delete_replica(who: &<T as system::Config>::AccountId, cid: &MerkleRoot, anchor: &SworkerAnchor) -> u64 {
+    fn delete_replica(who: &<T as system::Config>::AccountId, cid: &MerkleRoot, anchor: &TarsAnchor) -> u64 {
         // 1. Delete replica from file_info
         if let Some((mut file_info, used_info)) = <Files<T>>::get(cid) {
             let mut is_to_decreased = false;
@@ -257,7 +257,7 @@ pub trait Config: system::Config {
     type CurrencyToBalance: Convert<BalanceOf<Self>, u64> + Convert<u64, BalanceOf<Self>>;
 
     /// used to check work report
-    type SworkerInterface: SworkerInterface<Self::AccountId>;
+    type TarsInterface: TarsInterface<Self::AccountId>;
 
     /// The overarching event type.
     type Event: From<Event<Self>> + Into<<Self as system::Config>::Event>;
@@ -331,10 +331,10 @@ decl_storage! {
         pub UsedTrashSizeII get(fn used_trash_size_ii): u128 = 0;
 
         pub UsedTrashMappingI get(fn used_trash_mapping_i):
-        map hasher(blake2_128_concat) SworkerAnchor => u64 = 0;
+        map hasher(blake2_128_concat) TarsAnchor => u64 = 0;
 
         pub UsedTrashMappingII get(fn used_trash_mapping_ii):
-        map hasher(blake2_128_concat) SworkerAnchor => u64 = 0;
+        map hasher(blake2_128_concat) TarsAnchor => u64 = 0;
 
         /// Market switch to enable place storage order
         pub MarketSwitch get(fn market_switch): bool = false;
@@ -752,7 +752,7 @@ impl<T: Config> Module<T> {
             // 5.2. Loop replicas
             for replica in file_info.replicas.iter() {
                 // a. didn't report in prev slot, push back to the end of replica
-                if !T::SworkerInterface::is_wr_reported(&replica.anchor, curr_bn) {
+                if !T::TarsInterface::is_wr_reported(&replica.anchor, curr_bn) {
                     let mut invalid_replica = replica.clone();
                     // update the valid_at to the curr_bn
                     invalid_replica.valid_at = curr_bn;
@@ -851,7 +851,7 @@ impl<T: Config> Module<T> {
 
     fn dump_used_trash_i() {
         for (anchor, used) in UsedTrashMappingI::iter() {
-            T::SworkerInterface::update_used(&anchor, used, 0);
+            T::TarsInterface::update_used(&anchor, used, 0);
         }
         remove_storage_prefix(UsedTrashMappingI::module_prefix(), UsedTrashMappingI::storage_prefix(), &[]);
         remove_storage_prefix(UsedTrashI::module_prefix(), UsedTrashI::storage_prefix(), &[]);
@@ -860,7 +860,7 @@ impl<T: Config> Module<T> {
 
     fn dump_used_trash_ii() {
         for (anchor, used) in UsedTrashMappingII::iter() {
-            T::SworkerInterface::update_used(&anchor, used, 0);
+            T::TarsInterface::update_used(&anchor, used, 0);
         }
         remove_storage_prefix(UsedTrashMappingII::module_prefix(), UsedTrashMappingII::storage_prefix(), &[]);
         remove_storage_prefix(UsedTrashII::module_prefix(), UsedTrashII::storage_prefix(), &[]);
@@ -876,7 +876,7 @@ impl<T: Config> Module<T> {
                         UsedTrashMappingI::mutate(anchor, |value| {
                             *value -= used_info.used_size;
                         });
-                        T::SworkerInterface::update_used(anchor, used_info.used_size, 0);
+                        T::TarsInterface::update_used(anchor, used_info.used_size, 0);
                     }
                     UsedTrashSizeI::mutate(|value| {*value -= 1;});
                 },
@@ -895,7 +895,7 @@ impl<T: Config> Module<T> {
                         UsedTrashMappingII::mutate(anchor, |value| {
                             *value -= used_info.used_size;
                         });
-                        T::SworkerInterface::update_used(anchor, used_info.used_size, 0);
+                        T::TarsInterface::update_used(anchor, used_info.used_size, 0);
                     }
                     UsedTrashSizeII::mutate(|value| {*value -= 1;});
                 },
@@ -905,7 +905,7 @@ impl<T: Config> Module<T> {
         });
     }
 
-    fn maybe_delete_anchor_from_used_trash_i(cid: &MerkleRoot, anchor: &SworkerAnchor) -> u64 {
+    fn maybe_delete_anchor_from_used_trash_i(cid: &MerkleRoot, anchor: &TarsAnchor) -> u64 {
         let mut used_size = 0;
         UsedTrashI::mutate(cid, |maybe_used| match *maybe_used {
             Some(ref mut used_info) => {
@@ -921,7 +921,7 @@ impl<T: Config> Module<T> {
         used_size
     }
 
-    fn maybe_delete_anchor_from_used_trash_ii(cid: &MerkleRoot, anchor: &SworkerAnchor) -> u64 {
+    fn maybe_delete_anchor_from_used_trash_ii(cid: &MerkleRoot, anchor: &TarsAnchor) -> u64 {
         let mut used_size = 0;
         UsedTrashII::mutate(cid, |maybe_used| match *maybe_used {
             Some(ref mut used_info) => {
@@ -986,7 +986,7 @@ impl<T: Config> Module<T> {
             let used_info = UsedInfo {
                 used_size: 0,
                 reported_group_count: 0,
-                groups: <BTreeMap<SworkerAnchor, bool>>::new()
+                groups: <BTreeMap<TarsAnchor, bool>>::new()
             };
             <Files<T>>::insert(cid, (file_info, used_info));
         }
@@ -1053,7 +1053,7 @@ impl<T: Config> Module<T> {
     }
 
     pub fn update_file_price() {
-        let total_capacity = T::SworkerInterface::get_total_capacity();
+        let total_capacity = T::TarsInterface::get_total_capacity();
         let (numerator, denominator) = T::StorageReferenceRatio::get();
         let files_size = Self::files_size();
         let mut file_price = Self::file_price();
@@ -1111,7 +1111,7 @@ impl<T: Config> Module<T> {
         TryInto::<u32>::try_into(current_block_number).ok().unwrap()
     }
 
-    fn add_used_group(used_info: &mut UsedInfo, anchor: &SworkerAnchor, file_size: u64) -> u64 {
+    fn add_used_group(used_info: &mut UsedInfo, anchor: &TarsAnchor, file_size: u64) -> u64 {
         used_info.reported_group_count += 1;
         Self::update_groups_used_info(file_size, used_info);
         Self::update_files_size(file_size, 0, 1);
@@ -1119,7 +1119,7 @@ impl<T: Config> Module<T> {
         used_info.used_size
     }
 
-    fn delete_used_group(cid: &MerkleRoot, anchor: &SworkerAnchor) -> u64 {
+    fn delete_used_group(cid: &MerkleRoot, anchor: &TarsAnchor) -> u64 {
         let mut used_size: u64 = 0;
         
         // 1. Delete files anchor
@@ -1191,16 +1191,16 @@ impl<T: Config> Module<T> {
         let prev_used_size = used_info.used_size;
         if prev_used_size != new_used_size {
             for anchor in used_info.groups.keys() {
-                T::SworkerInterface::update_used(anchor, prev_used_size, new_used_size);
+                T::TarsInterface::update_used(anchor, prev_used_size, new_used_size);
             }
         }
         used_info.used_size = new_used_size;
     }
 
-    fn count_reported_groups(groups: &mut BTreeMap<SworkerAnchor, bool>, curr_bn: BlockNumber) -> u32 {
+    fn count_reported_groups(groups: &mut BTreeMap<TarsAnchor, bool>, curr_bn: BlockNumber) -> u32 {
         let mut count = 0;
         for (anchor, is_calculated_as_reported_group_count) in groups.iter_mut() {
-            if T::SworkerInterface::is_wr_reported(anchor, curr_bn) {
+            if T::TarsInterface::is_wr_reported(anchor, curr_bn) {
                 count += 1;
                 *is_calculated_as_reported_group_count = true;
             } else { *is_calculated_as_reported_group_count = false; }

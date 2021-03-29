@@ -3,8 +3,8 @@
 
 use sp_std::prelude::*;
 use primitives::{
-    SworkerSignature,
-    IASSig, SworkerCert, ISVBody, SworkerCode
+    TarsSignature,
+    IASSig, TarsCert, ISVBody, TarsCode
 };
 use serde_json::Value;
 use p256::ecdsa::{VerifyKey, signature::{Verifier, Signature}};
@@ -60,11 +60,11 @@ static SUPPORTED_SIG_ALGS: SignatureAlgorithms = &[
 
 pub fn verify_identity (
     ias_sig: &IASSig,
-    ias_cert: &SworkerCert,
+    ias_cert: &TarsCert,
     account_id: &Vec<u8>,
     isv_body: &ISVBody,
-    sig: &SworkerSignature,
-    enclave_code: &SworkerCode
+    sig: &TarsSignature,
+    enclave_code: &TarsCode
 ) -> Option<Vec<u8>> {
     // 1. Decode ias cert from base64
     let ias_cert_dec = match base64::decode_config(&ias_cert, base64::STANDARD) {

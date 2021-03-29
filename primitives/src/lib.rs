@@ -47,21 +47,21 @@ pub type IASSig = Vec<u8>;
 /// The ISV body type, contains the enclave code and public key
 pub type ISVBody = Vec<u8>;
 
-/// sworker certification type, begin with `-----BEGIN CERTIFICATE-----`
+/// tars certification type, begin with `-----BEGIN CERTIFICATE-----`
 /// and end with `-----END CERTIFICATE-----`
-pub type SworkerCert = Vec<u8>;
+pub type TarsCert = Vec<u8>;
 
-/// sworker public key, little-endian-format, 64 bytes vec
-pub type SworkerPubKey = Vec<u8>;
+/// tars public key, little-endian-format, 64 bytes vec
+pub type TarsPubKey = Vec<u8>;
 
-/// sworker anchor, just use SworkerPubKey right now, 64 bytes vec
-pub type SworkerAnchor = SworkerPubKey;
+/// tars anchor, just use TarsPubKey right now, 64 bytes vec
+pub type TarsAnchor = TarsPubKey;
 
-/// sworker signature, little-endian-format, 64 bytes vec
-pub type SworkerSignature = Vec<u8>;
+/// tars signature, little-endian-format, 64 bytes vec
+pub type TarsSignature = Vec<u8>;
 
-/// sworker enclave code
-pub type SworkerCode = Vec<u8>;
+/// tars enclave code
+pub type TarsCode = Vec<u8>;
 
 /// Work report empty workload/storage merkle root
 pub type MerkleRoot = Vec<u8>;

@@ -22,7 +22,7 @@ use sp_staking::{
 };
 use std::{cell::RefCell, collections::HashSet, collections::btree_set::BTreeSet};
 use balances::AccountData;
-use primitives::{traits::MarketInterface, MerkleRoot, SworkerAnchor};
+use primitives::{traits::MarketInterface, MerkleRoot, TarsAnchor};
 
 /// The AccountId alias in this test module.
 pub type AccountId = u128;
@@ -214,8 +214,8 @@ impl swork::Works<AccountId> for TestStaking {
 }
 
 impl<AID> MarketInterface<AID, BalanceOf<Test>> for TestStaking {
-    fn upsert_replica(_: &AID, _: &MerkleRoot, _: u64, _: &SworkerAnchor, _: u32, _: &Option<BTreeSet<AID>>) -> u64 { 0 }
-    fn delete_replica(_: &AID, _: &MerkleRoot, _: &SworkerAnchor) -> u64 { 0 }
+    fn upsert_replica(_: &AID, _: &MerkleRoot, _: u64, _: &TarsAnchor, _: u32, _: &Option<BTreeSet<AID>>) -> u64 { 0 }
+    fn delete_replica(_: &AID, _: &MerkleRoot, _: &TarsAnchor) -> u64 { 0 }
     fn withdraw_staking_pot() -> BalanceOf<Test> {
         BalanceOf::<Test>::from(DSM_STAKING_PAYOUT.with(|v| *v.borrow()))
     }
