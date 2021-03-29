@@ -24,10 +24,10 @@ use serde::{Deserialize, Serialize};
 // Calcu primitives and runtime modules
 use primitives::{
     constants::swork::*,
-    MerkleRoot, SworkerPubKey, SworkerSignature,
+    MerkleRoot, TarsPubKey, TarsSignature,
     ReportSlot, BlockNumber, IASSig,
-    ISVBody, SworkerCert, SworkerCode, SworkerAnchor,
-    traits::{MarketInterface, SworkerInterface}
+    ISVBody, TarsCert, TarsCode, TarsAnchor,
+    traits::{MarketInterface, TarsInterface}
 };
 use sp_std::collections::btree_map::BTreeMap;
 
@@ -86,8 +86,8 @@ pub struct WorkReport {
 #[derive(Debug, PartialEq, Eq, Clone, Encode, Decode, Default)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct PKInfo {
-    pub code: SworkerCode,
-    pub anchor: Option<SworkerAnchor> // is bonded to an account or not in report work
+    pub code: TarsCode,
+    pub anchor: Option<TarsAnchor> // is bonded to an account or not in report work
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Encode, Decode, Default)]
@@ -95,7 +95,7 @@ pub struct PKInfo {
 pub struct Identity<AccountId> {
     /// The unique identity associated to one account id.
     /// During the AB upgrade, this anchor would keep and won't change.
-    pub anchor: SworkerAnchor,
+    pub anchor: TarsAnchor,
     pub punishment_deadline: ReportSlot,
     pub group: Option<AccountId>
 }
@@ -110,16 +110,16 @@ impl<AId> Works<AId> for () {
 }
 
 /// Implement market's file inspector
-impl<T: Config> SworkerInterface<T::AccountId> for Module<T> {
+impl<T: Config> TarsInterface<T::AccountId> for Module<T> {
     /// check wr existing or not
-    fn is_wr_reported(anchor: &SworkerAnchor, bn: BlockNumber) -> bool {
+    fn is_wr_reported(anchor: &TarsAnchor, bn: BlockNumber) -> bool {
         let current_rs = Self::convert_bn_to_rs(bn);
         let prev_rs = current_rs.saturating_sub(REPORT_SLOT);
         Self::reported_in_slot(&anchor, prev_rs)
     }
 
     /// update the used value due to deleted files, dump trash or calculate_payout
-    fn update_used(anchor: &SworkerAnchor, anchor_decrease_used: u64, anchor_increase_used: u64) {
+    fn update_used(anchor: &TarsAnchor, anchor_decrease_used: u64, anchor_increase_used: u64) {
         WorkReports::mutate_exists(anchor, |maybe_wr| match *maybe_wr {
             Some(WorkReport { ref mut used, .. }) => *used = used.saturating_sub(anchor_decrease_used).saturating_add(anchor_increase_used),
             ref mut i => *i = None,
@@ -127,7 +127,7 @@ impl<T: Config> SworkerInterface<T::AccountId> for Module<T> {
     }
 
     /// check whether the account id and the anchor is valid or not
-    fn check_anchor(who: &T::AccountId, anchor: &SworkerAnchor) -> bool {
+    fn check_anchor(who: &T::AccountId, anchor: &TarsAnchor) -> bool {
         if let Some(identity) = Self::identities(who) {
             return identity.anchor == *anchor;
         }
@@ -171,7 +171,7 @@ decl_storage! {
         HistorySlotDepth get(fn history_slot_depth): ReportSlot = 6 * REPORT_SLOT;
 
         /// The sWorker enclave code, this should be managed by sudo/democracy
-        pub Code get(fn code) config(): SworkerCode;
+        pub Code get(fn code) config(): TarsCode;
 
         /// The AB upgrade expired block, this should be managed by sudo/democracy
         pub ABExpire get(fn ab_expire): Option<T::BlockNumber>;
@@ -182,7 +182,7 @@ decl_storage! {
 
         /// The sWorker information, mapping from sWorker public key to an optional pubkey information
         pub PubKeys get(fn pub_keys):
-            map hasher(twox_64_concat) SworkerPubKey => PKInfo;
+            map hasher(twox_64_concat) TarsPubKey => PKInfo;
 
         /// The group information
         pub Groups get(fn groups):
@@ -192,7 +192,7 @@ decl_storage! {
         /// WorkReport only been replaced, it won't get removed cause we need to check the
         /// status transition from off-chain sWorker
         pub WorkReports get(fn work_reports):
-            map hasher(twox_64_concat) SworkerAnchor => Option<WorkReport>;
+            map hasher(twox_64_concat) TarsAnchor => Option<WorkReport>;
 
         /// The current report slot block number, this value should be a multiple of era block
         pub CurrentReportSlot get(fn current_report_slot): ReportSlot = 0;
@@ -203,7 +203,7 @@ decl_storage! {
         /// value represent if reported in this slot
         /// TODO: reverse the keys when we launch mainnet
         pub ReportedInSlot get(fn reported_in_slot):
-            double_map hasher(twox_64_concat) SworkerAnchor, hasher(twox_64_concat) ReportSlot => bool = false;
+            double_map hasher(twox_64_concat) TarsAnchor, hasher(twox_64_concat) ReportSlot => bool = false;
 
         /// The used workload, used for calculating stake limit in the end of era
         /// default is 0
@@ -293,11 +293,11 @@ decl_module! {
         /// - 2 DB try
         /// # </weight>
         #[weight = (T::WeightInfo::upgrade(), DispatchClass::Operational)]
-        pub fn upgrade(origin, new_code: SworkerCode, expire_block: T::BlockNumber) {
+        pub fn upgrade(origin, new_code: TarsCode, expire_block: T::BlockNumber) {
             ensure_root(origin)?;
             <Code>::put(&new_code);
             <ABExpire<T>>::put(&expire_block);
-            Self::deposit_event(RawEvent::SworkerUpgradeSuccess(new_code, expire_block));
+            Self::deposit_event(RawEvent::TarsUpgradeSuccess(new_code, expire_block));
         }
 
         /// Register as new trusted node, can only called from sWorker.
@@ -321,10 +321,10 @@ decl_module! {
         pub fn register(
             origin,
             ias_sig: IASSig,
-            ias_cert: SworkerCert,
+            ias_cert: TarsCert,
             applier: T::AccountId,
             isv_body: ISVBody,
-            sig: SworkerSignature
+            sig: TarsSignature
         ) -> DispatchResult {
             let who = ensure_signed(origin)?;
 
@@ -334,7 +334,7 @@ decl_module! {
             // 2. Ensure who cannot be group owner
             ensure!(!<Groups<T>>::contains_key(&who), Error::<T>::GroupOwnerForbidden);
 
-            // 3. Ensure unparsed_identity trusted chain is legal, including signature and sworker code
+            // 3. Ensure unparsed_identity trusted chain is legal, including signature and tars code
             let maybe_pk = Self::check_and_get_pk(&ias_sig, &ias_cert, &applier, &isv_body, &sig);
             ensure!(maybe_pk.is_some(), Error::<T>::IllegalIdentity);
 
@@ -368,8 +368,8 @@ decl_module! {
         #[weight = (T::WeightInfo::report_works(added_files.len() as u32, deleted_files.len() as u32), DispatchClass::Operational)]
         pub fn report_works(
             origin,
-            curr_pk: SworkerPubKey,
-            ab_upgrade_pk: SworkerPubKey,
+            curr_pk: TarsPubKey,
+            ab_upgrade_pk: TarsPubKey,
             slot: u64,
             slot_hash: Vec<u8>,
             reported_srd_size: u64,
@@ -378,7 +378,7 @@ decl_module! {
             deleted_files: Vec<(MerkleRoot, u64, u64)>,
             reported_srd_root: MerkleRoot,
             reported_files_root: MerkleRoot,
-            sig: SworkerSignature
+            sig: TarsSignature
         ) -> DispatchResultWithPostInfo {
             let reporter = ensure_signed(origin)?;
             let mut prev_pk = curr_pk.clone();
@@ -744,7 +744,7 @@ impl<T: Config> Module<T> {
 
     // PRIVATE MUTABLES
     /// This function will insert a new pk
-    pub fn insert_pk_info(pk: SworkerPubKey, code: SworkerCode) {
+    pub fn insert_pk_info(pk: TarsPubKey, code: TarsCode) {
         let pk_info = PKInfo {
             code,
             anchor: None
@@ -754,13 +754,13 @@ impl<T: Config> Module<T> {
     }
 
     /// This function will (maybe) remove pub_keys
-    fn chill_pk(pk: &SworkerPubKey) {
+    fn chill_pk(pk: &TarsPubKey) {
         // 1. Remove from `pub_keys`
         PubKeys::remove(pk);
     }
 
     /// This function will chill WorkReports and ReportedInSlot
-    fn chill_anchor(anchor: &SworkerAnchor) {
+    fn chill_anchor(anchor: &TarsAnchor) {
         WorkReports::remove(anchor);
         ReportedInSlot::remove_prefix(anchor);
     }
@@ -772,7 +772,7 @@ impl<T: Config> Module<T> {
     /// 4. call `Works::report_works` interface
     fn maybe_upsert_work_report(
         reporter: &T::AccountId,
-        anchor: &SworkerAnchor,
+        anchor: &TarsAnchor,
         reported_srd_size: u64,
         reported_files_size: u64,
         added_files: &Vec<(MerkleRoot, u64, u64)>,
@@ -828,7 +828,7 @@ impl<T: Config> Module<T> {
     fn update_files(
         reporter: &T::AccountId,
         changed_files: &Vec<(MerkleRoot, u64, u64)>,
-        anchor: &SworkerPubKey,
+        anchor: &TarsPubKey,
         is_added: bool) -> Vec<(MerkleRoot, u64, u64)> {
 
         // 1. Loop changed files
@@ -890,7 +890,7 @@ impl<T: Config> Module<T> {
     // PRIVATE IMMUTABLES
     /// This function will check work report files status transition
     fn files_transition_check(
-        prev_pk: &SworkerPubKey,
+        prev_pk: &TarsPubKey,
         new_files_size: u64,
         reported_added_files: &Vec<(MerkleRoot, u64, u64)>,
         reported_deleted_files: &Vec<(MerkleRoot, u64, u64)>,
@@ -913,10 +913,10 @@ impl<T: Config> Module<T> {
 
     fn check_and_get_pk(
         ias_sig: &IASSig,
-        ias_cert: &SworkerCert,
+        ias_cert: &TarsCert,
         account_id: &T::AccountId,
         isv_body: &ISVBody,
-        sig: &SworkerSignature
+        sig: &TarsSignature
     ) -> Option<Vec<u8>> {
         let enclave_code = Self::code();
         let applier = account_id.encode();
@@ -931,9 +931,9 @@ impl<T: Config> Module<T> {
         )
     }
 
-    /// This function is judging if the work report sworker code is legal,
-    /// return `is_sworker_code_legal`
-    fn reporter_code_check(pk: &SworkerPubKey, block_number: u64) -> bool {
+    /// This function is judging if the work report tars code is legal,
+    /// return `is_tars_code_legal`
+    fn reporter_code_check(pk: &TarsPubKey, block_number: u64) -> bool {
         return Self::pub_keys(pk).code == Self::code() ||
             (Self::ab_expire().is_some() && block_number < TryInto::<u64>::try_into(Self::ab_expire().unwrap()).ok().unwrap())
     }
@@ -962,8 +962,8 @@ impl<T: Config> Module<T> {
     }
 
     fn work_report_sig_check(
-        curr_pk: &SworkerPubKey,
-        prev_pk: &SworkerPubKey,
+        curr_pk: &TarsPubKey,
+        prev_pk: &TarsPubKey,
         block_number: u64,
         block_hash: &Vec<u8>,
         reserved: u64,
@@ -972,7 +972,7 @@ impl<T: Config> Module<T> {
         files_root: &MerkleRoot,
         added_files: &Vec<(MerkleRoot, u64, u64)>,
         deleted_files: &Vec<(MerkleRoot, u64, u64)>,
-        sig: &SworkerSignature
+        sig: &TarsSignature
     ) -> bool {
         // 1. Encode
         let block_number_bytes = utils::encode_u64_to_string_to_bytes(block_number);
@@ -983,8 +983,8 @@ impl<T: Config> Module<T> {
 
         // 2. Construct work report data
         //{
-        //    curr_pk: SworkerPubKey,
-        //    prev_pk: SworkerPubKey,
+        //    curr_pk: TarsPubKey,
+        //    prev_pk: TarsPubKey,
         //    block_number: u64, -> Vec<u8>
         //    block_hash: Vec<u8>,
         //    free: u64, -> Vec<u8>
@@ -1033,11 +1033,11 @@ decl_event!(
         AccountId = <T as system::Config>::AccountId,
         BlockNumber = <T as system::Config>::BlockNumber,
     {
-        RegisterSuccess(AccountId, SworkerPubKey),
-        WorksReportSuccess(AccountId, SworkerPubKey),
-        ABUpgradeSuccess(AccountId, SworkerPubKey, SworkerPubKey),
-        ChillSuccess(AccountId, SworkerPubKey),
-        SworkerUpgradeSuccess(SworkerCode, BlockNumber),
+        RegisterSuccess(AccountId, TarsPubKey),
+        WorksReportSuccess(AccountId, TarsPubKey),
+        ABUpgradeSuccess(AccountId, TarsPubKey, TarsPubKey),
+        ChillSuccess(AccountId, TarsPubKey),
+        TarsUpgradeSuccess(TarsCode, BlockNumber),
         JoinGroupSuccess(AccountId, AccountId),
         QuitGroupSuccess(AccountId, AccountId),
         CreateGroupSuccess(AccountId),

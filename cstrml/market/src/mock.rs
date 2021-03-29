@@ -70,8 +70,8 @@ impl Convert<u64, u128> for CurrencyToVoteHandler {
 }
 
 pub struct ReportWorksInfo {
-    pub curr_pk: SworkerPubKey,
-    pub prev_pk: SworkerPubKey,
+    pub curr_pk: TarsPubKey,
+    pub prev_pk: TarsPubKey,
     pub block_number: u64,
     pub block_hash: Vec<u8>,
     pub free: u64,
@@ -80,7 +80,7 @@ pub struct ReportWorksInfo {
     pub files_root: MerkleRoot,
     pub added_files: Vec<(MerkleRoot, u64, u64)>,
     pub deleted_files: Vec<(MerkleRoot, u64, u64)>,
-    pub sig: SworkerSignature
+    pub sig: TarsSignature
 }
 
 pub struct LegalCode;
@@ -165,7 +165,7 @@ impl Config for Test {
     type ModuleId = MarketModuleId;
     type Currency = balances::Module<Self>;
     type CurrencyToBalance = CurrencyToVoteHandler;
-    type SworkerInterface = Swork;
+    type TarsInterface = Swork;
     type Event = ();
     type FileDuration = FileDuration;
     type FileReplica = FileReplica;
@@ -243,7 +243,7 @@ pub fn init_swork_setup() {
 }
 
 // fake for report_works
-pub fn add_who_into_replica(cid: &MerkleRoot, reported_size: u64, who: AccountId, anchor: SworkerAnchor, reported_at: Option<u32>, maybe_members: Option<BTreeSet<AccountId>>) {
+pub fn add_who_into_replica(cid: &MerkleRoot, reported_size: u64, who: AccountId, anchor: TarsAnchor, reported_at: Option<u32>, maybe_members: Option<BTreeSet<AccountId>>) {
     Market::upsert_replica(&who, cid, reported_size, &anchor, reported_at.unwrap_or(TryInto::<u32>::try_into(System::block_number()).ok().unwrap()), &maybe_members);
 }
 
@@ -278,7 +278,7 @@ pub fn legal_work_report_with_added_files() -> ReportWorksInfo {
     }
 }
 
-pub fn register(pk: &SworkerPubKey, code: SworkerCode) {
+pub fn register(pk: &TarsPubKey, code: TarsCode) {
     <swork::PubKeys>::insert(pk.clone(), PKInfo {
         code: code,
         anchor: None

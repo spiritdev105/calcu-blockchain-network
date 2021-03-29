@@ -68,15 +68,15 @@ impl WorkloadMap {
 
 pub struct RegisterInfo {
     pub ias_sig: IASSig,
-    pub ias_cert: SworkerCert,
+    pub ias_cert: TarsCert,
     pub account_id: AccountId,
     pub isv_body: ISVBody,
-    pub sig: SworkerSignature
+    pub sig: TarsSignature
 }
 
 pub struct ReportWorksInfo {
-    pub curr_pk: SworkerPubKey,
-    pub prev_pk: SworkerPubKey,
+    pub curr_pk: TarsPubKey,
+    pub prev_pk: TarsPubKey,
     pub block_number: u64,
     pub block_hash: Vec<u8>,
     pub free: u64,
@@ -85,7 +85,7 @@ pub struct ReportWorksInfo {
     pub files_root: MerkleRoot,
     pub added_files: Vec<(MerkleRoot, u64, u64)>,
     pub deleted_files: Vec<(MerkleRoot, u64, u64)>,
-    pub sig: SworkerSignature
+    pub sig: TarsSignature
 }
 
 parameter_types! {
@@ -150,7 +150,7 @@ impl market::Config for Test {
     type ModuleId = MarketModuleId;
     type Currency = balances::Module<Self>;
     type CurrencyToBalance = ();
-    type SworkerInterface = Swork;
+    type TarsInterface = Swork;
     type Event = ();
     /// File duration.
     type FileDuration = FileDuration;
@@ -211,7 +211,7 @@ frame_support::construct_runtime!(
 );
 
 pub struct ExtBuilder {
-    code: SworkerCode
+    code: TarsCode
 }
 
 impl Default for ExtBuilder {
@@ -223,7 +223,7 @@ impl Default for ExtBuilder {
 }
 
 impl ExtBuilder {
-    pub fn code(mut self, code: SworkerCode) -> Self {
+    pub fn code(mut self, code: TarsCode) -> Self {
         self.code = code;
         self
     }
@@ -617,11 +617,11 @@ pub fn group_work_report_eve_600() -> ReportWorksInfo {
     }
 }
 
-pub fn register(pk: &SworkerPubKey, code: SworkerCode) {
+pub fn register(pk: &TarsPubKey, code: TarsCode) {
     Swork::insert_pk_info(pk.clone(), code);
 }
 
-pub fn register_identity(who: &AccountId, pk: &SworkerPubKey, anchor: &SworkerAnchor) {
+pub fn register_identity(who: &AccountId, pk: &TarsPubKey, anchor: &TarsAnchor) {
     <self::PubKeys>::mutate(pk, |pk_info| {
         pk_info.anchor = Some(anchor.clone());
     });
@@ -632,7 +632,7 @@ pub fn register_identity(who: &AccountId, pk: &SworkerPubKey, anchor: &SworkerAn
     });
 }
 
-pub fn add_wr(anchor: &SworkerAnchor, wr: &WorkReport) {
+pub fn add_wr(anchor: &TarsAnchor, wr: &WorkReport) {
     <self::WorkReports>::insert(anchor.clone(), wr.clone());
     <self::ReportedInSlot>::insert(anchor.clone(), wr.report_slot, true);
 }
@@ -652,7 +652,7 @@ pub fn add_not_live_files() {
         let used_info = UsedInfo {
             used_size: 0,
             reported_group_count: 0,
-            groups: <BTreeMap<SworkerAnchor, bool>>::new()
+            groups: <BTreeMap<TarsAnchor, bool>>::new()
         };
         insert_file(file, 1000, 0, 1000, 0, 0, vec![], *file_size, used_info);
     }
@@ -661,7 +661,7 @@ pub fn add_not_live_files() {
     let _ = Balances::make_free_balance_be(&storage_pot, 20000);
 }
 
-pub fn add_live_files(who: &AccountId, anchor: &SworkerAnchor) {
+pub fn add_live_files(who: &AccountId, anchor: &TarsAnchor) {
     let files: Vec<(Vec<u8>, u64)> = [
         ("QmdwgqZy1MZBfWPi7GcxVsYgJEtmvHg6rsLzbCej3tf3oF".as_bytes().to_vec(), 134289408),
         ("QmdwgqZy1MZBfWPi7GcxVsYgJEtmvHg6rsLzbCej3tf3oB".as_bytes().to_vec(), 7),

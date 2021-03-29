@@ -24,8 +24,8 @@ pub type Balance = u64;
 mod mock;
 
 struct ReportWorksInfo {
-    pub curr_pk: SworkerPubKey,
-    pub prev_pk: SworkerPubKey,
+    pub curr_pk: TarsPubKey,
+    pub prev_pk: TarsPubKey,
     pub block_number: u64,
     pub block_hash: Vec<u8>,
     pub free: u64,
@@ -34,7 +34,7 @@ struct ReportWorksInfo {
     pub files_root: MerkleRoot,
     pub added_files: Vec<(MerkleRoot, u64, u64)>,
     pub deleted_files: Vec<(MerkleRoot, u64, u64)>,
-    pub sig: SworkerSignature
+    pub sig: TarsSignature
 }
 
 fn legal_work_report_with_srd() -> ReportWorksInfo {
@@ -136,7 +136,7 @@ fn add_market_files<T: Config>(files: Vec<(MerkleRoot, u64, u64)>, user: T::Acco
         let used_info = UsedInfo {
             used_size: *file_size,
             reported_group_count: 0,
-            groups: <BTreeMap<SworkerAnchor, bool>>::new()
+            groups: <BTreeMap<TarsAnchor, bool>>::new()
         };
         let mut replicas: Vec<Replica<T::AccountId>> = vec![];
         for _ in 0..200 {
