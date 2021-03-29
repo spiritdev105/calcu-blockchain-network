@@ -19,7 +19,7 @@ use sp_runtime::{
 pub use std::{cell::RefCell, iter::FromIterator};
 use balances::AccountData;
 pub use primitives::*;
-use swork::{PKInfo, Identity};
+use tars::{PKInfo, Identity};
 
 pub type AccountId = AccountId32;
 pub type Balance = u64;
@@ -134,14 +134,14 @@ parameter_types! {
     pub const MaxGroupSize: u32 = 100;
 }
 
-impl swork::Config for Test {
+impl tars::Config for Test {
     type Currency = Balances;
     type Event = ();
     type PunishmentSlots = PunishmentSlots;
     type Works = ();
     type MarketInterface = Market;
     type MaxGroupSize = MaxGroupSize;
-    type WeightInfo = swork::weight::WeightInfo<Test>;
+    type WeightInfo = tars::weight::WeightInfo<Test>;
 }
 
 parameter_types! {
@@ -165,7 +165,7 @@ impl Config for Test {
     type ModuleId = MarketModuleId;
     type Currency = balances::Module<Self>;
     type CurrencyToBalance = CurrencyToVoteHandler;
-    type TarsInterface = Swork;
+    type TarsInterface = Tars;
     type Event = ();
     type FileDuration = FileDuration;
     type FileReplica = FileReplica;
@@ -193,7 +193,7 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system::{Module, Call, Config, Storage, Event<T>},
 		Balances: balances::{Module, Call, Storage, Config<T>, Event<T>},
-		Swork: swork::{Module, Call, Storage, Event<T>, Config},
+		Tars: tars::{Module, Call, Storage, Event<T>, Config},
 		Market: market::{Module, Call, Storage, Event<T>, Config},
 	}
 );
@@ -203,35 +203,35 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     .build_storage::<Test>()
     .unwrap();
 
-    let _ = swork::GenesisConfig {
+    let _ = tars::GenesisConfig {
         code: LegalCode::get(),
     }.assimilate_storage(&mut t);
 
     let mut ext: sp_io::TestExternalities = t.into();
     ext.execute_with(|| {
-        init_swork_setup();
+        init_tars_setup();
         assert_ok!(Market::set_market_switch(Origin::root(), true));
     });
 
     ext
 }
 
-pub fn init_swork_setup() {
+pub fn init_tars_setup() {
     let pks = vec![hex::decode("11").unwrap(), hex::decode("22").unwrap(), hex::decode("33").unwrap(), hex::decode("44").unwrap()];
     let whos = vec![ALICE, BOB, CHARLIE, DAVE];
     let frees: Vec<u64> = vec![0, 50, 50, 200];
     let code = LegalCode::get();
     for ((pk, who), free) in pks.iter().zip(whos.iter()).zip(frees.iter()) {
-        <swork::PubKeys>::insert(pk.clone(), PKInfo {
+        <tars::PubKeys>::insert(pk.clone(), PKInfo {
             code: code.clone(),
             anchor: Some(pk.clone())
         });
-        <swork::Identities<Test>>::insert(who, Identity {
+        <tars::Identities<Test>>::insert(who, Identity {
             anchor: pk.clone(),
             punishment_deadline: 0,
             group: None
         });
-        <swork::WorkReports>::insert(pk.clone(), swork::WorkReport{
+        <tars::WorkReports>::insert(pk.clone(), tars::WorkReport{
             report_slot: 0,
             used: 0,
             free: *free,
@@ -279,7 +279,7 @@ pub fn legal_work_report_with_added_files() -> ReportWorksInfo {
 }
 
 pub fn register(pk: &TarsPubKey, code: TarsCode) {
-    <swork::PubKeys>::insert(pk.clone(), PKInfo {
+    <tars::PubKeys>::insert(pk.clone(), PKInfo {
         code: code,
         anchor: None
     });

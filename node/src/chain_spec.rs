@@ -6,7 +6,7 @@ use sp_core::{Pair, Public, sr25519, crypto::UncheckedInto};
 use calcu_runtime::{
     AuthorityDiscoveryId, BalancesConfig, GenesisConfig, ImOnlineId,
     AuthorityDiscoveryConfig, SessionConfig, SessionKeys, StakerStatus,
-    StakingConfig, IndicesConfig, SystemConfig, SworkConfig, SudoConfig,
+    StakingConfig, IndicesConfig, SystemConfig, TarsConfig, SudoConfig,
     ElectionsConfig, CouncilConfig, TechnicalCommitteeConfig, DemocracyConfig,
     WASM_BINARY
 };
@@ -211,7 +211,7 @@ fn testnet_genesis(
         pallet_authority_discovery: Some(AuthorityDiscoveryConfig {
             keys: vec![]
         }),
-        swork: Some(SworkConfig {
+        tars: Some(TarsConfig {
             code: vec![]
         }),
         pallet_collective_Instance1: Some(CouncilConfig::default()),

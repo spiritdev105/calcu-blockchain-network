@@ -23,7 +23,7 @@ use serde::{Deserialize, Serialize};
 
 // Calcu primitives and runtime modules
 use primitives::{
-    constants::swork::*,
+    constants::tars::*,
     MerkleRoot, TarsPubKey, TarsSignature,
     ReportSlot, BlockNumber, IASSig,
     ISVBody, TarsCert, TarsCode, TarsAnchor,
@@ -45,7 +45,7 @@ mod tests;
 pub type BalanceOf<T> =
     <<T as Config>::Currency as Currency<<T as system::Config>::AccountId>>::Balance;
 
-pub(crate) const LOG_TARGET: &'static str = "swork";
+pub(crate) const LOG_TARGET: &'static str = "tars";
 
 #[macro_export]
 macro_rules! log {
@@ -143,7 +143,7 @@ impl<T: Config> TarsInterface<T::AccountId> for Module<T> {
 /// The module's configuration trait.
 pub trait Config: system::Config {
     /// The payment balance.
-    /// TODO: remove this for abstracting MarketInterface into sWorker self
+    /// TODO: remove this for abstracting MarketInterface into Tars self
     type Currency: ReservableCurrency<Self::AccountId>;
 
     /// The overarching event type.
@@ -166,11 +166,11 @@ pub trait Config: system::Config {
 }
 
 decl_storage! {
-    trait Store for Module<T: Config> as Swork {
+    trait Store for Module<T: Config> as Tars {
 
         HistorySlotDepth get(fn history_slot_depth): ReportSlot = 6 * REPORT_SLOT;
 
-        /// The sWorker enclave code, this should be managed by sudo/democracy
+        /// The Tars enclave code, this should be managed by sudo/democracy
         pub Code get(fn code) config(): TarsCode;
 
         /// The AB upgrade expired block, this should be managed by sudo/democracy
@@ -180,7 +180,7 @@ decl_storage! {
         pub Identities get(fn identities):
             map hasher(blake2_128_concat) T::AccountId => Option<Identity<T::AccountId>>;
 
-        /// The sWorker information, mapping from sWorker public key to an optional pubkey information
+        /// The Tars information, mapping from Tars public key to an optional pubkey information
         pub PubKeys get(fn pub_keys):
             map hasher(twox_64_concat) TarsPubKey => PKInfo;
 
@@ -188,9 +188,9 @@ decl_storage! {
         pub Groups get(fn groups):
             map hasher(blake2_128_concat) T::AccountId => BTreeSet<T::AccountId>;
 
-        /// Node's work report, mapping from sWorker anchor to an optional work report
+        /// Node's work report, mapping from Tars anchor to an optional work report
         /// WorkReport only been replaced, it won't get removed cause we need to check the
-        /// status transition from off-chain sWorker
+        /// status transition from off-chain Tars
         pub WorkReports get(fn work_reports):
             map hasher(twox_64_concat) TarsAnchor => Option<WorkReport>;
 
@@ -220,7 +220,7 @@ decl_storage! {
 }
 
 decl_error! {
-    /// Error for the swork module.
+    /// Error for the tars module.
     pub enum Error for Module<T: Config> {
         /// Illegal applier
         IllegalApplier,
@@ -300,8 +300,8 @@ decl_module! {
             Self::deposit_event(RawEvent::TarsUpgradeSuccess(new_code, expire_block));
         }
 
-        /// Register as new trusted node, can only called from sWorker.
-        /// All `inputs` can only be generated from sWorker's enclave
+        /// Register as new trusted node, can only called from Tars.
+        /// All `inputs` can only be generated from Tars's enclave
         ///
         /// The dispatch origin for this call must be _Signed_ by the reporter account.
         ///
@@ -348,8 +348,8 @@ decl_module! {
             Ok(())
         }
 
-        /// Report storage works from sWorker
-        /// All `inputs` can only be generated from sWorker's enclave
+        /// Report storage works from Tars
+        /// All `inputs` can only be generated from Tars's enclave
         ///
         /// The dispatch origin for this call must be _Signed_ by the reporter account.
         ///

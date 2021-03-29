@@ -10,7 +10,7 @@ pub trait UsableCurrency<AccountId>: LockableCurrency<AccountId> {
 	fn usable_balance(who: &AccountId) -> Self::Balance;
 }
 
-/// Means for interacting with a specialized version of the `swork` trait.
+/// Means for interacting with a specialized version of the `tars` trait.
 pub trait TarsInterface<AccountId> {
 	// Check whether work report was reported in the last report slot according to given block number
 	fn is_wr_reported(anchor: &TarsAnchor, bn: BlockNumber) -> bool;

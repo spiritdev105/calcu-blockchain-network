@@ -199,7 +199,7 @@ impl pallet_timestamp::Config for Test {
     type WeightInfo = ();
 }
 pub struct TestStaking;
-impl swork::Works<AccountId> for TestStaking {
+impl tars::Works<AccountId> for TestStaking {
     fn report_works(workload_map: BTreeMap<AccountId, u128>, _total_workload: u128) {
         // Disable work report in mock test
         for (controller, _) in workload_map.iter() {
@@ -226,14 +226,14 @@ parameter_types! {
     pub const MaxGroupSize: u32 = 100;
 }
 
-impl swork::Config for Test {
+impl tars::Config for Test {
     type Currency = Balances;
     type Event = ();
     type PunishmentSlots = PunishmentSlots;
     type Works = TestStaking;
     type MarketInterface = TestStaking;
     type MaxGroupSize = MaxGroupSize;
-    type WeightInfo = swork::weight::WeightInfo<Test>;
+    type WeightInfo = tars::weight::WeightInfo<Test>;
 }
 
 parameter_types! {
@@ -283,7 +283,7 @@ frame_support::construct_runtime!(
 		Balances: balances::{Module, Call, Storage, Config<T>, Event<T>},
 		Staking: staking::{Module, Call, Config<T>, Storage, Event<T>},
 		Session: pallet_session::{Module, Call, Storage, Event, Config<T>},
-		Swork: swork::{Module, Call, Storage, Event<T>, Config},
+		Tars: tars::{Module, Call, Storage, Event<T>, Config},
 	}
 );
 
@@ -496,13 +496,13 @@ impl ExtBuilder {
         }
         .assimilate_storage(&mut storage);
 
-        let _ = swork::GenesisConfig {
+        let _ = tars::GenesisConfig {
             code: vec![],
         }.assimilate_storage(&mut storage);
 
         let mut ext = sp_io::TestExternalities::from(storage);
         ext.execute_with(|| {
-            init_swork_setup();
+            init_tars_setup();
             let validators = Session::validators();
             SESSION.with(|x| *x.borrow_mut() = (validators.clone(), HashSet::new()));
         });
@@ -605,7 +605,7 @@ pub fn advance_session() {
 pub fn start_session(session_index: SessionIndex, with_reward: bool) {
     // Compensate for session delay
     for i in Session::current_index()..session_index {
-        Swork::on_initialize(System::block_number());
+        Tars::on_initialize(System::block_number());
         Staking::on_finalize(System::block_number());
         System::set_block_number(((i+1)*100).into());
         if with_reward {
@@ -701,22 +701,22 @@ pub fn payout_all_stakers(era_index: EraIndex) {
     Staking::reward_stakers(Origin::signed(10), 41, era_index).unwrap_or_default();
 }
 
-fn init_swork_setup() {
+fn init_tars_setup() {
     let identities: Vec<u128> = vec![10, 20, 30, 40, 2, 60, 50, 70, 4, 6, 100];
     let id_map: Vec<(u128, Vec<u8>)> = identities.iter().map(|account| (*account, account.to_be_bytes().to_vec())).collect();
     let code: Vec<u8> = vec![];
 
     for (id, pk) in id_map {
-        <swork::PubKeys>::insert(pk.clone(), swork::PKInfo {
+        <tars::PubKeys>::insert(pk.clone(), tars::PKInfo {
             code: code.clone(),
             anchor: Some(pk.clone())
         });
-        <swork::Identities<Test>>::insert(id, swork::Identity {
+        <tars::Identities<Test>>::insert(id, tars::Identity {
             anchor: pk.clone(),
             punishment_deadline: 0,
             group: None
         });
-        <swork::WorkReports>::insert(pk.clone(), swork::WorkReport {
+        <tars::WorkReports>::insert(pk.clone(), tars::WorkReport {
             report_slot: 0,
             used: 0,
             free: 20000000000000,
