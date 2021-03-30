@@ -16,8 +16,8 @@ use sp_std::{vec, prelude::*, collections::{btree_set::BTreeSet, btree_map::BTre
 const SEED: u32 = 0;
 const EXPIRE_BLOCK_NUMBER: u32 = 2000;
 
-pub struct Module<T: Config>(swork::Module<T>);
-pub trait Config: market::Config + swork::Config {}
+pub struct Module<T: Config>(tars::Module<T>);
+pub trait Config: market::Config + tars::Config {}
 pub type Balance = u64;
 
 #[cfg(test)]
@@ -167,12 +167,12 @@ benchmarks! {
     upgrade {
         let code: Vec<u8> = vec![120,27,83,125,61,206,243,157,236,123,139,206,111,223,205,3,45,141,132,102,64,233,181,89,139,74,159,98,113,136,169,8];
     }: {
-        swork::Module::<T>::upgrade(RawOrigin::Root.into(), code, EXPIRE_BLOCK_NUMBER.into()).expect("failed to insert code");
+        tars::Module::<T>::upgrade(RawOrigin::Root.into(), code, EXPIRE_BLOCK_NUMBER.into()).expect("failed to insert code");
     }
 
     register {
         let code: Vec<u8> = vec![120,27,83,125,61,206,243,157,236,123,139,206,111,223,205,3,45,141,132,102,64,233,181,89,139,74,159,98,113,136,169,8];
-        swork::Module::<T>::upgrade(RawOrigin::Root.into(), code.clone(), EXPIRE_BLOCK_NUMBER.into()).expect("failed to insert code");
+        tars::Module::<T>::upgrade(RawOrigin::Root.into(), code.clone(), EXPIRE_BLOCK_NUMBER.into()).expect("failed to insert code");
         let user: Vec<u8> = vec![166,239,163,116,112,15,134,64,183,119,188,146,199,125,52,68,124,85,136,215,235,124,78,201,132,50,60,125,176,152,48,9];
         let caller = T::AccountId::decode(&mut &user[..]).unwrap_or_default();
         let ias_sig = "VWfhb8pfVTHFcwIfFI9fLQPPvScGKwWOtkhYzlIMP5MT/u81VMAJed37p87YyMNwpqopaTP6/QVLkrZFw6fRgONMY+kRyzzkUDB3gRhRh71ZqZe0R+XHsGi6QH0YnMiXtCnD9oP3vSKx8UqhMKRpn4eCUU2jKLkoUOT8fiwozOnrIfYH5aVLcF65Laomj0trgoFbJlm/Yag7HOA3mQMRgCoBzP+xeKZBCWr/Zh6814mnwb8X79KVpM7suiy+g0KuZQpjH9qE32XsBL7lNizqVji9XiAJwN6pbhDmQaRbB8y46mJ1HkII+SFHCyBWAtdiqH9cTsmbsTjAS/TjoXcphQ==".as_bytes();
@@ -180,26 +180,26 @@ benchmarks! {
         let isv_body = "{\"id\":\"224446224973977124963950294138353548427\",\"timestamp\":\"2020-10-27T07:26:53.412131\",\"version\":3,\"epidPseudonym\":\"4tcrS6EX9pIyhLyxtgpQJuMO1VdAkRDtha/N+u/rRkTsb11AhkuTHsY6UXRPLRJavxG3nsByBdTfyDuBDQTEjMYV6NBXjn3P4UyvG1Ae2+I4lE1n+oiKgLA8CR8pc2nSnSY1Wz1Pw/2l9Q5Er6hM6FdeECgMIVTZzjScYSma6rE=\",\"isvEnclaveQuoteStatus\":\"GROUP_OUT_OF_DATE\",\"platformInfoBlob\":\"1502006504000F00000F0F02040101070000000000000000000B00000B00000002000000000000142ADC0536C0F778E6339B78B7495BDAB064CBC27DA1049CE6739151D0F781995C52276F171A92BE72FDDC4A5602B353742E9DF16256EADC00D3577943656DFEEE1B\",\"isvEnclaveQuoteBody\":\"AgABACoUAAAKAAkAAAAAAP7yPH5zo3mCPOcf8onPvAcAAAAAAAAAAAAAAAAAAAAACBD///8CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwAAAAAAAAAHAAAAAAAAAHgbU309zvOd7HuLzm/fzQMtjYRmQOm1WYtKn2JxiKkIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACD1xnnferKFHD2uvYqTXdDA8iZ22kCD5xw7h38CMfOngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADLinsnSTdJyTnaS7pyZvFHa7lg50iRgXVEUDISYg3OPJThwmxiLMuahAQViB3u9UErVI8ip9XlwF+0Es/cjlRk\"}".as_bytes();
         let sig: Vec<u8> = vec![153,15,132,203,16,61,189,174,53,69,117,139,125,120,121,86,243,25,28,226,237,230,56,194,238,228,22,182,116,166,245,27,86,43,129,7,122,13,3,143,247,159,97,239,88,200,8,51,238,45,204,71,25,38,46,164,18,85,82,175,13,48,15,190];
     }: {
-        swork::Module::<T>::register(RawOrigin::Signed(caller.clone()).into(), ias_sig.to_vec(), ias_cert.to_vec(), caller.clone(), isv_body.to_vec(), sig).expect("Something wrong during registering");
+        tars::Module::<T>::register(RawOrigin::Signed(caller.clone()).into(), ias_sig.to_vec(), ias_cert.to_vec(), caller.clone(), isv_body.to_vec(), sig).expect("Something wrong during registering");
     }
 
     report_works_with_srd {
         let code: Vec<u8> = vec![120,27,83,125,61,206,243,157,236,123,139,206,111,223,205,3,45,141,132,102,64,233,181,89,139,74,159,98,113,136,169,8];
-        swork::Module::<T>::upgrade(RawOrigin::Root.into(), code.clone(), EXPIRE_BLOCK_NUMBER.into()).expect("failed to insert code");
+        tars::Module::<T>::upgrade(RawOrigin::Root.into(), code.clone(), EXPIRE_BLOCK_NUMBER.into()).expect("failed to insert code");
 
         // Prepare legal work report
         let user: Vec<u8> = vec![212,53,147,199,21,253,211,28,97,20,26,189,4,169,159,214,130,44,133,88,133,76,205,227,154,86,132,231,165,109,162,125]; // Alice
         let caller = T::AccountId::decode(&mut &user[..]).unwrap_or_default();
         let wr = legal_work_report_with_srd();
 
-        // Set block number, system hash and pk in swork
-        swork::Module::<T>::insert_pk_info(wr.curr_pk.clone(), code.clone());
+        // Set block number, system hash and pk in tars
+        tars::Module::<T>::insert_pk_info(wr.curr_pk.clone(), code.clone());
         system::Module::<T>::set_block_number(303u32.into());
         let fake_bh:T::Hash = T::Hash::decode(&mut &wr.block_hash[..]).unwrap_or_default();
         let target_block_number:T::BlockNumber = 300u32.into();
         <system::BlockHash<T>>::insert(target_block_number, fake_bh);
     }: {
-        swork::Module::<T>::report_works(
+        tars::Module::<T>::report_works(
             RawOrigin::Signed(caller.clone()).into(),
             wr.curr_pk.clone(),
             wr.prev_pk,
@@ -214,22 +214,22 @@ benchmarks! {
             wr.sig
         ).expect("Something wrong during reporting works");
     } verify {
-        assert_eq!(swork::Module::<T>::free(), wr.free as u128);
-        assert_eq!(swork::Module::<T>::used(), 0 as u128);
-        assert_eq!(swork::Module::<T>::reported_in_slot(&wr.curr_pk, wr.block_number), true);
+        assert_eq!(tars::Module::<T>::free(), wr.free as u128);
+        assert_eq!(tars::Module::<T>::used(), 0 as u128);
+        assert_eq!(tars::Module::<T>::reported_in_slot(&wr.curr_pk, wr.block_number), true);
     }
 
     report_works_with_added_files {
         let code: Vec<u8> = vec![120,27,83,125,61,206,243,157,236,123,139,206,111,223,205,3,45,141,132,102,64,233,181,89,139,74,159,98,113,136,169,8];
-        swork::Module::<T>::upgrade(RawOrigin::Root.into(), code.clone(), EXPIRE_BLOCK_NUMBER.into()).expect("failed to insert code");
+        tars::Module::<T>::upgrade(RawOrigin::Root.into(), code.clone(), EXPIRE_BLOCK_NUMBER.into()).expect("failed to insert code");
 
         // Prepare legal work report
         let user: Vec<u8> = vec![212,53,147,199,21,253,211,28,97,20,26,189,4,169,159,214,130,44,133,88,133,76,205,227,154,86,132,231,165,109,162,125]; // Alice
         let caller = T::AccountId::decode(&mut &user[..]).unwrap_or_default();
         let wr = legal_work_report_with_added_files();
 
-        // Set block number, system hash and pk in swork
-        swork::Module::<T>::insert_pk_info(wr.curr_pk.clone(), code.clone());
+        // Set block number, system hash and pk in tars
+        tars::Module::<T>::insert_pk_info(wr.curr_pk.clone(), code.clone());
         system::Module::<T>::set_block_number(303u32.into());
         let fake_bh:T::Hash = T::Hash::decode(&mut &wr.block_hash[..]).unwrap_or_default();
         let target_block_number:T::BlockNumber = 300u32.into();
@@ -238,7 +238,7 @@ benchmarks! {
         // Prepare Files in market
         add_market_files::<T>(wr.added_files.clone(), caller.clone(), wr.curr_pk.clone());
     }: {
-        swork::Module::<T>::report_works(
+        tars::Module::<T>::report_works(
             RawOrigin::Signed(caller.clone()).into(),
             wr.curr_pk.clone(),
             wr.prev_pk,
@@ -253,22 +253,22 @@ benchmarks! {
             wr.sig
         ).expect("Something wrong during reporting works");
     } verify {
-        assert_eq!(swork::Module::<T>::free(), wr.free as u128);
-        assert_eq!(swork::Module::<T>::used(), (wr.used * 2) as u128);
-        assert_eq!(swork::Module::<T>::reported_in_slot(&wr.curr_pk, wr.block_number), true);
+        assert_eq!(tars::Module::<T>::free(), wr.free as u128);
+        assert_eq!(tars::Module::<T>::used(), (wr.used * 2) as u128);
+        assert_eq!(tars::Module::<T>::reported_in_slot(&wr.curr_pk, wr.block_number), true);
     }
 
     report_works {
         let code: Vec<u8> = vec![120,27,83,125,61,206,243,157,236,123,139,206,111,223,205,3,45,141,132,102,64,233,181,89,139,74,159,98,113,136,169,8];
-        swork::Module::<T>::upgrade(RawOrigin::Root.into(), code.clone(), EXPIRE_BLOCK_NUMBER.into()).expect("failed to insert code");
+        tars::Module::<T>::upgrade(RawOrigin::Root.into(), code.clone(), EXPIRE_BLOCK_NUMBER.into()).expect("failed to insert code");
 
         // Prepare legal work report
         let user: Vec<u8> = vec![212,53,147,199,21,253,211,28,97,20,26,189,4,169,159,214,130,44,133,88,133,76,205,227,154,86,132,231,165,109,162,125]; // Alice
         let caller = T::AccountId::decode(&mut &user[..]).unwrap_or_default();
         let wr = legal_work_report_with_added_files();
 
-        // Set block number, system hash and pk in swork at 300
-        swork::Module::<T>::insert_pk_info(wr.curr_pk.clone(), code.clone());
+        // Set block number, system hash and pk in tars at 300
+        tars::Module::<T>::insert_pk_info(wr.curr_pk.clone(), code.clone());
         system::Module::<T>::set_block_number(303u32.into());
         let fake_bh:T::Hash = T::Hash::decode(&mut &wr.block_hash[..]).unwrap_or_default();
         let target_block_number:T::BlockNumber = 300u32.into();
@@ -278,7 +278,7 @@ benchmarks! {
         add_market_files::<T>(wr.added_files.clone(), caller.clone(), wr.curr_pk.clone());
 
         // Report works at 300
-        swork::Module::<T>::report_works(
+        tars::Module::<T>::report_works(
             RawOrigin::Signed(caller.clone()).into(),
             wr.curr_pk.clone(),
             wr.prev_pk,
@@ -294,13 +294,13 @@ benchmarks! {
         ).expect("Something wrong during reporting works");
 
         let wr = legal_work_report_with_deleted_files();
-        // Set block number, system hash and pk in swork at 600
+        // Set block number, system hash and pk in tars at 600
         system::Module::<T>::set_block_number(603u32.into());
         let fake_bh:T::Hash = T::Hash::decode(&mut &wr.block_hash[..]).unwrap_or_default();
         let target_block_number:T::BlockNumber = 600u32.into();
         <system::BlockHash<T>>::insert(target_block_number, fake_bh);
     }: {
-        swork::Module::<T>::report_works(
+        tars::Module::<T>::report_works(
             RawOrigin::Signed(caller.clone()).into(),
             wr.curr_pk.clone(),
             wr.prev_pk,
@@ -315,41 +315,41 @@ benchmarks! {
             wr.sig
         ).expect("Something wrong during reporting works");
     } verify {
-        assert_eq!(swork::Module::<T>::free(), wr.free as u128);
-        assert_eq!(swork::Module::<T>::used(), (wr.used * 2) as u128);
-        assert_eq!(swork::Module::<T>::reported_in_slot(&wr.curr_pk, wr.block_number), true);
+        assert_eq!(tars::Module::<T>::free(), wr.free as u128);
+        assert_eq!(tars::Module::<T>::used(), (wr.used * 2) as u128);
+        assert_eq!(tars::Module::<T>::reported_in_slot(&wr.curr_pk, wr.block_number), true);
     }
 
     create_group {
         let owner: T::AccountId = account("owner", 0, SEED);
     }: {
-        swork::Module::<T>::create_group(RawOrigin::Signed(owner.clone()).into()).expect("Something wrong during creating group");
+        tars::Module::<T>::create_group(RawOrigin::Signed(owner.clone()).into()).expect("Something wrong during creating group");
     } verify {
-        assert_eq!(<swork::Groups<T>>::contains_key(&owner), true);
+        assert_eq!(<tars::Groups<T>>::contains_key(&owner), true);
     }
 
     join_group {
         let owner: T::AccountId = account("owner", 0, SEED);
         let member: T::AccountId = account("member", 0, SEED);
-        swork::Module::<T>::create_group(RawOrigin::Signed(owner.clone()).into()).expect("Something wrong during creating group");
+        tars::Module::<T>::create_group(RawOrigin::Signed(owner.clone()).into()).expect("Something wrong during creating group");
 
         let code: Vec<u8> = vec![120,27,83,125,61,206,243,157,236,123,139,206,111,223,205,3,45,141,132,102,64,233,181,89,139,74,159,98,113,136,169,8];
-        swork::Module::<T>::upgrade(RawOrigin::Root.into(), code.clone(), EXPIRE_BLOCK_NUMBER.into()).expect("failed to insert code");
+        tars::Module::<T>::upgrade(RawOrigin::Root.into(), code.clone(), EXPIRE_BLOCK_NUMBER.into()).expect("failed to insert code");
 
         // Prepare legal work report
         let user: Vec<u8> = vec![212,53,147,199,21,253,211,28,97,20,26,189,4,169,159,214,130,44,133,88,133,76,205,227,154,86,132,231,165,109,162,125]; // Alice
         let caller = T::AccountId::decode(&mut &user[..]).unwrap_or_default();
         let wr = legal_work_report_with_deleted_files();
 
-        swork::Module::<T>::insert_pk_info(wr.curr_pk.clone(), code.clone());
+        tars::Module::<T>::insert_pk_info(wr.curr_pk.clone(), code.clone());
 
-        // Set block number, system hash and pk in swork at 600
+        // Set block number, system hash and pk in tars at 600
         system::Module::<T>::set_block_number(603u32.into());
         let fake_bh:T::Hash = T::Hash::decode(&mut &wr.block_hash[..]).unwrap_or_default();
         let target_block_number:T::BlockNumber = 600u32.into();
         <system::BlockHash<T>>::insert(target_block_number, fake_bh);
 
-        swork::Module::<T>::report_works(
+        tars::Module::<T>::report_works(
             RawOrigin::Signed(member.clone()).into(),
             wr.curr_pk.clone(),
             wr.prev_pk,
@@ -364,10 +364,10 @@ benchmarks! {
             wr.sig
         ).expect("Something wrong during reporting works");
     }: {
-        swork::Module::<T>::join_group(RawOrigin::Signed(member.clone()).into(), T::Lookup::unlookup(owner.clone())).expect("Something wrong during joining group");
+        tars::Module::<T>::join_group(RawOrigin::Signed(member.clone()).into(), T::Lookup::unlookup(owner.clone())).expect("Something wrong during joining group");
     } verify {
-        assert_eq!(<swork::Groups<T>>::contains_key(&owner), true);
-        assert_eq!(swork::Module::<T>::groups(&owner), BTreeSet::from_iter(vec![member.clone()].into_iter()))
+        assert_eq!(<tars::Groups<T>>::contains_key(&owner), true);
+        assert_eq!(tars::Module::<T>::groups(&owner), BTreeSet::from_iter(vec![member.clone()].into_iter()))
     }
 }
 

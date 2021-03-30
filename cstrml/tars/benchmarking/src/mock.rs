@@ -15,7 +15,7 @@ use sp_runtime::{
     Perbill,
 };
 pub use market::{Replica, FileInfo, UsedInfo};
-use swork::Works;
+use tars::Works;
 use balances::AccountData;
 pub use std::{cell::RefCell, collections::HashMap, borrow::Borrow, iter::FromIterator};
 
@@ -95,7 +95,7 @@ impl market::Config for Test {
     type ModuleId = MarketModuleId;
     type Currency = balances::Module<Self>;
     type CurrencyToBalance = ();
-    type TarsInterface = Swork;
+    type TarsInterface = Tars;
     type Event = ();
     /// File duration.
     type FileDuration = FileDuration;
@@ -124,14 +124,14 @@ parameter_types! {
     pub const MaxGroupSize: u32 = 100;
 }
 
-impl swork::Config for Test {
+impl tars::Config for Test {
     type Currency = balances::Module<Self>;
     type Event = ();
     type PunishmentSlots = PunishmentSlots;
     type Works = TestWorksInterface;
     type MarketInterface = Market;
     type MaxGroupSize = MaxGroupSize;
-    type WeightInfo = swork::weight::WeightInfo<Test>;
+    type WeightInfo = tars::weight::WeightInfo<Test>;
 }
 
 impl crate::Config for Test {}
@@ -147,7 +147,7 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system::{Module, Call, Config, Storage, Event<T>},
 		Balances: balances::{Module, Call, Storage, Config<T>, Event<T>},
-		Swork: swork::{Module, Call, Storage, Event<T>, Config},
+		Tars: tars::{Module, Call, Storage, Event<T>, Config},
 		Market: market::{Module, Call, Storage, Event<T>, Config},
 	}
 );

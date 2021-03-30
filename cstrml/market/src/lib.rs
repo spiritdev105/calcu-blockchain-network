@@ -99,7 +99,7 @@ pub struct Replica<AccountId> {
     pub is_reported: bool
 }
 
-/// According to the definition, we should put this one into swork pallet.
+/// According to the definition, we should put this one into tars pallet.
 /// However, in consideration of performance,
 /// we put this in market to avoid too many keys in storage
 #[derive(Debug, PartialEq, Eq, Clone, Encode, Decode, Default)]
@@ -143,7 +143,7 @@ impl<T: Config> MarketInterface<<T as system::Config>::AccountId, BalanceOf<T>> 
         // Judge if file_info.file_size == reported_file_size or not
         Self::maybe_upsert_file_size(who, cid, reported_file_size);
 
-        // `is_counted` is a concept in swork-side, which means if this `cid`'s `used` size is counted by `(who, anchor)`
+        // `is_counted` is a concept in tars-side, which means if this `cid`'s `used` size is counted by `(who, anchor)`
         // if the file doesn't exist(aka. is_counted == false), return false(doesn't increase used size) cause it's junk.
         // if the file exist, is_counted == true, will change it later.
         let mut used_size: u64 = 0;

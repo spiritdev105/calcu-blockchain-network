@@ -1,5 +1,5 @@
 [package]
-name = "cstrml-swork-benchmarking"
+name = "cstrml-tars-benchmarking"
 version = "0.11.1"
 authors = ["calcuio"]
 edition = "2018"
@@ -27,7 +27,7 @@ frame-benchmarking = { version = "3.0.0", default-features = false }
 # calcu runtime modules
 primitives = { package = "cst-primitives", path = "../../../primitives", default-features = false }
 market = { package = "cstrml-market", path = "../../market", default-features = false }
-swork = { package = "cstrml-swork", path = "../../swork", default-features = false }
+tars = { package = "cstrml-tars", path = "../../tars", default-features = false }
 balances = { package = "cstrml-balances", path = "../../balances", default-features = false }
 
 [features]
@@ -43,7 +43,7 @@ std = [
     "frame-system/std",
     "primitives/std",
     "frame-benchmarking/std",
-    "swork/std",
+    "tars/std",
     "market/std",
     "balances/std"
 ]

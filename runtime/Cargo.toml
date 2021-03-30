@@ -75,11 +75,11 @@ candy = { package = "cstrml-candy", path = "../cstrml/candy", default-features =
 claims = { package = "cstrml-claims", path = "../cstrml/claims", default-features = false, version = "0.11.1" }
 market = { package = "cstrml-market", path = "../cstrml/market", default-features = false, version = "0.11.1" }
 primitives = { package = "cst-primitives", path = "../primitives", default-features = false, version = "0.11.1" }
-swork = { package = "cstrml-swork", path = "../cstrml/swork", default-features = false, version = "0.11.1" }
+tars = { package = "cstrml-tars", path = "../cstrml/tars", default-features = false, version = "0.11.1" }
 staking = { package = "cstrml-staking", path = "../cstrml/staking", default-features = false, version = "0.11.1" }
 
 # calcu benchmark dependencies
-swork-benchmarking = { package = "cstrml-swork-benchmarking", path = "../cstrml/swork/benchmarking", default-features = false, optional = true, version = "0.11.1" }
+tars-benchmarking = { package = "cstrml-tars-benchmarking", path = "../cstrml/tars/benchmarking", default-features = false, optional = true, version = "0.11.1" }
 
 [features]
 default = ["std"]
@@ -125,7 +125,7 @@ std = [
     "pallet-session/std",
     "staking/std",
     "pallet-sudo/std",
-    "swork/std",
+    "tars/std",
     "frame-system/std",
     "frame-system-rpc-runtime-api/std",
     "pallet-timestamp/std",
@@ -145,5 +145,5 @@ runtime-benchmarks = [
     "frame-system-benchmarking",
     "staking/runtime-benchmarks",
     "market/runtime-benchmarks",
-    "swork-benchmarking"
+    "tars-benchmarking"
 ]

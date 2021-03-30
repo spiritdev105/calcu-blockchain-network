@@ -728,14 +728,14 @@ parameter_types! {
     pub const MaxGroupSize: u32 = 100;
 }
 
-impl swork::Config for Runtime {
+impl tars::Config for Runtime {
     type Currency = Balances;
     type Event = Event;
     type PunishmentSlots = PunishmentSlots;
     type Works = Staking;
     type MarketInterface = Market;
     type MaxGroupSize = MaxGroupSize;
-    type WeightInfo = swork::weight::WeightInfo<Runtime>;
+    type WeightInfo = tars::weight::WeightInfo<Runtime>;
 }
 
 parameter_types! {
@@ -760,7 +760,7 @@ impl market::Config for Runtime {
     type ModuleId = MarketModuleId;
     type Currency = Balances;
     type CurrencyToBalance = CurrencyToVoteHandler;
-    type TarsInterface = Swork;
+    type TarsInterface = Tars;
     type Event = Event;
     /// File duration.
     type FileDuration = FileDuration;
@@ -826,7 +826,7 @@ construct_runtime! {
 		Identity: pallet_identity::{Module, Call, Storage, Event<T>},
 
         // Calcu modules
-        Swork: swork::{Module, Call, Storage, Event<T>, Config},
+        Tars: tars::{Module, Call, Storage, Event<T>, Config},
         Market: market::{Module, Call, Storage, Event<T>, Config},
 
         // Sudo. Last module. Usable initially, but removed once governance enabled.
@@ -1065,10 +1065,10 @@ impl_runtime_apis! {
             // To get around that, we separated the Session benchmarks into its own crate, which is why
             // we need these two lines below.
             use frame_system_benchmarking::Module as SystemBench;
-            use swork_benchmarking::Module as SworkBench;
+            use tars_benchmarking::Module as TarsBench;
 
             impl frame_system_benchmarking::Config for Runtime {}
-            impl swork_benchmarking::Config for Runtime {}
+            impl tars_benchmarking::Config for Runtime {}
             let whitelist: Vec<TrackedStorageKey> = vec![];
             let mut batches = Vec::<BenchmarkBatch>::new();
             let params = (&config, &whitelist);
@@ -1076,7 +1076,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, system, SystemBench::<Runtime>);
             add_benchmark!(params, batches, staking, Staking);
             add_benchmark!(params, batches, market, Market);
-            add_benchmark!(params, batches, swork, SworkBench::<Runtime>);
+            add_benchmark!(params, batches, tars, TarsBench::<Runtime>);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }
             Ok(batches)

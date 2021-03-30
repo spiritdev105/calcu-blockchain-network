@@ -29,7 +29,7 @@ frame-benchmarking = { default-features = false, optional = true, version = "3.0
 rand_chacha = { default-features = false, version = "0.2" }
 
 # calcu runtime modules
-swork = { package = "cstrml-swork", path = "../swork", default-features = false }
+tars = { package = "cstrml-tars", path = "../tars", default-features = false }
 primitives = { package = "cst-primitives", path = "../../primitives", default-features = false }
 
 [dev-dependencies]
@@ -58,7 +58,7 @@ std = [
 	"pallet-session/std",
 	"frame-system/std",
 	"pallet-authorship/std",
-	"swork/std"
+	"tars/std"
 ]
 runtime-benchmarks = [
     "frame-benchmarking",

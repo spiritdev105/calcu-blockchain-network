@@ -47,6 +47,6 @@ runtime-benchmarks = [
 
 [dev-dependencies]
 hex = "0.4.2"
-swork = { package = "cstrml-swork", path = "../swork" }
+tars = { package = "cstrml-tars", path = "../tars" }
 balances = { package = "cstrml-balances", path = "../balances" }
 frame-benchmarking = "3.0.0"
