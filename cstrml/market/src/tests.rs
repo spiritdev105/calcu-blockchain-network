@@ -10,7 +10,7 @@ use frame_support::{
 };
 use hex;
 use crate::MerchantLedger;
-use swork::Identity;
+use tars::Identity;
 
 /// Register & Collateral test cases
 #[test]
@@ -307,7 +307,7 @@ fn place_storage_order_should_work_for_extend_scenarios() {
         // Report this cid's works
         register(&legal_pk, LegalCode::get());
         run_to_block(400);
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -346,7 +346,7 @@ fn place_storage_order_should_work_for_extend_scenarios() {
 
         // Calculate reward should work
         run_to_block(500);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
         Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
         assert_eq!(Market::files(&cid).unwrap_or_default(), (
             FileInfo {
@@ -434,7 +434,7 @@ fn place_storage_order_should_work_for_extend_scenarios() {
 /// Payouts test cases
 #[test]
 // Payout should be triggered by:
-// 1. Delete file(covered by swork module)
+// 1. Delete file(covered by tars module)
 // 2. Calculate reward
 // 3. Place started storage order(covered by `place_storage_order_should_work_for_extend_scenarios`)
 fn do_calculate_reward_should_work() {
@@ -490,7 +490,7 @@ fn do_calculate_reward_should_work() {
         register(&legal_pk, LegalCode::get());
 
         // 2. Report this file's work, let file begin
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -529,7 +529,7 @@ fn do_calculate_reward_should_work() {
 
         // 3. Go along with some time, and get reward
         run_to_block(606);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 300, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 300, true);
         Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
         assert_eq!(Market::files(&cid).unwrap_or_default(), (
             FileInfo {
@@ -605,7 +605,7 @@ fn do_calculate_reward_should_fail_due_to_insufficient_collateral() {
 
         register(&legal_pk, LegalCode::get());
 
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -643,7 +643,7 @@ fn do_calculate_reward_should_fail_due_to_insufficient_collateral() {
         );
 
         run_to_block(603);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 300, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 300, true);
         Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
         assert_eq!(Market::files(&cid).unwrap_or_default(), (
             FileInfo {
@@ -674,7 +674,7 @@ fn do_calculate_reward_should_fail_due_to_insufficient_collateral() {
         });
 
         run_to_block(903);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 600, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 600, true);
         assert_ok!(Market::add_collateral(Origin::signed(merchant.clone()), 6_000_000));
         Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
         assert_eq!(Market::files(&cid).unwrap_or_default(), (
@@ -752,7 +752,7 @@ fn do_calculate_reward_should_move_file_to_trash_due_to_expired() {
 
         register(&legal_pk, LegalCode::get());
 
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -790,7 +790,7 @@ fn do_calculate_reward_should_move_file_to_trash_due_to_expired() {
         );
 
         run_to_block(1506);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 1200, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 1200, true);
         assert_ok!(Market::calculate_reward(Origin::signed(merchant.clone()), cid.clone()));
         assert_eq!(Market::files(&cid), None);
 
@@ -862,7 +862,7 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
 
         register(&legal_pk, LegalCode::get());
 
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -902,7 +902,7 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
         );
 
         run_to_block(503);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
         Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
         assert_eq!(Market::files(&cid).unwrap_or_default(), (
             FileInfo {
@@ -933,7 +933,7 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
         add_who_into_replica(&cid, file_size, charlie.clone(), legal_pk.clone(), None, None);
 
         run_to_block(603);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 300, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 300, true);
         Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
         assert_eq!(Market::files(&cid).unwrap_or_default(), (
             FileInfo {
@@ -1023,7 +1023,7 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
         assert_eq!(Market::files_size(), file_size as u128);
 
         run_to_block(903);
-        <swork::ReportedInSlot>::insert(hex::decode("11").unwrap(), 600, true);
+        <tars::ReportedInSlot>::insert(hex::decode("11").unwrap(), 600, true);
         Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
         assert_eq!(Market::files(&cid).unwrap_or_default(), (
             FileInfo {
@@ -1075,8 +1075,8 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
         assert_eq!(Market::files_size(), file_size as u128);
 
         run_to_block(1203);
-        <swork::ReportedInSlot>::insert(hex::decode("11").unwrap(), 900, true);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 900, true);
+        <tars::ReportedInSlot>::insert(hex::decode("11").unwrap(), 900, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 900, true);
         Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
         assert_eq!(Market::files(&cid).unwrap_or_default(), (
             FileInfo {
@@ -1297,7 +1297,7 @@ fn do_calculate_reward_should_work_for_more_replicas() {
 
         register(&legal_pk, LegalCode::get());
 
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -1364,7 +1364,7 @@ fn do_calculate_reward_should_work_for_more_replicas() {
             })
         );
         run_to_block(503);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
         Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
         assert_eq!(Market::files(&cid).unwrap_or_default(), (
             FileInfo {
@@ -1487,12 +1487,12 @@ fn do_calculate_reward_should_only_pay_the_groups() {
         let legal_wr_info = legal_work_report_with_added_files();
         let legal_pk = legal_wr_info.curr_pk.clone();
 
-        <swork::Identities<Test>>::insert(ferdie.clone(), Identity {
+        <tars::Identities<Test>>::insert(ferdie.clone(), Identity {
             anchor: hex::decode("11").unwrap(),
             punishment_deadline: 0,
             group: None
         });
-        <swork::Identities<Test>>::insert(charlie.clone(), Identity {
+        <tars::Identities<Test>>::insert(charlie.clone(), Identity {
             anchor: hex::decode("22").unwrap(),
             punishment_deadline: 0,
             group: None
@@ -1506,7 +1506,7 @@ fn do_calculate_reward_should_only_pay_the_groups() {
 
         register(&legal_pk, LegalCode::get());
 
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -1573,10 +1573,10 @@ fn do_calculate_reward_should_only_pay_the_groups() {
             })
         );
         run_to_block(503);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
-        <swork::ReportedInSlot>::insert(hex::decode("11").unwrap(), 0, true);
-        <swork::ReportedInSlot>::insert(hex::decode("22").unwrap(), 0, true);
-        <swork::ReportedInSlot>::insert(hex::decode("33").unwrap(), 0, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
+        <tars::ReportedInSlot>::insert(hex::decode("11").unwrap(), 0, true);
+        <tars::ReportedInSlot>::insert(hex::decode("22").unwrap(), 0, true);
+        <tars::ReportedInSlot>::insert(hex::decode("33").unwrap(), 0, true);
         Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
         assert_eq!(Market::files(&cid).unwrap_or_default(), (
             FileInfo {
@@ -1796,7 +1796,7 @@ fn insert_replica_should_work_for_complex_scenario() {
 
         register(&legal_pk, LegalCode::get());
 
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -2043,7 +2043,7 @@ fn clear_trash_should_work() {
         }
 
         run_to_block(1500);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 1200, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 1200, true);
         // close files one by one
         assert_ok!(Market::calculate_reward(Origin::signed(merchant.clone()), cid1.clone()));
         assert_eq!(Market::used_trash_i(&cid1).unwrap_or_default(), UsedInfo {
@@ -2105,9 +2105,9 @@ fn update_price_should_work() {
 
         run_to_block(50);
         // first class storage is 0
-        <swork::Free>::put(10000);
-        <swork::ReportedFilesSize>::put(10000);
-        assert_eq!(Swork::get_total_capacity(), 20000);
+        <tars::Free>::put(10000);
+        <tars::ReportedFilesSize>::put(10000);
+        assert_eq!(Tars::get_total_capacity(), 20000);
         Market::update_file_price();
         assert_eq!(Market::file_price(), 980);
 
@@ -2433,7 +2433,7 @@ fn place_storage_order_for_expired_file_should_inherit_the_status() {
 
         register(&legal_pk, LegalCode::get());
 
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -2473,7 +2473,7 @@ fn place_storage_order_for_expired_file_should_inherit_the_status() {
         );
 
         run_to_block(503);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
         Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
         assert_eq!(Market::files(&cid).unwrap_or_default(), (
             FileInfo {
@@ -2533,7 +2533,7 @@ fn place_storage_order_for_expired_file_should_inherit_the_status() {
         );
 
         run_to_block(1803);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 1500, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 1500, true);
         assert_ok!(Market::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
@@ -2636,7 +2636,7 @@ fn place_storage_order_for_expired_file_should_make_it_pending_if_replicas_is_ze
 
         register(&legal_pk, LegalCode::get());
 
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -2676,7 +2676,7 @@ fn place_storage_order_for_expired_file_should_make_it_pending_if_replicas_is_ze
         );
 
         run_to_block(503);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
         Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
         assert_eq!(Market::files(&cid).unwrap_or_default(), (
             FileInfo {
@@ -2919,7 +2919,7 @@ fn delete_used_size_should_work() {
         for i in 10..30 {
             let key = hex::decode(i.to_string()).unwrap();
             add_who_into_replica(&cid, file_size, merchant.clone(), key.clone(), Some(303u32), None);
-            <swork::ReportedInSlot>::insert(key.clone(), 0, true);
+            <tars::ReportedInSlot>::insert(key.clone(), 0, true);
             expected_groups.insert(key.clone(), true);
         }
         assert_eq!(Market::files(&cid).unwrap_or_default().1,
@@ -2941,7 +2941,7 @@ fn delete_used_size_should_work() {
 
         for i in 11..30 {
             let key = hex::decode(i.to_string()).unwrap();
-            <swork::ReportedInSlot>::insert(key.clone(), 300, true);
+            <tars::ReportedInSlot>::insert(key.clone(), 300, true);
             expected_groups.insert(key.clone(), true);
         }
         Market::delete_replica(&merchant, &cid, &hex::decode("21").unwrap()); // delete 21. 21 won't be deleted twice.
@@ -3011,7 +3011,7 @@ fn files_size_should_not_be_decreased_twice() {
 
         register(&legal_pk, LegalCode::get());
 
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -3033,7 +3033,7 @@ fn files_size_should_not_be_decreased_twice() {
         add_who_into_replica(&cid, file_size, dave.clone(), hex::decode("11").unwrap(), None, None);
         assert_eq!(Market::files_size(), (file_size * 3) as u128);
         run_to_block(703);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 300, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 300, true);
         Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
         assert_eq!(Market::files(&cid).unwrap_or_default(), (
             FileInfo {
@@ -3158,7 +3158,7 @@ fn clear_same_file_in_trash_should_work() {
 
         register(&legal_pk, LegalCode::get());
 
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -3178,8 +3178,8 @@ fn clear_same_file_in_trash_should_work() {
         run_to_block(603);
         add_who_into_replica(&cid, file_size, dave.clone(), hex::decode("11").unwrap(), None, None);
         run_to_block(1803);
-        <swork::ReportedInSlot>::insert(legal_pk.clone(), 1500, true);
-        <swork::ReportedInSlot>::insert(hex::decode("11").unwrap(), 1500, true);
+        <tars::ReportedInSlot>::insert(legal_pk.clone(), 1500, true);
+        <tars::ReportedInSlot>::insert(hex::decode("11").unwrap(), 1500, true);
         assert_ok!(Market::calculate_reward(Origin::signed(merchant.clone()), cid.clone()));
 
         // Prepare a file in the trash
@@ -3279,7 +3279,7 @@ fn reward_liquidator_should_work() {
 
         register(&legal_pk, LegalCode::get());
 
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -3466,7 +3466,7 @@ fn renew_file_should_work() {
 
         register(&legal_pk, LegalCode::get());
 
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -3611,7 +3611,7 @@ fn storage_pot_should_be_balanced() {
 
         register(&legal_pk, LegalCode::get());
 
-        assert_ok!(Swork::report_works(
+        assert_ok!(Tars::report_works(
                 Origin::signed(merchant.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,

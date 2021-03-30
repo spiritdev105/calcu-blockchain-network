@@ -2,7 +2,7 @@
 // This file is part of Calcu.
 
 use crate::*;
-use crate as swork;
+use crate as tars;
 
 pub use frame_support::{
     parameter_types,
@@ -150,7 +150,7 @@ impl market::Config for Test {
     type ModuleId = MarketModuleId;
     type Currency = balances::Module<Self>;
     type CurrencyToBalance = ();
-    type TarsInterface = Swork;
+    type TarsInterface = Tars;
     type Event = ();
     /// File duration.
     type FileDuration = FileDuration;
@@ -205,7 +205,7 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system::{Module, Call, Config, Storage, Event<T>},
 		Balances: balances::{Module, Call, Storage, Config<T>, Event<T>},
-		Swork: swork::{Module, Call, Storage, Event<T>, Config},
+		Tars: tars::{Module, Call, Storage, Event<T>, Config},
 		Market: market::{Module, Call, Storage, Event<T>, Config},
 	}
 );
@@ -233,7 +233,7 @@ impl ExtBuilder {
             .build_storage::<Test>()
             .unwrap();
 
-        swork::GenesisConfig {
+        tars::GenesisConfig {
             code: self.code,
         }.assimilate_storage(&mut t).unwrap();
 
@@ -618,7 +618,7 @@ pub fn group_work_report_eve_600() -> ReportWorksInfo {
 }
 
 pub fn register(pk: &TarsPubKey, code: TarsCode) {
-    Swork::insert_pk_info(pk.clone(), code);
+    Tars::insert_pk_info(pk.clone(), code);
 }
 
 pub fn register_identity(who: &AccountId, pk: &TarsPubKey, anchor: &TarsAnchor) {

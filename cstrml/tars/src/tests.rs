@@ -22,7 +22,7 @@ fn register_should_work() {
                 .expect("valid ss58 address");
         let register_info = legal_register_info();
 
-        assert_ok!(Swork::register(
+        assert_ok!(Tars::register(
             Origin::signed(applier.clone()),
             register_info.ias_sig,
             register_info.ias_cert,
@@ -34,15 +34,15 @@ fn register_should_work() {
         let legal_code = LegalCode::get();
         let legal_pk = LegalPK::get();
 
-        assert_eq!(Swork::identities(applier).is_none(), true);
-        assert_eq!(Swork::pub_keys(legal_pk), PKInfo {
+        assert_eq!(Tars::identities(applier).is_none(), true);
+        assert_eq!(Tars::pub_keys(legal_pk), PKInfo {
             code: legal_code,
             anchor: None
         });
     });
 }
 
-// Duplicate pk check is removed due to the uniqueness guaranteed by sWorker-side
+// Duplicate pk check is removed due to the uniqueness guaranteed by Tars-side
 
 #[test]
 fn register_should_failed_with_unmatched_reporter() {
@@ -54,7 +54,7 @@ fn register_should_failed_with_unmatched_reporter() {
         let register_info = legal_register_info();
 
         assert_noop!(
-            Swork::register(
+            Tars::register(
                 Origin::signed(applier.clone()),
                 register_info.ias_sig,
                 register_info.ias_cert,
@@ -84,7 +84,7 @@ fn register_should_failed_with_illegal_cert() {
         register_info.ias_cert = "-----BEGIN CERTIFICATE-----\nMIIFFjCCAv4CCQChGbr81on1kDANBgkqhkiG9w0BAQsFADBNMQswCQYDVQQGEwJD\nTjERMA8GA1UECAwIU2hhbmdoYWkxETAPBgNVBAcMCFNoYW5naGFpMQswCQYDVQQK\nDAJaazELMAkGA1UECwwCWkgwHhcNMjAwNjIzMDUwODQyWhcNMjEwNjIzMDUwODQy\nWjBNMQswCQYDVQQGEwJDTjERMA8GA1UECAwIU2hhbmdoYWkxETAPBgNVBAcMCFNo\nYW5naGFpMQswCQYDVQQKDAJaazELMAkGA1UECwwCWkgwggIiMA0GCSqGSIb3DQEB\nAQUAA4ICDwAwggIKAoICAQC7oznSx9/gjE1/cEgXGKLATEvDPAdnvJ/T2lopEDZ/\nJEsNu0qBQsbOSAgJUhqAfX6ahwAn/Epz7yXy7PxCKZJi/wvESJ/WX4x+b7tE1nU1\nK7p7bKGJ6erww/ZrmGV+4+6GvdCg5dcOAA5TXAE2ZjTeIoR76Y3IZb0L78i/S+q1\ndZpx4YRfzwHNELCqpgwaJAS0FHIH1g+6X59EbF0UFT0YcM90Xxa0gHkPlYIoEoWS\n+UA/UW1MjuUwNaS5mNB3IpcrMhSeOkkqLglMdanu6r5MZpjuLBl7+sACoH0P7Rda\nx1c/NadmrbZf3/+AHvMZ6M9HrciyKKMauBZM9PUMrzLnTfF8iHitrSlum1UIfUuN\nvXXXzNLWskTxcXuWuyBgXpKM7D5XG7VnENDAbEYiN5Ej6zz5Zi/2OHVyErI3f1Ka\nvwTC8AjJMemCOBgPrgqMH7l6SAXr55eozXaSQVa4HG9iPGJixXZU5PUIiVFVO7Hj\nXtE3yfa2zaucB4rKhOJLwSD9qYgqFKB+vQ1X2GUkkPpsAMrL4n/VDQcJkrvjK3tt\n7AES9Q3TLmbVK91E2scF063XKUc3vT5Q8hcvg4MMLHn7gzMEaWTzjknRo1fLNWPY\nlPV3lZhBwkxdHKYodY7d6subE8nOsiFibq8X6Nf0UNIG0MXeFTAM2WfG2s6AlnZR\nHwIDAQABMA0GCSqGSIb3DQEBCwUAA4ICAQA5NL5fFP1eSBN/WEd8z6vJRWPyOz1t\ntrQF5o7Fazh3AtFcb3j3ab8NG/4qDTr7FrYFyOD+oHgIoHlzK4TFxlhSZquvU2Xb\nSMQyIQChojz8jbTa771ZPsjQjDWU0R0r83vI1ywc1v6eFpXIpV5oidT0afbJ85n4\ngwhVd6S2eTHh91U11BKf2gV4nhewzON4r7YuFg7sMMDVl3wx1HtXCKg5dMtgePyc\nGejdpyxdWX4BIxnvIY8QdAa4gvi9etzRf83mcNfwr+gM0rTyqGEBXuPW8bwq9BRL\nXz6zeL1Anb2HsjMQ6+MKWbXRhBFBCbB+APDcnjHv7OZXUaILi0B1JoTPu/jjSK1U\n7yAnK1sRtVpADVpa2N4STk9ImdTKfqTHZR9iTaheoqxRuTm7vzwGy72V4HEeEyOa\njyYpiCD8we3gJfro1pjzFLOqE3yU14vUc0SwQCZWlEH8LR/a8m/ZCPuqN4a2xPJO\nwksgMSCDkui5yUr4uTINFpROXHzz1dpOuUnvkkCAjKieZHWCyYyoEE0tedgejwee\nWv3UtR7svhpbAVoIQ8Z8EV2Ys1IN0Tp+4pltRbcgeZK0huEFOz4BL/1EGezwLbjE\nvoOMtTumWI9Mw5FTG4iTbRxvWL/KnLMvZr7V+o5ovmm0jeLW03Eh/E+aHH0B0tQp\nf6FKPRF7+Imo/g==\n-----END CERTIFICATE-----\n".as_bytes().to_vec();
 
         assert_noop!(
-            Swork::register(
+            Tars::register(
                 Origin::signed(applier.clone()),
                 register_info.ias_sig,
                 register_info.ias_cert,
@@ -116,7 +116,7 @@ fn register_should_failed_with_illegal_isv_body() {
         register_info.isv_body = "{\"id\":\"125366127848601794295099877969265555107\",\"timestamp\":\"2020-06-22T11:34:54.845374\",\"version\":3,\"epidPseudonym\":\"4tcrS6EX9pIyhLyxtgpQJuMO1VdAkRDtha/N+u/rRkTsb11AhkuTHsY6UXRPLRJavxG3nsByBdTfyDuBDQTEjMYV6NBXjn3P4UyvG1Ae2+I4lE1n+oiKgLA8CR8pc2nSnSY1Wz1Pw/2l9Q5Er6hM6FdeECgMIVTZzjScYSma6rE=\",\"isvEnclaveQuoteStatus\":\"GROUP_OUT_OF_DATE\",\"platformInfoBlob\":\"1502006504000F00000F0F02040101070000000000000000000B00000B00000002000000000000142A70382C3A557904D4AB5766B2D3BAAD8ED8B7B372FB8F25C7E06212DEF369A389047D2249CF2ACDB22197AD7EE604634D47B3720BB1837E35C5C7D66F256117B6\",\"isvEnclaveQuoteBody\":\"AgABACoUAAAKAAkAAAAAAP7yPH5zo3mCPOcf8onPvAcAAAAAAAAAAAAAAAAAAAAACA7///8CAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABwAAAAAAAAAHAAAAAAAAAJY6Ggjlm1yvKL0sgypJx2BBrGbValVEq8cCi/0sViQcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACD1xnnferKFHD2uvYqTXdDA8iZ22kCD5xw7h38CMfOngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADagmwZsR+S1ZNqgDg6HobleD6S6tRtqtsF1j81Bw7CnoP9/ZGNDEEzMEh+EKk1jAPW8PE+YKpum0xkVhh2J5Y8\"}".as_bytes().to_vec();
 
         assert_noop!(
-            Swork::register(
+            Tars::register(
                 Origin::signed(applier.clone()),
                 register_info.ias_sig,
                 register_info.ias_cert,
@@ -147,7 +147,7 @@ fn register_should_failed_with_illegal_id_sig() {
         register_info.sig = hex::decode("f45e401778623de9b27726ab749549da35b1f8c0fd7bb56e0c1c3bba86948eb41717c9e13bf57113d85a1cc64d5cc2fc95c12d8b3108ab6fadeff621dfb6a486").unwrap();
 
         assert_noop!(
-            Swork::register(
+            Tars::register(
                 Origin::signed(applier.clone()),
                 register_info.ias_sig,
                 register_info.ias_cert,
@@ -178,7 +178,7 @@ fn register_should_failed_with_illegal_ias_sig() {
         register_info.ias_sig = "cU3uOnd5XghR3ngJTbSFr48ttEIrJtbHHtuRM3hgzX7LHGacuTBMVRy0VK3ldqeM7KPBS+g3Da2anDHEJsSgITTXfHh+dxjUPO9v2hC+okjtWSY9fWhaFlR31lFWmSSbUfJSe2rtkLQRoj5VgKpOVkVuGzQjl/xF+SQZU4gjq130TwO8Gr/TvPLA3vJnM3/d8FUpcefp5Q5dbBka7y2ej8hDTyOjix3ZXSVD2SrSySfIg6kvIPS/EEJYoz/eMOFciSWuIIPrUj9M0eUc4xHsUxgNcgjOmtRt621RlzAwgY+yPFoqJwKtmlVNYy/FyvSbIMSB3kJbmlA+qHwOBgPQ0A==".as_bytes().to_vec();
 
         assert_noop!(
-            Swork::register(
+            Tars::register(
                 Origin::signed(applier.clone()),
                 register_info.ias_sig,
                 register_info.ias_cert,
@@ -207,7 +207,7 @@ fn register_should_failed_with_wrong_code() {
             let register_info = legal_register_info();
 
             assert_noop!(
-                Swork::register(
+                Tars::register(
                     Origin::signed(applier.clone()),
                     register_info.ias_sig,
                     register_info.ias_cert,
@@ -249,10 +249,10 @@ fn report_works_should_work() {
             add_not_live_files();
 
             // Check workloads before reporting
-            assert_eq!(Swork::free(), 0);
-            assert_eq!(Swork::used(), 0);
+            assert_eq!(Tars::free(), 0);
+            assert_eq!(Tars::used(), 0);
 
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(reporter.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -268,20 +268,20 @@ fn report_works_should_work() {
             ));
 
             // Check work report
-            assert_eq!(Swork::work_reports(&legal_pk).unwrap(), legal_wr);
+            assert_eq!(Tars::work_reports(&legal_pk).unwrap(), legal_wr);
 
             // Check workloads after work report
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 402868224 * 2);
-            assert_eq!(Swork::reported_files_size(), 402868224);
-            assert_eq!(Swork::reported_in_slot(&legal_pk, 300), true);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 402868224 * 2);
+            assert_eq!(Tars::reported_files_size(), 402868224);
+            assert_eq!(Tars::reported_in_slot(&legal_pk, 300), true);
 
-            assert_eq!(Swork::identities(&reporter).unwrap_or_default(), Identity {
+            assert_eq!(Tars::identities(&reporter).unwrap_or_default(), Identity {
                 anchor: legal_pk.clone(),
                 punishment_deadline: 300,
                 group: None
             });
-            assert_eq!(Swork::pub_keys(legal_pk.clone()), PKInfo {
+            assert_eq!(Tars::pub_keys(legal_pk.clone()), PKInfo {
                 code: LegalCode::get(),
                 anchor: Some(legal_pk.clone())
             });
@@ -333,10 +333,10 @@ fn report_works_should_work_without_files() {
             register(&legal_pk, LegalCode::get());
 
             // Check workloads before reporting
-            assert_eq!(Swork::free(), 0);
-            assert_eq!(Swork::used(), 0);
+            assert_eq!(Tars::free(), 0);
+            assert_eq!(Tars::used(), 0);
 
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(reporter.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -352,9 +352,9 @@ fn report_works_should_work_without_files() {
             ));
 
             // Check workloads after work report
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 0);
-            assert_eq!(Swork::reported_files_size(), 402868224);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 0);
+            assert_eq!(Tars::reported_files_size(), 402868224);
         });
 }
 
@@ -372,7 +372,7 @@ fn report_works_should_work_with_added_and_deleted_files() {
 
             register(&legal_pk, LegalCode::get());
 
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(reporter.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -394,7 +394,7 @@ fn report_works_should_work_with_added_and_deleted_files() {
             // FAKE Pass.
             let legal_wr_info_with_added_and_deleted_files = legal_work_report_with_added_and_deleted_files();
             assert_ok!(
-                Swork::report_works(
+                Tars::report_works(
                     Origin::signed(reporter),
                     legal_wr_info_with_added_and_deleted_files.curr_pk,
                     legal_wr_info_with_added_and_deleted_files.prev_pk,
@@ -424,7 +424,7 @@ fn report_works_should_failed_with_not_registered() {
             let legal_wr_info = legal_work_report_with_added_files();
 
             assert_noop!(
-                Swork::report_works(
+                Tars::report_works(
                     Origin::signed(illegal_reporter),
                     legal_wr_info.curr_pk,
                     legal_wr_info.prev_pk,
@@ -464,7 +464,7 @@ fn report_works_should_failed_with_illegal_code() {
             register(&legal_pk, illegal_code);
 
             assert_noop!(
-                Swork::report_works(
+                Tars::report_works(
                     Origin::signed(reporter),
                     legal_wr_info.curr_pk,
                     legal_wr_info.prev_pk,
@@ -502,7 +502,7 @@ fn report_works_should_failed_with_wrong_timing() {
             register(&legal_pk, LegalCode::get());
 
             assert_noop!(
-                Swork::report_works(
+                Tars::report_works(
                     Origin::signed(reporter),
                     illegal_wr_info.curr_pk,
                     illegal_wr_info.prev_pk,
@@ -541,7 +541,7 @@ fn report_works_should_failed_with_illegal_sig() {
             register(&legal_pk, LegalCode::get());
 
             assert_noop!(
-                Swork::report_works(
+                Tars::report_works(
                     Origin::signed(reporter),
                     illegal_wr_info.curr_pk,
                     illegal_wr_info.prev_pk,
@@ -590,7 +590,7 @@ fn report_works_should_failed_with_illegal_file_transition() {
             });
 
             assert_noop!(
-                Swork::report_works(
+                Tars::report_works(
                     Origin::signed(reporter),
                     illegal_wr_info.curr_pk,
                     illegal_wr_info.prev_pk,
@@ -637,7 +637,7 @@ fn incremental_report_should_work_without_change() {
                 reported_files_root: hex::decode("11").unwrap()
             });
 
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(reporter.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -686,7 +686,7 @@ fn incremental_report_should_work_with_files_change() {
             });
             add_live_files(&reporter, &legal_pk);
 
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(reporter.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -702,12 +702,12 @@ fn incremental_report_should_work_with_files_change() {
             ));
 
             // Check work report
-            assert_eq!(Swork::work_reports(&legal_pk).unwrap(), legal_wr);
+            assert_eq!(Tars::work_reports(&legal_pk).unwrap(), legal_wr);
 
             // Check workloads after work report
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 0);
-            assert_eq!(Swork::reported_files_size(), 0);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 0);
+            assert_eq!(Tars::reported_files_size(), 0);
         });
 }
 
@@ -735,7 +735,7 @@ fn incremental_report_should_failed_with_root_change() {
             });
 
             assert_noop!(
-                Swork::report_works(
+                Tars::report_works(
                     Origin::signed(reporter),
                     illegal_wr_info.curr_pk,
                     illegal_wr_info.prev_pk,
@@ -783,7 +783,7 @@ fn incremental_report_should_failed_with_wrong_file_size_change() {
             });
 
             assert_noop!(
-                Swork::report_works(
+                Tars::report_works(
                     Origin::signed(reporter),
                     illegal_wr_info.curr_pk,
                     illegal_wr_info.prev_pk,
@@ -830,16 +830,16 @@ fn update_identities_should_work() {
 
             // 1. Runs to 303 block
             run_to_block(303);
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 0);
-            assert_eq!(Swork::used(), 2);
-            assert_eq!(Swork::reported_files_size(), 2);
-            assert_eq!(Swork::current_report_slot(), 300);
+            assert_eq!(Tars::free(), 0);
+            assert_eq!(Tars::used(), 2);
+            assert_eq!(Tars::reported_files_size(), 2);
+            assert_eq!(Tars::current_report_slot(), 300);
             assert_eq!(*WorkloadMap::get().borrow().get(&reporter).unwrap(), 2u128);
 
             // 2. Report works in slot 300
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(reporter.clone()),
                 legal_wr_info.curr_pk,
                 legal_wr_info.prev_pk,
@@ -855,31 +855,31 @@ fn update_identities_should_work() {
             ));
 
             // 3. Free and used should already been updated
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 2);
-            assert_eq!(Swork::reported_files_size(), 2);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 2);
+            assert_eq!(Tars::reported_files_size(), 2);
             assert_eq!(*WorkloadMap::get().borrow().get(&reporter).unwrap(), 2u128);
 
             // 4. Runs to 606
             run_to_block(606);
-            Swork::update_identities();
+            Tars::update_identities();
 
             // 5. Free and used should not change, but current_rs should already been updated
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 2);
-            assert_eq!(Swork::reported_files_size(), 2);
-            assert_eq!(Swork::current_report_slot(), 600);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 2);
+            assert_eq!(Tars::reported_files_size(), 2);
+            assert_eq!(Tars::current_report_slot(), 600);
             assert_eq!(*WorkloadMap::get().borrow().get(&reporter).unwrap(), 4294967298u128);
 
             // 6. Runs to 909, work report is outdated
             run_to_block(909);
-            Swork::update_identities();
+            Tars::update_identities();
 
             // 7. Free and used should goes to 0, and the corresponding storage order should failed
-            assert_eq!(Swork::free(), 0);
-            assert_eq!(Swork::used(), 0);
-            assert_eq!(Swork::reported_files_size(), 0);
-            assert_eq!(Swork::current_report_slot(), 900);
+            assert_eq!(Tars::free(), 0);
+            assert_eq!(Tars::used(), 0);
+            assert_eq!(Tars::reported_files_size(), 0);
+            assert_eq!(Tars::current_report_slot(), 900);
             assert_eq!(*WorkloadMap::get().borrow().get(&reporter).unwrap(), 0u128);
         });
 }
@@ -906,21 +906,21 @@ fn abnormal_era_should_work() {
 
             // 1. Normal new era, runs to 301 block
             run_to_block(301);
-            Swork::update_identities();
+            Tars::update_identities();
 
             // 2. Everything goes well
-            assert_eq!(Swork::free(), 0);
-            assert_eq!(Swork::used(), 2);
-            assert_eq!(Swork::reported_files_size(), 2);
+            assert_eq!(Tars::free(), 0);
+            assert_eq!(Tars::used(), 2);
+            assert_eq!(Tars::reported_files_size(), 2);
 
             // 4. Abnormal era happened, new era goes like 404
             run_to_block(404);
-            Swork::update_identities();
+            Tars::update_identities();
 
             // 5. Free and used should not change
-            assert_eq!(Swork::free(), 0);
-            assert_eq!(Swork::used(), 2);
-            assert_eq!(Swork::reported_files_size(), 2);
+            assert_eq!(Tars::free(), 0);
+            assert_eq!(Tars::used(), 2);
+            assert_eq!(Tars::reported_files_size(), 2);
         });
 }
 
@@ -954,8 +954,8 @@ fn ab_upgrade_should_work() {
             // 1. Runs to 303 block
             run_to_block(303);
 
-            // 2. Report works with sWorker A
-            assert_ok!(Swork::report_works(
+            // 2. Report works with Tars A
+            assert_ok!(Tars::report_works(
                 Origin::signed(reporter.clone()),
                 a_wr_info.curr_pk,
                 a_wr_info.prev_pk,
@@ -971,7 +971,7 @@ fn ab_upgrade_should_work() {
             ));
 
             // 3. Check A's work report and free & used
-            assert_eq!(Swork::work_reports(&a_pk).unwrap(), WorkReport {
+            assert_eq!(Tars::work_reports(&a_pk).unwrap(), WorkReport {
                 report_slot: 300,
                 used: 2,
                 free: 4294967296,
@@ -979,21 +979,21 @@ fn ab_upgrade_should_work() {
                 reported_srd_root: hex::decode("00").unwrap(),
                 reported_files_root: hex::decode("11").unwrap()
             });
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 2);
-            assert_eq!(Swork::reported_files_size(), 2);
-            assert_eq!(Swork::reported_in_slot(&a_pk, 300), true);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 2);
+            assert_eq!(Tars::reported_files_size(), 2);
+            assert_eq!(Tars::reported_in_slot(&a_pk, 300), true);
 
-            // 4. Runs to 606, and do sWorker upgrade
-            Swork::update_identities();
+            // 4. Runs to 606, and do Tars upgrade
+            Tars::update_identities();
             run_to_block(606);
             // Fake do upgrade
 
             // 5. (Fake) Register B 🤣, suppose B's code is upgraded
             register(&b_pk, LegalCode::get());
 
-            // 6. Report works with sWorker B
-            assert_ok!(Swork::report_works(
+            // 6. Report works with Tars B
+            assert_ok!(Tars::report_works(
                 Origin::signed(reporter.clone()),
                 b_wr_info_1.curr_pk,
                 b_wr_info_1.prev_pk,
@@ -1009,7 +1009,7 @@ fn ab_upgrade_should_work() {
             ));
 
             // 7. Check B's work report and free & used
-            assert_eq!(Swork::work_reports(&a_pk).unwrap(), WorkReport {
+            assert_eq!(Tars::work_reports(&a_pk).unwrap(), WorkReport {
                 report_slot: 600,
                 used: 2,
                 free: 4294967296,
@@ -1017,11 +1017,11 @@ fn ab_upgrade_should_work() {
                 reported_srd_root: hex::decode("00").unwrap(),
                 reported_files_root: hex::decode("11").unwrap()
             });
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 2);
-            assert_eq!(Swork::reported_files_size(), 2);
-            assert_eq!(Swork::reported_in_slot(&a_pk, 300), true);
-            assert_eq!(Swork::reported_in_slot(&a_pk, 600), true);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 2);
+            assert_eq!(Tars::reported_files_size(), 2);
+            assert_eq!(Tars::reported_in_slot(&a_pk, 300), true);
+            assert_eq!(Tars::reported_in_slot(&a_pk, 600), true);
 
             // 8. Check A is already be chilled
             assert_eq!(<self::PubKeys>::contains_key(&a_pk), false);
@@ -1030,7 +1030,7 @@ fn ab_upgrade_should_work() {
             run_to_block(909);
 
             // 10. B normally report with A's pk(and with files changing), it should be ok
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(reporter.clone()),
                 b_wr_info_2.curr_pk,
                 b_wr_info_2.prev_pk,
@@ -1046,7 +1046,7 @@ fn ab_upgrade_should_work() {
             ));
 
             // 11. Check B's work report and free & used again
-            assert_eq!(Swork::work_reports(&a_pk).unwrap(), WorkReport {
+            assert_eq!(Tars::work_reports(&a_pk).unwrap(), WorkReport {
                 report_slot: 900,
                 used: 62, // 2 + 2 * 37 - 7 * 2
                 free: 4294967296,
@@ -1054,9 +1054,9 @@ fn ab_upgrade_should_work() {
                 reported_srd_root: hex::decode("00").unwrap(),
                 reported_files_root: hex::decode("11").unwrap()
             });
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 62);
-            assert_eq!(Swork::reported_files_size(), 32);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 62);
+            assert_eq!(Tars::reported_files_size(), 32);
         });
 }
 
@@ -1083,13 +1083,13 @@ fn ab_upgrade_expire_should_work() {
             });
 
             // 1. Arrange an upgrade immediately, expired at 500
-            assert_ok!(Swork::upgrade(Origin::root(), hex::decode("0011").unwrap(), 500));
+            assert_ok!(Tars::upgrade(Origin::root(), hex::decode("0011").unwrap(), 500));
 
             // 1. Runs to 303 block
             run_to_block(303);
 
             // 2. Report works still worked
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(reporter.clone()),
                 wr_info_300.curr_pk,
                 wr_info_300.prev_pk,
@@ -1109,7 +1109,7 @@ fn ab_upgrade_expire_should_work() {
 
             // 4. Report works should failed due to the expired time
             assert_noop!(
-                Swork::report_works(
+                Tars::report_works(
                     Origin::signed(reporter.clone()),
                     wr_info_600.curr_pk,
                     wr_info_600.prev_pk,
@@ -1156,7 +1156,7 @@ fn ab_upgrade_should_failed_with_files_size_unmatch() {
 
             // 1. Report A
             run_to_block(303);
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(reporter.clone()),
                 a_wr_info.curr_pk,
                 a_wr_info.prev_pk,
@@ -1171,16 +1171,16 @@ fn ab_upgrade_should_failed_with_files_size_unmatch() {
                 a_wr_info.sig
             ));
 
-            // 2. Runs to 606, and do sWorker upgrade
+            // 2. Runs to 606, and do Tars upgrade
             run_to_block(606);
             // Fake do upgrade
 
             // 3. (Fake) Register B 🤣, suppose B's code is upgraded
             register(&b_pk, LegalCode::get());
 
-            // 4. Report works with sWorker B will failed
+            // 4. Report works with Tars B will failed
             assert_noop!(
-                Swork::report_works(
+                Tars::report_works(
                     Origin::signed(reporter.clone()),
                     b_wr_info.curr_pk,
                     b_wr_info.prev_pk,
@@ -1228,17 +1228,17 @@ fn create_and_join_group_should_work() {
             });
 
             // Alice create a group and be the owner
-            assert_ok!(Swork::create_group(
+            assert_ok!(Tars::create_group(
                 Origin::signed(alice.clone())
             ));
 
             // Bob join the alice's group
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(bob.clone()),
                 alice.clone()
             ));
 
-            assert_eq!(Swork::identities(&bob).unwrap_or_default(), Identity {
+            assert_eq!(Tars::identities(&bob).unwrap_or_default(), Identity {
                 anchor: b_pk.clone(),
                 punishment_deadline: 0,
                 group: Some(alice.clone())
@@ -1256,11 +1256,11 @@ fn create_group_should_fail_due_to_invalid_situations() {
             let a_pk = a_wr_info.curr_pk.clone();
 
             // Alice create a group and be the owner
-            assert_ok!(Swork::create_group(
+            assert_ok!(Tars::create_group(
                 Origin::signed(alice.clone())
             ));
 
-            assert_noop!(Swork::create_group(
+            assert_noop!(Tars::create_group(
                 Origin::signed(alice.clone())
             ),
             DispatchError::Module {
@@ -1271,7 +1271,7 @@ fn create_group_should_fail_due_to_invalid_situations() {
 
             register_identity(&alice, &a_pk, &a_pk);
 
-            assert_noop!(Swork::create_group(
+            assert_noop!(Tars::create_group(
                 Origin::signed(alice.clone())
             ),
             DispatchError::Module {
@@ -1293,12 +1293,12 @@ fn register_should_fail_due_to_reporter_is_group_owner() {
             let register_info = legal_register_info();
 
             // Alice create a group and be the owner
-            assert_ok!(Swork::create_group(
+            assert_ok!(Tars::create_group(
                 Origin::signed(applier.clone())
             ));
 
             assert_noop!(
-                Swork::register(
+                Tars::register(
                     Origin::signed(applier.clone()),
                     register_info.ias_sig,
                     register_info.ias_cert,
@@ -1330,11 +1330,11 @@ fn report_works_should_fail_due_to_reporter_is_group_owner() {
             register(&legal_pk, LegalCode::get());
             add_not_live_files();
             // Alice create a group and be the owner
-            assert_ok!(Swork::create_group(
+            assert_ok!(Tars::create_group(
                 Origin::signed(reporter.clone())
             ));
             assert_noop!(
-                Swork::report_works(
+                Tars::report_works(
                     Origin::signed(reporter.clone()),
                     legal_wr_info.curr_pk,
                     legal_wr_info.prev_pk,
@@ -1372,7 +1372,7 @@ fn join_group_should_fail_due_to_invalid_situations() {
             let b_pk = b_wr_info.curr_pk.clone();
 
             // bob's identity doesn't exist
-            assert_noop!(Swork::join_group(
+            assert_noop!(Tars::join_group(
                 Origin::signed(bob.clone()),
                 alice.clone()
             ),
@@ -1398,7 +1398,7 @@ fn join_group_should_fail_due_to_invalid_situations() {
             });
 
             // alice is not the owner of the group
-            assert_noop!(Swork::join_group(
+            assert_noop!(Tars::join_group(
                 Origin::signed(bob.clone()),
                 alice.clone()
             ),
@@ -1409,12 +1409,12 @@ fn join_group_should_fail_due_to_invalid_situations() {
             });
 
             // Alice create a group and be the owner
-            assert_ok!(Swork::create_group(
+            assert_ok!(Tars::create_group(
                 Origin::signed(alice.clone())
             ));
 
             // bob's used is not 0
-            assert_noop!(Swork::join_group(
+            assert_noop!(Tars::join_group(
                 Origin::signed(bob.clone()),
                 alice.clone()
             ),
@@ -1434,23 +1434,23 @@ fn join_group_should_fail_due_to_invalid_situations() {
             });
 
             // Bob join the alice's group
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(bob.clone()),
                 alice.clone()
             ));
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(charlie.clone()),
                 alice.clone()
             ));
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(dave.clone()),
                 alice.clone()
             ));
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(eve.clone()),
                 alice.clone()
             ));
-            assert_noop!(Swork::join_group(
+            assert_noop!(Tars::join_group(
                 Origin::signed(ferdie.clone()),
                 alice.clone()
             ),
@@ -1460,14 +1460,14 @@ fn join_group_should_fail_due_to_invalid_situations() {
                 message: Some("ExceedGroupLimit"),
             });
 
-            assert_eq!(Swork::identities(&bob).unwrap_or_default(), Identity {
+            assert_eq!(Tars::identities(&bob).unwrap_or_default(), Identity {
                 anchor: b_pk.clone(),
                 punishment_deadline: 0,
                 group: Some(alice.clone())
             });
 
             // bob already joined a group
-            assert_noop!(Swork::join_group(
+            assert_noop!(Tars::join_group(
                 Origin::signed(bob.clone()),
                 alice.clone()
             ),
@@ -1512,21 +1512,21 @@ fn join_group_should_work_for_used_in_work_report() {
             let file_e = "QmdwgqZy1MZBfWPi7GcxVsYgJEtmvHg6rsLzbCej3tf3oE".as_bytes().to_vec(); // E file
 
             // alice, bob and eve become a group
-            assert_ok!(Swork::create_group(
+            assert_ok!(Tars::create_group(
                 Origin::signed(ferdie.clone())
             ));
 
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(alice.clone()),
                 ferdie.clone()
             ));
 
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(bob.clone()),
                 ferdie.clone()
             ));
 
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(eve.clone()),
                 ferdie.clone()
             ));
@@ -1534,7 +1534,7 @@ fn join_group_should_work_for_used_in_work_report() {
             run_to_block(303);
             add_not_live_files();
             // A report works in 303
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(alice.clone()),
                 alice_wr_info.curr_pk,
                 alice_wr_info.prev_pk,
@@ -1612,7 +1612,7 @@ fn join_group_should_work_for_used_in_work_report() {
                     groups: BTreeMap::from_iter(vec![(a_pk.clone(), true)].into_iter())
                 })
             );
-            assert_eq!(Swork::work_reports(&a_pk).unwrap(), WorkReport {
+            assert_eq!(Tars::work_reports(&a_pk).unwrap(), WorkReport {
                 report_slot: 300,
                 used: 57 * 2,
                 free: 4294967296,
@@ -1620,7 +1620,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 reported_srd_root: hex::decode("00").unwrap(),
                 reported_files_root: hex::decode("11").unwrap()
             });
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(bob.clone()),
                 bob_wr_info.curr_pk,
                 bob_wr_info.prev_pk,
@@ -1717,7 +1717,7 @@ fn join_group_should_work_for_used_in_work_report() {
                     groups: BTreeMap::from_iter(vec![(b_pk.clone(), true)].into_iter())
                 })
             );
-            assert_eq!(Swork::work_reports(&b_pk).unwrap(), WorkReport {
+            assert_eq!(Tars::work_reports(&b_pk).unwrap(), WorkReport {
                 report_slot: 300,
                 used: 55 * 2,
                 free: 4294967296,
@@ -1725,7 +1725,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 reported_srd_root: hex::decode("00").unwrap(),
                 reported_files_root: hex::decode("11").unwrap()
             });
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(eve.clone()),
                 eve_wr_info.curr_pk,
                 eve_wr_info.prev_pk,
@@ -1828,7 +1828,7 @@ fn join_group_should_work_for_used_in_work_report() {
                     groups: BTreeMap::from_iter(vec![(c_pk.clone(), true)].into_iter())
                 })
             );
-            assert_eq!(Swork::work_reports(&c_pk).unwrap(), WorkReport {
+            assert_eq!(Tars::work_reports(&c_pk).unwrap(), WorkReport {
                 report_slot: 300,
                 used: 22 * 2,
                 free: 4294967296,
@@ -1841,7 +1841,7 @@ fn join_group_should_work_for_used_in_work_report() {
             let eve_wr_info = group_work_report_eve_600();
 
             run_to_block(603);
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(bob.clone()),
                 bob_wr_info.curr_pk,
                 bob_wr_info.prev_pk,
@@ -1938,7 +1938,7 @@ fn join_group_should_work_for_used_in_work_report() {
                     groups: BTreeMap::from_iter(vec![(b_pk.clone(), true)].into_iter())
                 })
             );
-            assert_eq!(Swork::work_reports(&b_pk).unwrap(), WorkReport {
+            assert_eq!(Tars::work_reports(&b_pk).unwrap(), WorkReport {
                 report_slot: 600,
                 used: 55 * 2,
                 free: 4294967296,
@@ -1946,7 +1946,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 reported_srd_root: hex::decode("00").unwrap(),
                 reported_files_root: hex::decode("11").unwrap()
             });
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(eve.clone()),
                 eve_wr_info.curr_pk,
                 eve_wr_info.prev_pk,
@@ -2024,7 +2024,7 @@ fn join_group_should_work_for_used_in_work_report() {
                     groups: BTreeMap::new()
                 })
             );
-            assert_eq!(Swork::work_reports(&c_pk).unwrap(), WorkReport {
+            assert_eq!(Tars::work_reports(&c_pk).unwrap(), WorkReport {
                 report_slot: 600,
                 used: 0,
                 free: 4294967296,
@@ -2047,7 +2047,7 @@ fn join_group_should_work_for_used_in_work_report() {
             assert_eq!(Market::used_trash_i(&file_d).is_some(), true);
             assert_eq!(Market::used_trash_ii(&file_e).is_some(), true);
 
-            assert_eq!(Swork::work_reports(&a_pk).unwrap(), WorkReport {
+            assert_eq!(Tars::work_reports(&a_pk).unwrap(), WorkReport {
                 report_slot: 300,
                 used: 57 * 2,
                 free: 4294967296,
@@ -2056,7 +2056,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 reported_files_root: hex::decode("11").unwrap()
             });
 
-            assert_eq!(Swork::work_reports(&b_pk).unwrap(), WorkReport {
+            assert_eq!(Tars::work_reports(&b_pk).unwrap(), WorkReport {
                 report_slot: 600,
                 used: 55 * 2,
                 free: 4294967296,
@@ -2064,7 +2064,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 reported_srd_root: hex::decode("00").unwrap(),
                 reported_files_root: hex::decode("11").unwrap()
             });
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(alice.clone()),
                 alice_wr_info.curr_pk,
                 alice_wr_info.prev_pk,
@@ -2094,7 +2094,7 @@ fn join_group_should_work_for_used_in_work_report() {
             assert_eq!(Market::used_trash_i(&file_d).is_none(), true);
 
             // d has gone!
-            assert_eq!(Swork::work_reports(&b_pk).unwrap(), WorkReport {
+            assert_eq!(Tars::work_reports(&b_pk).unwrap(), WorkReport {
                 report_slot: 600,
                 used: 0,
                 free: 4294967296,
@@ -2103,7 +2103,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 reported_files_root: hex::decode("11").unwrap()
             });
 
-            assert_eq!(Swork::work_reports(&a_pk).unwrap(), WorkReport {
+            assert_eq!(Tars::work_reports(&a_pk).unwrap(), WorkReport {
                 report_slot: 1500,
                 used: 0,
                 free: 4294967296,
@@ -2140,30 +2140,30 @@ fn join_group_should_work_for_stake_limit() {
             register_identity(&eve, &c_pk, &c_pk);
 
             // alice, bob and eve become a group
-            assert_ok!(Swork::create_group(
+            assert_ok!(Tars::create_group(
                 Origin::signed(ferdie.clone())
             ));
 
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(alice.clone()),
                 ferdie.clone()
             ));
 
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(bob.clone()),
                 ferdie.clone()
             ));
 
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(eve.clone()),
                 ferdie.clone()
             ));
 
             run_to_block(303);
-            Swork::update_identities();
+            Tars::update_identities();
             add_not_live_files();
             // A report works in 303
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(alice.clone()),
                 alice_wr_info.curr_pk,
                 alice_wr_info.prev_pk,
@@ -2177,7 +2177,7 @@ fn join_group_should_work_for_stake_limit() {
                 alice_wr_info.files_root,
                 alice_wr_info.sig
             ));
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(bob.clone()),
                 bob_wr_info.curr_pk,
                 bob_wr_info.prev_pk,
@@ -2191,7 +2191,7 @@ fn join_group_should_work_for_stake_limit() {
                 bob_wr_info.files_root,
                 bob_wr_info.sig
             ));
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(eve.clone()),
                 eve_wr_info.curr_pk,
                 eve_wr_info.prev_pk,
@@ -2207,12 +2207,12 @@ fn join_group_should_work_for_stake_limit() {
             ));
 
             run_to_block(603);
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 12884901888);
-            assert_eq!(Swork::used(), 134 * 2);
-            assert_eq!(Swork::reported_files_size(), 270); // 57 + 99 + 134
-            assert_eq!(Swork::current_report_slot(), 600);
+            assert_eq!(Tars::free(), 12884901888);
+            assert_eq!(Tars::used(), 134 * 2);
+            assert_eq!(Tars::reported_files_size(), 270); // 57 + 99 + 134
+            assert_eq!(Tars::current_report_slot(), 600);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 12884902156u128);
@@ -2231,7 +2231,7 @@ fn quit_group_should_work_for_stake_limit() {
             let ferdie = Sr25519Keyring::Ferdie.to_account_id();
 
             assert_noop!(
-                Swork::quit_group(
+                Tars::quit_group(
                     Origin::signed(alice.clone())
                 ),
                 DispatchError::Module {
@@ -2247,7 +2247,7 @@ fn quit_group_should_work_for_stake_limit() {
             register(&a_pk, LegalCode::get());
             register_identity(&alice, &a_pk, &a_pk);
             assert_noop!(
-                Swork::quit_group(
+                Tars::quit_group(
                     Origin::signed(alice.clone())
                 ),
                 DispatchError::Module {
@@ -2258,20 +2258,20 @@ fn quit_group_should_work_for_stake_limit() {
             );
 
             // alice, bob and eve become a group
-            assert_ok!(Swork::create_group(
+            assert_ok!(Tars::create_group(
                 Origin::signed(ferdie.clone())
             ));
 
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(alice.clone()),
                 ferdie.clone()
             ));
 
             run_to_block(303);
-            Swork::update_identities();
+            Tars::update_identities();
             add_not_live_files();
             // A report works in 303
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(alice.clone()),
                 alice_wr_info.curr_pk,
                 alice_wr_info.prev_pk,
@@ -2288,17 +2288,17 @@ fn quit_group_should_work_for_stake_limit() {
 
             run_to_block(603);
 
-            assert_ok!(Swork::quit_group(
+            assert_ok!(Tars::quit_group(
                 Origin::signed(alice.clone())
             ));
-            assert_eq!(Swork::groups(ferdie.clone()), BTreeSet::from_iter(vec![].into_iter()));
+            assert_eq!(Tars::groups(ferdie.clone()), BTreeSet::from_iter(vec![].into_iter()));
 
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 57 * 2);
-            assert_eq!(Swork::reported_files_size(), 57); // 57
-            assert_eq!(Swork::current_report_slot(), 600);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 57 * 2);
+            assert_eq!(Tars::reported_files_size(), 57); // 57
+            assert_eq!(Tars::current_report_slot(), 600);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 0);
@@ -2315,7 +2315,7 @@ fn kick_out_should_work_for_stake_limit() {
             let ferdie = Sr25519Keyring::Ferdie.to_account_id();
 
             assert_noop!(
-                Swork::kick_out(
+                Tars::kick_out(
                     Origin::signed(ferdie.clone()),
                     alice.clone()
                 ),
@@ -2332,20 +2332,20 @@ fn kick_out_should_work_for_stake_limit() {
             register(&a_pk, LegalCode::get());
             register_identity(&alice, &a_pk, &a_pk);
             // alice, bob and eve become a group
-            assert_ok!(Swork::create_group(
+            assert_ok!(Tars::create_group(
                 Origin::signed(ferdie.clone())
             ));
 
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(alice.clone()),
                 ferdie.clone()
             ));
 
             run_to_block(303);
-            Swork::update_identities();
+            Tars::update_identities();
             add_not_live_files();
             // A report works in 303
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(alice.clone()),
                 alice_wr_info.curr_pk,
                 alice_wr_info.prev_pk,
@@ -2362,18 +2362,18 @@ fn kick_out_should_work_for_stake_limit() {
 
             run_to_block(603);
 
-            assert_ok!(Swork::kick_out(
+            assert_ok!(Tars::kick_out(
                 Origin::signed(ferdie.clone()),
                 alice.clone()
             ));
-            assert_eq!(Swork::groups(ferdie.clone()), BTreeSet::from_iter(vec![].into_iter()));
+            assert_eq!(Tars::groups(ferdie.clone()), BTreeSet::from_iter(vec![].into_iter()));
 
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 57 * 2);
-            assert_eq!(Swork::reported_files_size(), 57); // 57
-            assert_eq!(Swork::current_report_slot(), 600);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 57 * 2);
+            assert_eq!(Tars::reported_files_size(), 57); // 57
+            assert_eq!(Tars::current_report_slot(), 600);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 0);
@@ -2396,20 +2396,20 @@ fn punishment_by_offline_should_work_for_stake_limit() {
             register_identity(&alice, &a_pk, &a_pk);
 
             // alice join the ferdie's group
-            assert_ok!(Swork::create_group(
+            assert_ok!(Tars::create_group(
                 Origin::signed(ferdie.clone())
             ));
 
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(alice.clone()),
                 ferdie.clone()
             ));
 
             run_to_block(303);
-            Swork::update_identities();
+            Tars::update_identities();
             add_not_live_files();
             // A report works in 303
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(alice.clone()),
                 alice_wr_info.curr_pk,
                 alice_wr_info.prev_pk,
@@ -2425,36 +2425,36 @@ fn punishment_by_offline_should_work_for_stake_limit() {
             ));
 
             run_to_block(603);
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 57 * 2);
-            assert_eq!(Swork::reported_files_size(), 57);
-            assert_eq!(Swork::current_report_slot(), 600);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 57 * 2);
+            assert_eq!(Tars::reported_files_size(), 57);
+            assert_eq!(Tars::current_report_slot(), 600);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 4294967410u128);
 
             run_to_block(903);
             // Punishment happen. Can't find report work at 600 report_slot. punishment deadline would be 1800. Block would be after 2100
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 0);
-            assert_eq!(Swork::used(), 0);
-            assert_eq!(Swork::reported_files_size(), 0);
-            assert_eq!(Swork::current_report_slot(), 900);
+            assert_eq!(Tars::free(), 0);
+            assert_eq!(Tars::used(), 0);
+            assert_eq!(Tars::reported_files_size(), 0);
+            assert_eq!(Tars::current_report_slot(), 900);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 0);
 
             // Check 1500 and would still be punished.
             run_to_block(2000);
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 0);
-            assert_eq!(Swork::used(), 0);
-            assert_eq!(Swork::reported_files_size(), 0);
-            assert_eq!(Swork::current_report_slot(), 1800);
+            assert_eq!(Tars::free(), 0);
+            assert_eq!(Tars::used(), 0);
+            assert_eq!(Tars::reported_files_size(), 0);
+            assert_eq!(Tars::current_report_slot(), 1800);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 0);
@@ -2475,47 +2475,47 @@ fn punishment_by_offline_should_work_for_stake_limit() {
 
             // Check 1800 and would success since alice reported at 1800
             run_to_block(2103);
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 57 * 2);
-            assert_eq!(Swork::reported_files_size(), 57);
-            assert_eq!(Swork::current_report_slot(), 2100);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 57 * 2);
+            assert_eq!(Tars::reported_files_size(), 57);
+            assert_eq!(Tars::current_report_slot(), 2100);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 4294967410u128);
 
             // Check 2100 and would be punished till 3300
             run_to_block(2403);
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 0);
-            assert_eq!(Swork::used(), 0);
-            assert_eq!(Swork::reported_files_size(), 0);
-            assert_eq!(Swork::current_report_slot(), 2400);
+            assert_eq!(Tars::free(), 0);
+            assert_eq!(Tars::used(), 0);
+            assert_eq!(Tars::reported_files_size(), 0);
+            assert_eq!(Tars::current_report_slot(), 2400);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 0);
 
 
             run_to_block(3303);
-            Swork::update_identities();
-            assert_eq!(Swork::free(), 0);
-            assert_eq!(Swork::used(), 0);
-            assert_eq!(Swork::reported_files_size(), 0);
-            assert_eq!(Swork::current_report_slot(), 3300);
+            Tars::update_identities();
+            assert_eq!(Tars::free(), 0);
+            assert_eq!(Tars::used(), 0);
+            assert_eq!(Tars::reported_files_size(), 0);
+            assert_eq!(Tars::current_report_slot(), 3300);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 0);
 
             // Check 3300 and would be punished again till 4500
             run_to_block(3603);
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 0);
-            assert_eq!(Swork::used(), 0);
-            assert_eq!(Swork::reported_files_size(), 0);
-            assert_eq!(Swork::current_report_slot(), 3600);
+            assert_eq!(Tars::free(), 0);
+            assert_eq!(Tars::used(), 0);
+            assert_eq!(Tars::reported_files_size(), 0);
+            assert_eq!(Tars::current_report_slot(), 3600);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 0);
@@ -2535,24 +2535,24 @@ fn punishment_by_offline_should_work_for_stake_limit() {
 
             // Check 4200 and still in punishment duration
             run_to_block(4503);
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 0);
-            assert_eq!(Swork::used(), 0);
-            assert_eq!(Swork::reported_files_size(), 0);
-            assert_eq!(Swork::current_report_slot(), 4500);
+            assert_eq!(Tars::free(), 0);
+            assert_eq!(Tars::used(), 0);
+            assert_eq!(Tars::reported_files_size(), 0);
+            assert_eq!(Tars::current_report_slot(), 4500);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 0);
 
             // Check 4500 and would success
             run_to_block(4803);
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 57 * 2);
-            assert_eq!(Swork::reported_files_size(), 57);
-            assert_eq!(Swork::current_report_slot(), 4800);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 57 * 2);
+            assert_eq!(Tars::reported_files_size(), 57);
+            assert_eq!(Tars::current_report_slot(), 4800);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 4294967410u128);
@@ -2574,20 +2574,20 @@ fn cancel_punishment_should_work() {
             register_identity(&alice, &a_pk, &a_pk);
 
             // alice join the ferdie's group
-            assert_ok!(Swork::create_group(
+            assert_ok!(Tars::create_group(
                 Origin::signed(ferdie.clone())
             ));
 
-            assert_ok!(Swork::join_group(
+            assert_ok!(Tars::join_group(
                 Origin::signed(alice.clone()),
                 ferdie.clone()
             ));
 
             run_to_block(303);
-            Swork::update_identities();
+            Tars::update_identities();
             add_not_live_files();
             // A report works in 303
-            assert_ok!(Swork::report_works(
+            assert_ok!(Tars::report_works(
                 Origin::signed(alice.clone()),
                 alice_wr_info.curr_pk,
                 alice_wr_info.prev_pk,
@@ -2603,24 +2603,24 @@ fn cancel_punishment_should_work() {
             ));
 
             run_to_block(603);
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 57 * 2);
-            assert_eq!(Swork::reported_files_size(), 57);
-            assert_eq!(Swork::current_report_slot(), 600);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 57 * 2);
+            assert_eq!(Tars::reported_files_size(), 57);
+            assert_eq!(Tars::current_report_slot(), 600);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 4294967410u128);
 
             run_to_block(903);
             // Punishment happen. Can't find report work at 600 report_slot. punishment deadline would be 1800. Block would be after 2100
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 0);
-            assert_eq!(Swork::used(), 0);
-            assert_eq!(Swork::reported_files_size(), 0);
-            assert_eq!(Swork::current_report_slot(), 900);
+            assert_eq!(Tars::free(), 0);
+            assert_eq!(Tars::used(), 0);
+            assert_eq!(Tars::reported_files_size(), 0);
+            assert_eq!(Tars::current_report_slot(), 900);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 0);
@@ -2628,12 +2628,12 @@ fn cancel_punishment_should_work() {
             // Check 1200 and would still be punished.
             run_to_block(1600);
 
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 0);
-            assert_eq!(Swork::used(), 0);
-            assert_eq!(Swork::reported_files_size(), 0);
-            assert_eq!(Swork::current_report_slot(), 1500);
+            assert_eq!(Tars::free(), 0);
+            assert_eq!(Tars::used(), 0);
+            assert_eq!(Tars::reported_files_size(), 0);
+            assert_eq!(Tars::current_report_slot(), 1500);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 0);
@@ -2654,18 +2654,18 @@ fn cancel_punishment_should_work() {
 
             // Check 1500 and would success since punishment is cancelled
             run_to_block(2000);
-            assert_ok!(Swork::cancel_punishment(Origin::root(), alice.clone()));
-            assert_eq!(Swork::identities(alice.clone()).unwrap_or_default(), Identity {
+            assert_ok!(Tars::cancel_punishment(Origin::root(), alice.clone()));
+            assert_eq!(Tars::identities(alice.clone()).unwrap_or_default(), Identity {
                 anchor: a_pk.clone(),
                 punishment_deadline: 0,
                 group: Some(ferdie.clone())
             });
-            Swork::update_identities();
+            Tars::update_identities();
 
-            assert_eq!(Swork::free(), 4294967296);
-            assert_eq!(Swork::used(), 57 * 2);
-            assert_eq!(Swork::reported_files_size(), 57);
-            assert_eq!(Swork::current_report_slot(), 1800);
+            assert_eq!(Tars::free(), 4294967296);
+            assert_eq!(Tars::used(), 57 * 2);
+            assert_eq!(Tars::reported_files_size(), 57);
+            assert_eq!(Tars::current_report_slot(), 1800);
             let map = WorkloadMap::get().borrow().clone();
             // All workload is counted to alice. bob and eve is None.
             assert_eq!(*map.get(&ferdie).unwrap(), 4294967410u128);
@@ -2688,14 +2688,14 @@ fn remove_reported_in_slot_should_work() {
             <self::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
             <self::ReportedInSlot>::insert(legal_pk.clone(), 300, true);
             run_to_block(1800);
-            Swork::update_identities();
+            Tars::update_identities();
             run_to_block(2100);
-            Swork::update_identities();
+            Tars::update_identities();
             assert_eq!(<self::ReportedInSlot>::contains_key(legal_pk.clone(), 0), false);
             assert_eq!(<self::ReportedInSlot>::contains_key(legal_pk.clone(), 300), true);
             run_to_block(2400);
-            Swork::update_identities();
-            Swork::on_initialize(System::block_number());
+            Tars::update_identities();
+            Tars::on_initialize(System::block_number());
             assert_eq!(<self::ReportedInSlot>::contains_key(legal_pk.clone(), 300), false);
         });
 }

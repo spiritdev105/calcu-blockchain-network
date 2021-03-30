@@ -15,7 +15,7 @@ use sp_runtime::{
 };
 use sp_staking::offence::OffenceDetails;
 use substrate_test_utils::assert_eq_uvec;
-use swork::Works;
+use tars::Works;
 
 #[test]
 fn force_unstake_works() {

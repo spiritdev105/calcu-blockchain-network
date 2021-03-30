@@ -47,7 +47,7 @@ use sp_runtime::{Deserialize, Serialize};
 pub mod weight;
 
 // Calcu runtime modules
-use swork;
+use tars;
 use primitives::{
     constants::{currency::*, time::*},
     traits::{UsableCurrency, MarketInterface}
@@ -2359,7 +2359,7 @@ impl<T: Config> historical::SessionManager<T::AccountId, Exposure<T::AccountId, 
 }
 
 
-impl<T: Config> swork::Works<T::AccountId> for Module<T> {
+impl<T: Config> tars::Works<T::AccountId> for Module<T> {
     fn report_works(workload_map: BTreeMap<T::AccountId, u128>, total_workload: u128) {
         for (v_stash, _) in <Validators<T>>::iter() {
             let v_own_workload = workload_map.get(&v_stash).unwrap_or(&0u128);
