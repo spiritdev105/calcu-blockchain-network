@@ -403,7 +403,7 @@ parameter_types! {
     // 64 guarantors for one validator.
     pub const MaxGuarantorRewardedPerValidator: u32 = 64;
     // 60 eras means 15 days if era = 6 hours
-    pub const MarketStakingPotDuration: u32 = 60;
+    pub const MurphyStakingPotDuration: u32 = 60;
     // Authoring and Staking reward ratio
     pub const AuthoringAndStakingRatio: Perbill = Perbill::from_percent(20);
 }
@@ -428,8 +428,8 @@ impl staking::Config for Runtime {
     type SlashCancelOrigin = frame_system::EnsureRoot<Self::AccountId>;
     type SessionInterface = Self;
     type SPowerRatio = SPowerRatio;
-    type MarketStakingPot = Market;
-    type MarketStakingPotDuration = MarketStakingPotDuration;
+    type MurphyStakingPot = Murphy;
+    type MurphyStakingPotDuration = MurphyStakingPotDuration;
     type AuthoringAndStakingRatio = AuthoringAndStakingRatio;
     type WeightInfo = staking::weight::WeightInfo;
 }
@@ -733,14 +733,14 @@ impl tars::Config for Runtime {
     type Event = Event;
     type PunishmentSlots = PunishmentSlots;
     type Works = Staking;
-    type MarketInterface = Market;
+    type MurphyInterface = Murphy;
     type MaxGroupSize = MaxGroupSize;
     type WeightInfo = tars::weight::WeightInfo<Runtime>;
 }
 
 parameter_types! {
     /// Unit is pico
-    pub const MarketModuleId: ModuleId = ModuleId(*b"crmarket");
+    pub const MurphyModuleId: ModuleId = ModuleId(*b"crmurphy");
     pub const FileDuration: BlockNumber = 15 * DAYS;
     pub const FileReplica: u32 = 4;
     pub const FileBaseFee: Balance = MILLICENTS * 2;
@@ -755,9 +755,9 @@ parameter_types! {
     pub const RenewRewardRatio: Perbill = Perbill::from_percent(5);
 }
 
-impl market::Config for Runtime {
-    /// The market's module id, used for deriving its sovereign account ID.
-    type ModuleId = MarketModuleId;
+impl murphy::Config for Runtime {
+    /// The murphy's module id, used for deriving its sovereign account ID.
+    type ModuleId = MurphyModuleId;
     type Currency = Balances;
     type CurrencyToBalance = CurrencyToVoteHandler;
     type TarsInterface = Tars;
@@ -774,7 +774,7 @@ impl market::Config for Runtime {
     type RenewRewardRatio = RenewRewardRatio;
     type TaxRatio = TaxRatio;
     type UsedTrashMaxSize = UsedTrashMaxSize;
-    type WeightInfo = market::weight::WeightInfo<Runtime>;
+    type WeightInfo = murphy::weight::WeightInfo<Runtime>;
     type MaximumFileSize = MaximumFileSize;
 }
 
@@ -827,7 +827,7 @@ construct_runtime! {
 
         // Calcu modules
         Tars: tars::{Module, Call, Storage, Event<T>, Config},
-        Market: market::{Module, Call, Storage, Event<T>, Config},
+        Murphy: murphy::{Module, Call, Storage, Event<T>, Config},
 
         // Sudo. Last module. Usable initially, but removed once governance enabled.
         Sudo: pallet_sudo::{Module, Call, Storage, Config<T>, Event<T>},
@@ -1075,7 +1075,7 @@ impl_runtime_apis! {
             add_benchmark!(params, batches, balances, Balances);
             add_benchmark!(params, batches, system, SystemBench::<Runtime>);
             add_benchmark!(params, batches, staking, Staking);
-            add_benchmark!(params, batches, market, Market);
+            add_benchmark!(params, batches, murphy, Murphy);
             add_benchmark!(params, batches, tars, TarsBench::<Runtime>);
 
             if batches.is_empty() { return Err("Benchmark not found for this pallet.".into()) }

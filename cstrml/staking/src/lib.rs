@@ -50,7 +50,7 @@ pub mod weight;
 use tars;
 use primitives::{
     constants::{currency::*, time::*},
-    traits::{UsableCurrency, MarketInterface}
+    traits::{UsableCurrency, MurphyInterface}
 };
 
 const DEFAULT_MINIMUM_VALIDATOR_COUNT: u32 = 4;
@@ -434,13 +434,13 @@ pub trait Config: frame_system::Config {
     /// Storage power ratio for calcu network phase 1
     type SPowerRatio: Get<u128>;
 
-    /// Reference to Market staking pot.
-    type MarketStakingPot: MarketInterface<Self::AccountId, BalanceOf<Self>>;
+    /// Reference to Murphy staking pot.
+    type MurphyStakingPot: MurphyInterface<Self::AccountId, BalanceOf<Self>>;
 
-    /// Market Staking Pot Duration. Count of EraIndex
-    type MarketStakingPotDuration: Get<u32>;
+    /// Murphy Staking Pot Duration. Count of EraIndex
+    type MurphyStakingPotDuration: Get<u32>;
 
-    /// Authoring and Staking ratio for market staking pot
+    /// Authoring and Staking ratio for murphy staking pot
     type AuthoringAndStakingRatio: Get<Perbill>;
 
     /// Weight information for extrinsics in this pallet.
@@ -540,8 +540,8 @@ decl_storage! {
         pub ErasStakingPayout get(fn eras_staking_payout):
             map hasher(twox_64_concat) EraIndex => Option<BalanceOf<T>>;
 
-        /// Market staking payout of validator at era.
-        pub ErasMarketPayout get(fn eras_market_payout):
+        /// Murphy staking payout of validator at era.
+        pub ErasMurphyPayout get(fn eras_murphy_payout):
             map hasher(twox_64_concat) EraIndex => Option<BalanceOf<T>>;
 
         /// Authoring payout of validator at era.
@@ -781,12 +781,12 @@ decl_module! {
         const ModuleId: ModuleId = T::ModuleId::get();
 
         /// Total era duration for once dsm staking pot.
-        const MarketStakingPotDuration: u32 = T::MarketStakingPotDuration::get();
+        const MurphyStakingPotDuration: u32 = T::MurphyStakingPotDuration::get();
 
         /// Storage power ratio for calcu network phase 1
         const SPowerRatio: u128 = T::SPowerRatio::get();
 
-        /// Authoring and Staking ratio for market staking pot
+        /// Authoring and Staking ratio for murphy staking pot
         const AuthoringAndStakingRatio: Perbill = T::AuthoringAndStakingRatio::get();
 
         type Error = Error<T>;
@@ -1906,15 +1906,15 @@ impl<T: Config> Module<T> {
                         info,
                         "💸 Staking pot is not enough"
                     );
-                    // Market staking pot won't be skipped.
+                    // Murphy staking pot won't be skipped.
                     total_authoring_payout = Zero::zero();
                     total_staking_payout = Zero::zero();
                 }
 
-                // 2. Market's staking payout
-                let (market_authoring_payout, market_staking_payout) = Self::calculate_market_payout(active_era_index);
-                total_authoring_payout = total_authoring_payout.saturating_add(market_authoring_payout);
-                total_staking_payout = total_staking_payout.saturating_add(market_staking_payout);
+                // 2. Murphy's staking payout
+                let (murphy_authoring_payout, murphy_staking_payout) = Self::calculate_murphy_payout(active_era_index);
+                total_authoring_payout = total_authoring_payout.saturating_add(murphy_authoring_payout);
+                total_staking_payout = total_staking_payout.saturating_add(murphy_staking_payout);
 
                 // 3. Block authoring payout
                 for (v, p) in points.individual.iter() {
@@ -1945,7 +1945,7 @@ impl<T: Config> Module<T> {
         <ErasStakersClipped<T>>::remove_prefix(era_index);
         <ErasValidatorPrefs<T>>::remove_prefix(era_index);
         <ErasStakingPayout<T>>::remove(era_index);
-        <ErasMarketPayout<T>>::remove(era_index);
+        <ErasMurphyPayout<T>>::remove(era_index);
         <ErasTotalStakes<T>>::remove(era_index);
         <ErasAuthoringPayout<T>>::remove_prefix(era_index);
         <ErasRewardPoints<T>>::remove(era_index);
@@ -2013,22 +2013,22 @@ impl<T: Config> Module<T> {
         reward_this_era.try_into().ok().unwrap()
     }
 
-    fn calculate_market_payout(active_era: EraIndex) -> (BalanceOf<T>, BalanceOf<T>) {
-        let total_dsm_staking_payout = T::MarketStakingPot::withdraw_staking_pot();
-        let duration = T::MarketStakingPotDuration::get();
+    fn calculate_murphy_payout(active_era: EraIndex) -> (BalanceOf<T>, BalanceOf<T>) {
+        let total_dsm_staking_payout = T::MurphyStakingPot::withdraw_staking_pot();
+        let duration = T::MurphyStakingPotDuration::get();
         let dsm_staking_payout_per_era = Perbill::from_rational_approximation(1, duration) * total_dsm_staking_payout;
         // Reward starts from this era.
         for i in 0..duration {
-            <ErasMarketPayout<T>>::mutate(active_era + i, |payout| match *payout {
+            <ErasMurphyPayout<T>>::mutate(active_era + i, |payout| match *payout {
                 Some(amount) => *payout = Some(amount.saturating_add(dsm_staking_payout_per_era.clone())),
                 None => *payout = Some(dsm_staking_payout_per_era.clone())
             });
         }
-        let total_market_payout = Self::eras_market_payout(active_era).unwrap();
+        let total_murphy_payout = Self::eras_murphy_payout(active_era).unwrap();
         // TODO: merge this logic with GPoS's reward mechanism
-        let market_authoring_payout = T::AuthoringAndStakingRatio::get() * total_market_payout;
-        let market_staking_payout = total_market_payout.saturating_sub(market_authoring_payout);
-        (market_authoring_payout, market_staking_payout)
+        let murphy_authoring_payout = T::AuthoringAndStakingRatio::get() * total_murphy_payout;
+        let murphy_staking_payout = total_murphy_payout.saturating_sub(murphy_authoring_payout);
+        (murphy_authoring_payout, murphy_staking_payout)
     }
 
     /// Apply previously-unapplied slashes on the beginning of a new era, after a delay.

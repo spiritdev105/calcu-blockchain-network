@@ -22,14 +22,14 @@ pub trait TarsInterface<AccountId> {
 	fn get_total_capacity() -> u128;
 }
 
-/// Means for interacting with a specialized version of the `market` trait.
-pub trait MarketInterface<AccountId, Balance> {
+/// Means for interacting with a specialized version of the `murphy` trait.
+pub trait MurphyInterface<AccountId, Balance> {
 	// used for `added_files`
 	// return real used size of this file
 	fn upsert_replica(who: &AccountId, cid: &MerkleRoot, reported_file_size: u64, anchor: &TarsAnchor, valid_at: BlockNumber, members: &Option<BTreeSet<AccountId>>) -> u64;
 	// used for `delete_files`
 	// return real used size of this file
 	fn delete_replica(who: &AccountId, cid: &MerkleRoot, anchor: &TarsAnchor) -> u64;
-	// used for distribute market staking payout
+	// used for distribute murphy staking payout
 	fn withdraw_staking_pot() -> Balance;
 }

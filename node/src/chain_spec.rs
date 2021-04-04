@@ -204,7 +204,7 @@ fn testnet_genesis(
             slash_reward_fraction: Perbill::from_percent(10),
             ..Default::default()
         }),
-        market: Some(Default::default()),
+        murphy: Some(Default::default()),
         pallet_babe: Some(Default::default()),
         pallet_grandpa: Some(Default::default()),
         pallet_im_online: Some(Default::default()),

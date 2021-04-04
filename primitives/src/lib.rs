@@ -72,5 +72,5 @@ pub type FileAlias = Vec<u8>;
 /// Report index, always be a multiple of era number
 pub type ReportSlot = u64;
 
-/// Market vendor's address info
+/// Murphy vendor's address info
 pub type AddressInfo = Vec<u8>;

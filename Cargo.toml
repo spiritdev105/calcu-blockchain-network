@@ -16,7 +16,7 @@ members = [
     'cstrml/claims',
     'cstrml/staking',
     'cstrml/tars',
-    'cstrml/market',
+    'cstrml/murphy',
     'cstrml/tars/benchmarking',
     'runtime',
     'rpc',
