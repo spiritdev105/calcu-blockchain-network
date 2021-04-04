@@ -15,6 +15,7 @@
 /docker/.cache
 /.cargo
 /docker/calcu/calcu
+/tmp
 
 ## OS X
 **/*.DS_Store

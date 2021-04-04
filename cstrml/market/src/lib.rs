@@ -337,7 +337,7 @@ decl_storage! {
         map hasher(blake2_128_concat) TarsAnchor => u64 = 0;
 
         /// Market switch to enable place storage order
-        pub MarketSwitch get(fn market_switch): bool = false;
+        pub MarketSwitch get(fn market_switch): bool = true;
     }
     add_extra_genesis {
 		build(|_config| {
@@ -562,7 +562,7 @@ decl_module! {
                 }
             }
             // 3. charged_file_size should be smaller than 128G
-            ensure!(charged_file_size < T::MaximumFileSize::get(), Error::<T>::FileTooLarge);
+            // ensure!(charged_file_size < T::MaximumFileSize::get(), Error::<T>::FileTooLarge);
             let amount = T::FileBaseFee::get() + Self::get_file_amount(charged_file_size) + tips;
 
             // 4. Check client can afford the sorder
