@@ -22,7 +22,7 @@ use sp_staking::{
 };
 use std::{cell::RefCell, collections::HashSet, collections::btree_set::BTreeSet};
 use balances::AccountData;
-use primitives::{traits::MarketInterface, MerkleRoot, TarsAnchor};
+use primitives::{traits::MurphyInterface, MerkleRoot, TarsAnchor};
 
 /// The AccountId alias in this test module.
 pub type AccountId = u128;
@@ -213,7 +213,7 @@ impl tars::Works<AccountId> for TestStaking {
     }
 }
 
-impl<AID> MarketInterface<AID, BalanceOf<Test>> for TestStaking {
+impl<AID> MurphyInterface<AID, BalanceOf<Test>> for TestStaking {
     fn upsert_replica(_: &AID, _: &MerkleRoot, _: u64, _: &TarsAnchor, _: u32, _: &Option<BTreeSet<AID>>) -> u64 { 0 }
     fn delete_replica(_: &AID, _: &MerkleRoot, _: &TarsAnchor) -> u64 { 0 }
     fn withdraw_staking_pot() -> BalanceOf<Test> {
@@ -231,7 +231,7 @@ impl tars::Config for Test {
     type Event = ();
     type PunishmentSlots = PunishmentSlots;
     type Works = TestStaking;
-    type MarketInterface = TestStaking;
+    type MurphyInterface = TestStaking;
     type MaxGroupSize = MaxGroupSize;
     type WeightInfo = tars::weight::WeightInfo<Test>;
 }
@@ -242,7 +242,7 @@ parameter_types! {
     pub const BondingDuration: EraIndex = 3;
     pub const MaxGuarantorRewardedPerValidator: u32 = 4;
     pub const SPowerRatio: u128 = 2_500;
-    pub const MarketStakingPotDuration: u32 = 5;
+    pub const MurphyStakingPotDuration: u32 = 5;
     pub const AuthoringAndStakingRatio: Perbill = Perbill::from_percent(20);
 }
 
@@ -263,8 +263,8 @@ impl Config for Test {
     type SlashCancelOrigin = frame_system::EnsureRoot<Self::AccountId>;
     type SessionInterface = Self;
     type SPowerRatio = SPowerRatio;
-    type MarketStakingPot = TestStaking;
-    type MarketStakingPotDuration = MarketStakingPotDuration;
+    type MurphyStakingPot = TestStaking;
+    type MurphyStakingPotDuration = MurphyStakingPotDuration;
     type AuthoringAndStakingRatio = AuthoringAndStakingRatio;
     type WeightInfo = weight::WeightInfo;
 }

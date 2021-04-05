@@ -14,7 +14,7 @@ use sp_runtime::{
     traits::{BlakeTwo256, IdentityLookup},
     Perbill,
 };
-pub use market::{Replica, FileInfo, UsedInfo};
+pub use murphy::{Replica, FileInfo, UsedInfo};
 use tars::Works;
 use balances::AccountData;
 pub use std::{cell::RefCell, collections::HashMap, borrow::Borrow, iter::FromIterator};
@@ -76,7 +76,7 @@ impl balances::Config for Test {
 
 parameter_types! {
     /// Unit is pico
-    pub const MarketModuleId: ModuleId = ModuleId(*b"crmarket");
+    pub const MurphyModuleId: ModuleId = ModuleId(*b"crmurphy");
     pub const FileDuration: BlockNumber = 1000;
     pub const FileReplica: u32 = 4;
     pub const FileBaseFee: Balance = 1000;
@@ -91,8 +91,8 @@ parameter_types! {
     pub const RenewRewardRatio: Perbill = Perbill::from_percent(5);
 }
 
-impl market::Config for Test {
-    type ModuleId = MarketModuleId;
+impl murphy::Config for Test {
+    type ModuleId = MurphyModuleId;
     type Currency = balances::Module<Self>;
     type CurrencyToBalance = ();
     type TarsInterface = Tars;
@@ -110,7 +110,7 @@ impl market::Config for Test {
     type TaxRatio = TaxRatio;
     type UsedTrashMaxSize = UsedTrashMaxSize;
     type MaximumFileSize = MaximumFileSize;
-    type WeightInfo = market::weight::WeightInfo<Test>;
+    type WeightInfo = murphy::weight::WeightInfo<Test>;
 }
 
 pub struct TestWorksInterface;
@@ -129,7 +129,7 @@ impl tars::Config for Test {
     type Event = ();
     type PunishmentSlots = PunishmentSlots;
     type Works = TestWorksInterface;
-    type MarketInterface = Market;
+    type MurphyInterface = Murphy;
     type MaxGroupSize = MaxGroupSize;
     type WeightInfo = tars::weight::WeightInfo<Test>;
 }
@@ -148,7 +148,7 @@ frame_support::construct_runtime!(
 		System: frame_system::{Module, Call, Config, Storage, Event<T>},
 		Balances: balances::{Module, Call, Storage, Config<T>, Event<T>},
 		Tars: tars::{Module, Call, Storage, Event<T>, Config},
-		Market: market::{Module, Call, Storage, Event<T>, Config},
+		Murphy: murphy::{Module, Call, Storage, Event<T>, Config},
 	}
 );
 
