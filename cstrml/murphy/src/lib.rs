@@ -40,12 +40,12 @@ pub mod benchmarking;
 use primitives::{
     MerkleRoot, BlockNumber, TarsAnchor,
     traits::{
-        UsableCurrency, MarketInterface,
+        UsableCurrency, MurphyInterface,
         TarsInterface
     }
 };
 
-pub(crate) const LOG_TARGET: &'static str = "market";
+pub(crate) const LOG_TARGET: &'static str = "murphy";
 
 #[macro_export]
 macro_rules! log {
@@ -101,7 +101,7 @@ pub struct Replica<AccountId> {
 
 /// According to the definition, we should put this one into tars pallet.
 /// However, in consideration of performance,
-/// we put this in market to avoid too many keys in storage
+/// we put this in murphy to avoid too many keys in storage
 #[derive(Debug, PartialEq, Eq, Clone, Encode, Decode, Default)]
 #[cfg_attr(feature = "std", derive(Serialize, Deserialize))]
 pub struct UsedInfo {
@@ -127,12 +127,12 @@ type BalanceOf<T> =
 type PositiveImbalanceOf<T> =
     <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::PositiveImbalance;
 
-impl<T: Config> MarketInterface<<T as system::Config>::AccountId, BalanceOf<T>> for Module<T>
+impl<T: Config> MurphyInterface<<T as system::Config>::AccountId, BalanceOf<T>> for Module<T>
 {
     /// Upsert new replica
     /// Accept id(who, anchor), reported_file_size, cid, valid_at and maybe_member
     /// Returns the real used size of this file
-    /// used size is decided by market
+    /// used size is decided by murphy
     fn upsert_replica(who: &<T as system::Config>::AccountId,
                       cid: &MerkleRoot,
                       reported_file_size: u64,
@@ -213,13 +213,13 @@ impl<T: Config> MarketInterface<<T as system::Config>::AccountId, BalanceOf<T>> 
         Self::delete_used_group(cid, anchor)
     }
 
-    // withdraw market staking pot for distributing staking reward
+    // withdraw murphy staking pot for distributing staking reward
     fn withdraw_staking_pot() -> BalanceOf<T> {
         let staking_pot = Self::staking_pot();
         if T::Currency::free_balance(&staking_pot) < T::Currency::minimum_balance() {
             log!(
                 info,
-                "🏢 Market Staking Pot is empty."
+                "🏢 Murphy Staking Pot is empty."
             );
 
             return Zero::zero();
@@ -247,7 +247,7 @@ impl<T: Config> MarketInterface<<T as system::Config>::AccountId, BalanceOf<T>> 
 
 /// The module's configuration trait.
 pub trait Config: system::Config {
-    /// The market's module id, used for deriving its sovereign account ID.
+    /// The murphy's module id, used for deriving its sovereign account ID.
     type ModuleId: Get<ModuleId>;
 
     /// The payment balance.
@@ -304,7 +304,7 @@ pub trait Config: system::Config {
 
 // This module's storage items.
 decl_storage! {
-    trait Store for Module<T: Config> as Market {
+    trait Store for Module<T: Config> as Murphy {
         /// Merchant Ledger
         pub MerchantLedgers get(fn merchant_ledgers):
         map hasher(blake2_128_concat) T::AccountId => MerchantLedger<BalanceOf<T>>;
@@ -336,12 +336,12 @@ decl_storage! {
         pub UsedTrashMappingII get(fn used_trash_mapping_ii):
         map hasher(blake2_128_concat) TarsAnchor => u64 = 0;
 
-        /// Market switch to enable place storage order
-        pub MarketSwitch get(fn market_switch): bool = false;
+        /// Murphy switch to enable place storage order
+        pub MurphySwitch get(fn murphy_switch): bool = true;
     }
     add_extra_genesis {
 		build(|_config| {
-			// Create Market accounts
+			// Create Murphy accounts
 			<Module<T>>::init_pot(<Module<T>>::collateral_pot);
 			<Module<T>>::init_pot(<Module<T>>::storage_pot);
 			<Module<T>>::init_pot(<Module<T>>::staking_pot);
@@ -351,7 +351,7 @@ decl_storage! {
 }
 
 decl_error! {
-    /// Error for the market module.
+    /// Error for the murphy module.
     pub enum Error for Module<T: Config> {
         /// Don't have enough currency
         InsufficientCurrency,
@@ -391,7 +391,7 @@ decl_module! {
         // this is needed only if you are using events in your module
         fn deposit_event() = default;
 
-        /// The market's module id, used for deriving its sovereign account ID.
+        /// The murphy's module id, used for deriving its sovereign account ID.
         const ModuleId: ModuleId = T::ModuleId::get();
 
         /// File duration.
@@ -472,7 +472,7 @@ decl_module! {
             Ok(())
         }
 
-        /// Collateral extra amount of currency to accept market order.
+        /// Collateral extra amount of currency to accept murphy order.
         ///
         /// # <weight>
         /// Complexity: O(logP)
@@ -504,7 +504,7 @@ decl_module! {
             Ok(())
         }
 
-        /// Decrease collateral amount of currency for market order.
+        /// Decrease collateral amount of currency for murphy order.
         ///
         /// # <weight>
         /// Complexity: O(logP)
@@ -548,7 +548,7 @@ decl_module! {
             #[compact] tips: BalanceOf<T>
         ) -> DispatchResult {
             // 1. Service should be available right now.
-            ensure!(Self::market_switch(), Error::<T>::PlaceOrderNotAvailable);
+            ensure!(Self::murphy_switch(), Error::<T>::PlaceOrderNotAvailable);
             let who = ensure_signed(origin)?;
 
             // 2. Calculate amount.
@@ -562,7 +562,7 @@ decl_module! {
                 }
             }
             // 3. charged_file_size should be smaller than 128G
-            ensure!(charged_file_size < T::MaximumFileSize::get(), Error::<T>::FileTooLarge);
+            // ensure!(charged_file_size < T::MaximumFileSize::get(), Error::<T>::FileTooLarge);
             let amount = T::FileBaseFee::get() + Self::get_file_amount(charged_file_size) + tips;
 
             // 4. Check client can afford the sorder
@@ -674,15 +674,15 @@ decl_module! {
 
         /// Set the global switch
         #[weight = T::WeightInfo::reward_merchant()]
-        pub fn set_market_switch(
+        pub fn set_murphy_switch(
             origin,
             is_enabled: bool
         ) -> DispatchResult {
             let _ = ensure_root(origin)?;
 
-            MarketSwitch::put(is_enabled);
+            MurphySwitch::put(is_enabled);
 
-            Self::deposit_event(RawEvent::SetMarketSwitchSuccess(is_enabled));
+            Self::deposit_event(RawEvent::SetMurphySwitchSuccess(is_enabled));
             Ok(())
         }
     }
@@ -691,25 +691,25 @@ decl_module! {
 impl<T: Config> Module<T> {
     /// The pot of a collateral account
     pub fn collateral_pot() -> T::AccountId {
-        // "modl" ++ "crmarket" ++ "coll" is 16 bytes
+        // "modl" ++ "crmurphy" ++ "coll" is 16 bytes
         T::ModuleId::get().into_sub_account("coll")
     }
 
     /// The pot of a storage account
     pub fn storage_pot() -> T::AccountId {
-        // "modl" ++ "crmarket" ++ "stor" is 16 bytes
+        // "modl" ++ "crmurphy" ++ "stor" is 16 bytes
         T::ModuleId::get().into_sub_account("stor")
     }
 
     /// The pot of a staking account
     pub fn staking_pot() -> T::AccountId {
-        // "modl" ++ "crmarket" ++ "stak" is 16 bytes
+        // "modl" ++ "crmurphy" ++ "stak" is 16 bytes
         T::ModuleId::get().into_sub_account("stak")
     }
 
     /// The pot of a reserved account
     pub fn reserved_pot() -> T::AccountId {
-        // "modl" ++ "crmarket" ++ "rese" is 16 bytes
+        // "modl" ++ "crmurphy" ++ "rese" is 16 bytes
         T::ModuleId::get().into_sub_account("rese")
     }
 
@@ -1242,6 +1242,6 @@ decl_event!(
         CalculateSuccess(MerkleRoot),
         IllegalFileClosed(MerkleRoot),
         RewardMerchantSuccess(AccountId),
-        SetMarketSwitchSuccess(bool),
+        SetMurphySwitchSuccess(bool),
     }
 );

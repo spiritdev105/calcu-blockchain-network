@@ -27,7 +27,7 @@ use primitives::{
     MerkleRoot, TarsPubKey, TarsSignature,
     ReportSlot, BlockNumber, IASSig,
     ISVBody, TarsCert, TarsCode, TarsAnchor,
-    traits::{MarketInterface, TarsInterface}
+    traits::{MurphyInterface, TarsInterface}
 };
 use sp_std::collections::btree_map::BTreeMap;
 
@@ -109,7 +109,7 @@ impl<AId> Works<AId> for () {
     fn report_works(_: BTreeMap<AId, u128>, _: u128) {}
 }
 
-/// Implement market's file inspector
+/// Implement murphy's file inspector
 impl<T: Config> TarsInterface<T::AccountId> for Module<T> {
     /// check wr existing or not
     fn is_wr_reported(anchor: &TarsAnchor, bn: BlockNumber) -> bool {
@@ -143,7 +143,7 @@ impl<T: Config> TarsInterface<T::AccountId> for Module<T> {
 /// The module's configuration trait.
 pub trait Config: system::Config {
     /// The payment balance.
-    /// TODO: remove this for abstracting MarketInterface into Tars self
+    /// TODO: remove this for abstracting MurphyInterface into Tars self
     type Currency: ReservableCurrency<Self::AccountId>;
 
     /// The overarching event type.
@@ -155,8 +155,8 @@ pub trait Config: system::Config {
     /// The handler for reporting works.
     type Works: Works<Self::AccountId>;
 
-    /// Interface for interacting with a market module.
-    type MarketInterface: MarketInterface<Self::AccountId, BalanceOf<Self>>;
+    /// Interface for interacting with a murphy module.
+    type MurphyInterface: MurphyInterface<Self::AccountId, BalanceOf<Self>>;
 
     /// Max number of members in one group
     type MaxGroupSize: Get<u32>;
@@ -209,7 +209,7 @@ decl_storage! {
         /// default is 0
         pub Used get(fn used): u128 = 0;
 
-        /// The total reported files workload, used for calculating total_capacity for market module
+        /// The total reported files workload, used for calculating total_capacity for murphy module
         /// default is 0
         pub ReportedFilesSize get(fn reported_files_size): u128 = 0;
 
@@ -357,13 +357,13 @@ decl_module! {
         ///
         /// # <weight>
         /// - Independent of the arguments. Moderate complexity.
-        /// - TC depends on identities' size and market.Merchant.file_map size
-        /// - DB try depends on identities and market.Merchant.file_map
+        /// - TC depends on identities' size and murphy.Merchant.file_map size
+        /// - DB try depends on identities and murphy.Merchant.file_map
         ///
         /// ------------------
         /// DB Weight:
-        /// - Read: Identities, ReportedInSlot, Code, market.Merchant, market.SOrder
-        /// - Write: WorkReport, ReportedInSlot, market.SOrder
+        /// - Read: Identities, ReportedInSlot, Code, murphy.Merchant, murphy.SOrder
+        /// - Write: WorkReport, ReportedInSlot, murphy.SOrder
         /// # </weight>
         #[weight = (T::WeightInfo::report_works(added_files.len() as u32, deleted_files.len() as u32), DispatchClass::Operational)]
         pub fn report_works(
@@ -840,13 +840,13 @@ impl<T: Config> Module<T> {
                         members= Some(Self::groups(owner));
                     }
                 };
-                Some((cid.clone(), T::MarketInterface::upsert_replica(reporter, cid, *size, anchor, TryInto::<u32>::try_into(*valid_at).ok().unwrap(), &members), *valid_at))
+                Some((cid.clone(), T::MurphyInterface::upsert_replica(reporter, cid, *size, anchor, TryInto::<u32>::try_into(*valid_at).ok().unwrap(), &members), *valid_at))
             }).collect()
         } else {
             let curr_bn = Self::get_current_block_number();
             changed_files.iter().filter_map(|(cid, _, _)| {
                 // 2. If mapping to storage orders
-                Some((cid.clone(), T::MarketInterface::delete_replica(reporter, cid, anchor), curr_bn as u64))
+                Some((cid.clone(), T::MurphyInterface::delete_replica(reporter, cid, anchor), curr_bn as u64))
             }).collect()
         }
     }

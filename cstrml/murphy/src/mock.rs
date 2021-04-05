@@ -2,7 +2,7 @@
 // This file is part of Calcu.
 
 use super::*;
-use crate as market;
+use crate as murphy;
 
 use frame_support::{
     parameter_types, assert_ok,
@@ -139,14 +139,14 @@ impl tars::Config for Test {
     type Event = ();
     type PunishmentSlots = PunishmentSlots;
     type Works = ();
-    type MarketInterface = Market;
+    type MurphyInterface = Murphy;
     type MaxGroupSize = MaxGroupSize;
     type WeightInfo = tars::weight::WeightInfo<Test>;
 }
 
 parameter_types! {
     /// Unit is pico
-    pub const MarketModuleId: ModuleId = ModuleId(*b"crmarket");
+    pub const MurphyModuleId: ModuleId = ModuleId(*b"crmurphy");
     pub const FileDuration: BlockNumber = 1000;
     pub const FileReplica: u32 = 4;
     pub const FileBaseFee: Balance = 1000;
@@ -162,7 +162,7 @@ parameter_types! {
 }
 
 impl Config for Test {
-    type ModuleId = MarketModuleId;
+    type ModuleId = MurphyModuleId;
     type Currency = balances::Module<Self>;
     type CurrencyToBalance = CurrencyToVoteHandler;
     type TarsInterface = Tars;
@@ -194,7 +194,7 @@ frame_support::construct_runtime!(
 		System: frame_system::{Module, Call, Config, Storage, Event<T>},
 		Balances: balances::{Module, Call, Storage, Config<T>, Event<T>},
 		Tars: tars::{Module, Call, Storage, Event<T>, Config},
-		Market: market::{Module, Call, Storage, Event<T>, Config},
+		Murphy: murphy::{Module, Call, Storage, Event<T>, Config},
 	}
 );
 
@@ -210,7 +210,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
     let mut ext: sp_io::TestExternalities = t.into();
     ext.execute_with(|| {
         init_tars_setup();
-        assert_ok!(Market::set_market_switch(Origin::root(), true));
+        assert_ok!(Murphy::set_murphy_switch(Origin::root(), true));
     });
 
     ext
@@ -244,7 +244,7 @@ pub fn init_tars_setup() {
 
 // fake for report_works
 pub fn add_who_into_replica(cid: &MerkleRoot, reported_size: u64, who: AccountId, anchor: TarsAnchor, reported_at: Option<u32>, maybe_members: Option<BTreeSet<AccountId>>) {
-    Market::upsert_replica(&who, cid, reported_size, &anchor, reported_at.unwrap_or(TryInto::<u32>::try_into(System::block_number()).ok().unwrap()), &maybe_members);
+    Murphy::upsert_replica(&who, cid, reported_size, &anchor, reported_at.unwrap_or(TryInto::<u32>::try_into(System::block_number()).ok().unwrap()), &maybe_members);
 }
 
 pub fn legal_work_report_with_added_files() -> ReportWorksInfo {

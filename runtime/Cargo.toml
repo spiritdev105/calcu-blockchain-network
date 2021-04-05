@@ -73,7 +73,7 @@ pallet-transaction-payment-rpc-runtime-api = { default-features = false, version
 balances = { package = "cstrml-balances", path = "../cstrml/balances", default-features = false, version = "0.11.1" }
 candy = { package = "cstrml-candy", path = "../cstrml/candy", default-features = false, version = "0.11.1"  }
 claims = { package = "cstrml-claims", path = "../cstrml/claims", default-features = false, version = "0.11.1" }
-market = { package = "cstrml-market", path = "../cstrml/market", default-features = false, version = "0.11.1" }
+murphy = { package = "cstrml-murphy", path = "../cstrml/murphy", default-features = false, version = "0.11.1" }
 primitives = { package = "cst-primitives", path = "../primitives", default-features = false, version = "0.11.1" }
 tars = { package = "cstrml-tars", path = "../cstrml/tars", default-features = false, version = "0.11.1" }
 staking = { package = "cstrml-staking", path = "../cstrml/staking", default-features = false, version = "0.11.1" }
@@ -117,7 +117,7 @@ std = [
     "pallet-identity/std",
     "pallet-im-online/std",
     "pallet-indices/std",
-    "market/std",
+    "murphy/std",
     "pallet-membership/std",
     "pallet-offences/std",
     "pallet-randomness-collective-flip/std",
@@ -144,6 +144,6 @@ runtime-benchmarks = [
     "balances/runtime-benchmarks",
     "frame-system-benchmarking",
     "staking/runtime-benchmarks",
-    "market/runtime-benchmarks",
+    "murphy/runtime-benchmarks",
     "tars-benchmarking"
 ]

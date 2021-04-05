@@ -287,7 +287,7 @@ fn report_works_should_work() {
             });
 
             // Check same file all been confirmed
-            assert_eq!(Market::files(&legal_wr_info.added_files[0].0).unwrap_or_default().0, FileInfo {
+            assert_eq!(Murphy::files(&legal_wr_info.added_files[0].0).unwrap_or_default().0, FileInfo {
                 file_size: 134289408,
                 expired_on: 1303,
                 calculated_at: 303,
@@ -301,7 +301,7 @@ fn report_works_should_work() {
                     is_reported: true
                 }]
             });
-            assert_eq!(Market::files(&legal_wr_info.added_files[1].0).unwrap_or_default().0, FileInfo {
+            assert_eq!(Murphy::files(&legal_wr_info.added_files[1].0).unwrap_or_default().0, FileInfo {
                 file_size: 268578816,
                 expired_on: 1303,
                 calculated_at: 303,
@@ -1549,7 +1549,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 alice_wr_info.sig
             ));
 
-            assert_eq!(Market::files(&file_a).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_a).unwrap_or_default(), (
                 FileInfo {
                     file_size: 13,
                     expired_on: 1303,
@@ -1570,7 +1570,7 @@ fn join_group_should_work_for_used_in_work_report() {
                     groups: BTreeMap::from_iter(vec![(a_pk.clone(), true)].into_iter())
                 })
             );
-            assert_eq!(Market::files(&file_b).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_b).unwrap_or_default(), (
                 FileInfo {
                     file_size: 7,
                     expired_on: 1303,
@@ -1591,7 +1591,7 @@ fn join_group_should_work_for_used_in_work_report() {
                     groups: BTreeMap::from_iter(vec![(a_pk.clone(), true)].into_iter())
                 })
             );
-            assert_eq!(Market::files(&file_c).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_c).unwrap_or_default(), (
                 FileInfo {
                     file_size: 37,
                     expired_on: 1303,
@@ -1635,7 +1635,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 bob_wr_info.sig
             ));
 
-            assert_eq!(Market::files(&file_b).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_b).unwrap_or_default(), (
                 FileInfo {
                     file_size: 7,
                     expired_on: 1303,
@@ -1664,7 +1664,7 @@ fn join_group_should_work_for_used_in_work_report() {
                     groups: BTreeMap::from_iter(vec![(a_pk.clone(), true)].into_iter())
                 })
             );
-            assert_eq!(Market::files(&file_c).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_c).unwrap_or_default(), (
                 FileInfo {
                     file_size: 37,
                     expired_on: 1303,
@@ -1694,7 +1694,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 })
             );
 
-            assert_eq!(Market::files(&file_d).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_d).unwrap_or_default(), (
                 FileInfo {
                     file_size: 55,
                     expired_on: 1303,
@@ -1740,7 +1740,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 eve_wr_info.sig
             ));
 
-            assert_eq!(Market::files(&file_c).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_c).unwrap_or_default(), (
                 FileInfo {
                     file_size: 37,
                     expired_on: 1303,
@@ -1775,7 +1775,7 @@ fn join_group_should_work_for_used_in_work_report() {
                     groups: BTreeMap::from_iter(vec![(a_pk.clone(), true)].into_iter())
                 })
             );
-            assert_eq!(Market::files(&file_d).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_d).unwrap_or_default(), (
                 FileInfo {
                     file_size: 55,
                     expired_on: 1303,
@@ -1805,7 +1805,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 })
             );
 
-            assert_eq!(Market::files(&file_e).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_e).unwrap_or_default(), (
                 FileInfo {
                     file_size: 22,
                     expired_on: 1303,
@@ -1856,7 +1856,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 bob_wr_info.sig
             ));
 
-            assert_eq!(Market::files(&file_b).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_b).unwrap_or_default(), (
                 FileInfo {
                     file_size: 7,
                     expired_on: 1303,
@@ -1879,7 +1879,7 @@ fn join_group_should_work_for_used_in_work_report() {
                     groups: BTreeMap::from_iter(vec![(a_pk.clone(), true)].into_iter())
                 })
             );
-            assert_eq!(Market::files(&file_c).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_c).unwrap_or_default(), (
                 FileInfo {
                     file_size: 37,
                     expired_on: 1303,
@@ -1909,7 +1909,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 })
             );
 
-            assert_eq!(Market::files(&file_d).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_d).unwrap_or_default(), (
                 FileInfo {
                     file_size: 55,
                     expired_on: 1303,
@@ -1961,7 +1961,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 eve_wr_info.sig
             ));
 
-            assert_eq!(Market::files(&file_c).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_c).unwrap_or_default(), (
                 FileInfo {
                     file_size: 37,
                     expired_on: 1303,
@@ -1984,7 +1984,7 @@ fn join_group_should_work_for_used_in_work_report() {
                     groups: BTreeMap::from_iter(vec![(a_pk.clone(), true)].into_iter())
                 })
             );
-            assert_eq!(Market::files(&file_d).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_d).unwrap_or_default(), (
                 FileInfo {
                     file_size: 55,
                     expired_on: 1303,
@@ -2008,7 +2008,7 @@ fn join_group_should_work_for_used_in_work_report() {
                 })
             );
 
-            assert_eq!(Market::files(&file_e).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&file_e).unwrap_or_default(), (
                 FileInfo {
                     file_size: 22,
                     expired_on: 1303,
@@ -2035,17 +2035,17 @@ fn join_group_should_work_for_used_in_work_report() {
 
             run_to_block(1500);
             let alice_wr_info = group_work_report_alice_1500();
-            assert_ok!(Market::calculate_reward(Origin::signed(eve.clone()), file_c.clone()));
-            assert_ok!(Market::calculate_reward(Origin::signed(eve.clone()), file_d.clone()));
-            assert_ok!(Market::calculate_reward(Origin::signed(eve.clone()), file_e.clone()));
+            assert_ok!(Murphy::calculate_reward(Origin::signed(eve.clone()), file_c.clone()));
+            assert_ok!(Murphy::calculate_reward(Origin::signed(eve.clone()), file_d.clone()));
+            assert_ok!(Murphy::calculate_reward(Origin::signed(eve.clone()), file_e.clone()));
             // A, B still open, C, D, E already close. Trash I is full. Trash II has one file. Now we report works of alice to close A, B as well.
-            assert_eq!(Market::files(&file_c), None);
-            assert_eq!(Market::files(&file_d), None);
-            assert_eq!(Market::files(&file_e), None);
+            assert_eq!(Murphy::files(&file_c), None);
+            assert_eq!(Murphy::files(&file_d), None);
+            assert_eq!(Murphy::files(&file_e), None);
 
-            assert_eq!(Market::used_trash_i(&file_c).is_some(), true);
-            assert_eq!(Market::used_trash_i(&file_d).is_some(), true);
-            assert_eq!(Market::used_trash_ii(&file_e).is_some(), true);
+            assert_eq!(Murphy::used_trash_i(&file_c).is_some(), true);
+            assert_eq!(Murphy::used_trash_i(&file_d).is_some(), true);
+            assert_eq!(Murphy::used_trash_ii(&file_e).is_some(), true);
 
             assert_eq!(Tars::work_reports(&a_pk).unwrap(), WorkReport {
                 report_slot: 300,
@@ -2081,17 +2081,17 @@ fn join_group_should_work_for_used_in_work_report() {
 
 
             // delete won't call calculate payout anymore and won't close the file
-            assert_eq!(Market::files(&file_a).is_some(), true);
-            assert_eq!(Market::files(&file_b).is_some(), true);
-            assert_ok!(Market::calculate_reward(Origin::signed(eve.clone()), file_a.clone()));
-            assert_ok!(Market::calculate_reward(Origin::signed(eve.clone()), file_b.clone()));
-            assert_eq!(Market::files(&file_a), None);
-            assert_eq!(Market::files(&file_b), None);
-            assert_eq!(Market::used_trash_i(&file_b).is_some(), true);
-            assert_eq!(Market::used_trash_ii(&file_e).is_some(), true);
-            assert_eq!(Market::used_trash_ii(&file_a).is_some(), true);
-            assert_eq!(Market::used_trash_i(&file_c).is_none(), true);
-            assert_eq!(Market::used_trash_i(&file_d).is_none(), true);
+            assert_eq!(Murphy::files(&file_a).is_some(), true);
+            assert_eq!(Murphy::files(&file_b).is_some(), true);
+            assert_ok!(Murphy::calculate_reward(Origin::signed(eve.clone()), file_a.clone()));
+            assert_ok!(Murphy::calculate_reward(Origin::signed(eve.clone()), file_b.clone()));
+            assert_eq!(Murphy::files(&file_a), None);
+            assert_eq!(Murphy::files(&file_b), None);
+            assert_eq!(Murphy::used_trash_i(&file_b).is_some(), true);
+            assert_eq!(Murphy::used_trash_ii(&file_e).is_some(), true);
+            assert_eq!(Murphy::used_trash_ii(&file_a).is_some(), true);
+            assert_eq!(Murphy::used_trash_i(&file_c).is_none(), true);
+            assert_eq!(Murphy::used_trash_i(&file_d).is_none(), true);
 
             // d has gone!
             assert_eq!(Tars::work_reports(&b_pk).unwrap(), WorkReport {

@@ -19,22 +19,22 @@ fn register_should_work() {
         // generate 50 blocks first
         run_to_block(50);
         let merchant = MERCHANT;
-        let collateral_pot = Market::collateral_pot();
+        let collateral_pot = Murphy::collateral_pot();
         let _ = Balances::make_free_balance_be(&merchant, 200);
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 180));
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 180));
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 180,
             reward: 0
         });
         assert_eq!(Balances::free_balance(&collateral_pot), 180);
-        assert_ok!(Market::cut_collateral(Origin::signed(merchant.clone()), 20));
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_ok!(Murphy::cut_collateral(Origin::signed(merchant.clone()), 20));
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 160,
             reward: 0
         });
         assert_eq!(Balances::free_balance(&collateral_pot), 160);
-        assert_ok!(Market::add_collateral(Origin::signed(merchant.clone()), 10));
-        assert_eq!(Market::merchant_ledgers(merchant), MerchantLedger {
+        assert_ok!(Murphy::add_collateral(Origin::signed(merchant.clone()), 10));
+        assert_eq!(Murphy::merchant_ledgers(merchant), MerchantLedger {
             collateral: 170,
             reward: 0
         });
@@ -51,7 +51,7 @@ fn register_should_fail_due_to_insufficient_currency() {
         let merchant = MERCHANT;
         let _ = Balances::make_free_balance_be(&merchant, 100);
         assert_noop!(
-            Market::register(
+            Murphy::register(
                 Origin::signed(merchant),
                 200
             ),
@@ -71,9 +71,9 @@ fn register_should_fail_due_to_double_register() {
         run_to_block(50);
         let merchant = MERCHANT;
         let _ = Balances::make_free_balance_be(&merchant, 200);
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 70));
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 70));
         assert_noop!(
-            Market::register(
+            Murphy::register(
                 Origin::signed(merchant),
                 70
             ),
@@ -95,7 +95,7 @@ fn collateral_extra_should_fail_due_to_merchant_not_register() {
         let merchant = MERCHANT;
         let _ = Balances::make_free_balance_be(&merchant, 200);
         assert_noop!(
-            Market::add_collateral(
+            Murphy::add_collateral(
                 Origin::signed(merchant),
                 200
             ),
@@ -116,8 +116,8 @@ fn cut_collateral_should_fail_due_to_reward() {
 
         let merchant = MERCHANT;
         let _ = Balances::make_free_balance_be(&merchant, 200);
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 180));
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 180));
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 180,
             reward: 0
         });
@@ -126,13 +126,13 @@ fn cut_collateral_should_fail_due_to_reward() {
             collateral: 180,
             reward: 120
         });
-        assert_ok!(Market::cut_collateral(Origin::signed(merchant.clone()), 20));
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_ok!(Murphy::cut_collateral(Origin::signed(merchant.clone()), 20));
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 160,
             reward: 120
         });
         assert_noop!(
-            Market::cut_collateral(
+            Murphy::cut_collateral(
                 Origin::signed(merchant),
                 50
             ),
@@ -158,21 +158,21 @@ fn place_storage_order_should_work() {
         let cid =
         hex::decode("4e2883ddcbc77cf19979770d756fd332d0c8f815f9de646636169e460e6af6ff").unwrap();
         let file_size = 100; // should less than
-        let reserved_pot = Market::reserved_pot();
-        let staking_pot = Market::staking_pot();
-        let storage_pot = Market::storage_pot();
+        let reserved_pot = Murphy::reserved_pot();
+        let staking_pot = Murphy::staking_pot();
+        let storage_pot = Murphy::storage_pot();
         assert_eq!(Balances::free_balance(&staking_pot), 0);
         let _ = Balances::make_free_balance_be(&source, 20000);
         let _ = Balances::make_free_balance_be(&merchant, 200);
 
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 60));
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 60));
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -206,14 +206,14 @@ fn place_storage_order_should_fail_due_to_too_large_file_size() {
         let cid =
             hex::decode("4e2883ddcbc77cf19979770d756fd332d0c8f815f9de646636169e460e6af6ff").unwrap();
         let file_size = 437_438_953_472;
-        let staking_pot = Market::staking_pot();
+        let staking_pot = Murphy::staking_pot();
         assert_eq!(Balances::free_balance(&staking_pot), 0);
         let _ = Balances::make_free_balance_be(&source, 20000);
         let _ = Balances::make_free_balance_be(&merchant, 200);
 
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 60));
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 60));
 
-        assert_noop!(Market::place_storage_order(
+        assert_noop!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ),
@@ -241,21 +241,21 @@ fn place_storage_order_should_work_for_extend_scenarios() {
         let cid =
             "QmdwgqZy1MZBfWPi7GcxVsYgJEtmvHg6rsLzbCej3tf3oF".as_bytes().to_vec();
         let file_size = 134289408; // 134289408 / 1_048_576 = 129
-        let staking_pot = Market::staking_pot();
-        let storage_pot = Market::storage_pot();
+        let staking_pot = Murphy::staking_pot();
+        let storage_pot = Murphy::storage_pot();
         assert_eq!(Balances::free_balance(&staking_pot), 0);
         let _ = Balances::make_free_balance_be(&source, 20_000_000);
         let _ = Balances::make_free_balance_be(&merchant, 20_000_000);
 
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 6_000_000));
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 6_000_000));
 
         // 1. New storage order
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -277,12 +277,12 @@ fn place_storage_order_should_work_for_extend_scenarios() {
         run_to_block(250);
         
         // 2. Add amount for sOrder not begin should work
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -322,7 +322,7 @@ fn place_storage_order_should_work_for_extend_scenarios() {
                 legal_wr_info.sig
             ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1400,
@@ -347,8 +347,8 @@ fn place_storage_order_should_work_for_extend_scenarios() {
         // Calculate reward should work
         run_to_block(500);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1400,
@@ -372,12 +372,12 @@ fn place_storage_order_should_work_for_extend_scenarios() {
 
         // 3. Extend duration should work
         run_to_block(600);
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1600,
@@ -401,12 +401,12 @@ fn place_storage_order_should_work_for_extend_scenarios() {
 
         // 4. Extend replicas should work
         run_to_block(800);
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 200
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1800,
@@ -448,22 +448,22 @@ fn do_calculate_reward_should_work() {
         let cid =
             "QmdwgqZy1MZBfWPi7GcxVsYgJEtmvHg6rsLzbCej3tf3oF".as_bytes().to_vec();
         let file_size = 134289408; // 134289408 / 1_048_576 = 129
-        let staking_pot = Market::staking_pot();
-        let storage_pot = Market::storage_pot();
-        let reserved_pot = Market::reserved_pot();
+        let staking_pot = Murphy::staking_pot();
+        let storage_pot = Murphy::storage_pot();
+        let reserved_pot = Murphy::reserved_pot();
         assert_eq!(Balances::free_balance(&staking_pot), 0);
         let _ = Balances::make_free_balance_be(&source, 20_000_000);
         let _ = Balances::make_free_balance_be(&merchant, 20_000_000);
 
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 6_000_000));
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 6_000_000));
 
         // 1. New storage order
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -505,7 +505,7 @@ fn do_calculate_reward_should_work() {
                 legal_wr_info.sig
             ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -530,8 +530,8 @@ fn do_calculate_reward_should_work() {
         // 3. Go along with some time, and get reward
         run_to_block(606);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 300, true);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -552,7 +552,7 @@ fn do_calculate_reward_should_work() {
                 groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
             })
         );
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6_000_000,
             reward: 7089
         })
@@ -574,14 +574,14 @@ fn do_calculate_reward_should_fail_due_to_insufficient_collateral() {
         let _ = Balances::make_free_balance_be(&source, 20_000_000);
         let _ = Balances::make_free_balance_be(&merchant, 20_000_000);
 
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 70_000));
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 70_000));
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -620,7 +620,7 @@ fn do_calculate_reward_should_fail_due_to_insufficient_collateral() {
                 legal_wr_info.sig
             ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -644,8 +644,8 @@ fn do_calculate_reward_should_fail_due_to_insufficient_collateral() {
 
         run_to_block(603);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 300, true);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -668,16 +668,16 @@ fn do_calculate_reward_should_fail_due_to_insufficient_collateral() {
         );
 
         // collateral is 7020 * 10 < 70000 reward
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 70_000,
             reward: 0
         });
 
         run_to_block(903);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 600, true);
-        assert_ok!(Market::add_collateral(Origin::signed(merchant.clone()), 6_000_000));
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_ok!(Murphy::add_collateral(Origin::signed(merchant.clone()), 6_000_000));
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -699,7 +699,7 @@ fn do_calculate_reward_should_fail_due_to_insufficient_collateral() {
             })
         );
 
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6_070_000,
             reward: 10028
         });
@@ -721,14 +721,14 @@ fn do_calculate_reward_should_move_file_to_trash_due_to_expired() {
         let _ = Balances::make_free_balance_be(&source, 20_000_000);
         let _ = Balances::make_free_balance_be(&merchant, 20_000_000);
 
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 6_000_000));
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 6_000_000));
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -767,7 +767,7 @@ fn do_calculate_reward_should_move_file_to_trash_due_to_expired() {
                 legal_wr_info.sig
             ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -791,16 +791,16 @@ fn do_calculate_reward_should_move_file_to_trash_due_to_expired() {
 
         run_to_block(1506);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 1200, true);
-        assert_ok!(Market::calculate_reward(Origin::signed(merchant.clone()), cid.clone()));
-        assert_eq!(Market::files(&cid), None);
+        assert_ok!(Murphy::calculate_reward(Origin::signed(merchant.clone()), cid.clone()));
+        assert_eq!(Murphy::files(&cid), None);
 
-        assert_eq!(Market::used_trash_i(&cid).unwrap_or_default(), UsedInfo {
+        assert_eq!(Murphy::used_trash_i(&cid).unwrap_or_default(), UsedInfo {
             used_size: file_size * 2,
             reported_group_count: 1,
             groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
         });
 
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6_000_000,
             reward: 23399
         })
@@ -822,23 +822,23 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
         let dave = DAVE;
         let eve = EVE;
 
-        let staking_pot = Market::staking_pot();
-        let reserved_pot = Market::reserved_pot();
+        let staking_pot = Murphy::staking_pot();
+        let reserved_pot = Murphy::reserved_pot();
         assert_eq!(Balances::free_balance(&staking_pot), 0);
         assert_eq!(Balances::free_balance(&reserved_pot), 0);
         let _ = Balances::make_free_balance_be(&source, 20_000_000);
         let merchants = vec![merchant.clone(), charlie.clone(), dave.clone(), eve.clone()];
         for who in merchants.iter() {
             let _ = Balances::make_free_balance_be(&who, 20_000_000);
-            assert_ok!(Market::register(Origin::signed(who.clone()), 6_000_000));
+            assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -877,9 +877,9 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
                 legal_wr_info.sig
             ));
 
-        assert_eq!(Market::files_size(), file_size as u128);
+        assert_eq!(Murphy::files_size(), file_size as u128);
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -903,8 +903,8 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
 
         run_to_block(503);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -925,7 +925,7 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
                 groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
             })
         );
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6_000_000,
             reward: 4679
         });
@@ -934,8 +934,8 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
 
         run_to_block(603);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 300, true);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -963,21 +963,21 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
                 groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
             })
         );
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6_000_000,
             reward: 5848
         });
-        assert_eq!(Market::merchant_ledgers(&charlie), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&charlie), MerchantLedger {
             collateral: 6_000_000,
             reward: 1169
         });
 
-        assert_eq!(Market::files_size(), file_size as u128);
+        assert_eq!(Murphy::files_size(), file_size as u128);
 
         add_who_into_replica(&cid, file_size, dave.clone(), hex::decode("11").unwrap(), None, None);
         run_to_block(703);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -1011,21 +1011,21 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
                 groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true), (hex::decode("11").unwrap(), false)].into_iter())
             })
         );
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6_000_000,
             reward: 6627
         });
-        assert_eq!(Market::merchant_ledgers(&charlie), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&charlie), MerchantLedger {
             collateral: 6_000_000,
             reward: 1948
         });
 
-        assert_eq!(Market::files_size(), file_size as u128);
+        assert_eq!(Murphy::files_size(), file_size as u128);
 
         run_to_block(903);
         <tars::ReportedInSlot>::insert(hex::decode("11").unwrap(), 600, true);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -1059,26 +1059,26 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
                 groups: BTreeMap::from_iter(vec![(legal_pk.clone(), false), (hex::decode("11").unwrap(), true)].into_iter())
             })
         );
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6_000_000,
             reward: 6627
         });
-        assert_eq!(Market::merchant_ledgers(&charlie), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&charlie), MerchantLedger {
             collateral: 6_000_000,
             reward: 1948
         });
-        assert_eq!(Market::merchant_ledgers(&dave), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&dave), MerchantLedger {
             collateral: 6_000_000,
             reward: 1646
         });
 
-        assert_eq!(Market::files_size(), file_size as u128);
+        assert_eq!(Murphy::files_size(), file_size as u128);
 
         run_to_block(1203);
         <tars::ReportedInSlot>::insert(hex::decode("11").unwrap(), 900, true);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 900, true);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -1112,41 +1112,41 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
                 groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true), (hex::decode("11").unwrap(), true)].into_iter())
             })
         );
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6_000_000,
             reward: 9921
         });
-        assert_eq!(Market::merchant_ledgers(&charlie), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&charlie), MerchantLedger {
             collateral: 6_000_000,
             reward: 5242
         });
-        assert_eq!(Market::merchant_ledgers(&dave), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&dave), MerchantLedger {
             collateral: 6_000_000,
             reward: 4940
         });
-        assert_eq!(Market::files_size(), (file_size * 2) as u128);
+        assert_eq!(Murphy::files_size(), (file_size * 2) as u128);
 
         run_to_block(1803);
-        assert_ok!(Market::calculate_reward(Origin::signed(merchant.clone()), cid.clone()));
-        assert_eq!(Market::used_trash_i(&cid).unwrap_or_default(), UsedInfo {
+        assert_ok!(Murphy::calculate_reward(Origin::signed(merchant.clone()), cid.clone()));
+        assert_eq!(Murphy::used_trash_i(&cid).unwrap_or_default(), UsedInfo {
             used_size: file_size * 2,
             reported_group_count: 1,
             groups: BTreeMap::from_iter(vec![(legal_pk.clone(), false), (hex::decode("11").unwrap(), false)].into_iter())
         });
 
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6_000_000,
             reward: 9921
         });
-        assert_eq!(Market::merchant_ledgers(&charlie), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&charlie), MerchantLedger {
             collateral: 6_000_000,
             reward: 5242
         });
-        assert_eq!(Market::merchant_ledgers(&dave), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&dave), MerchantLedger {
             collateral: 6_000_000,
             reward: 4940
         });
-        assert_eq!(Market::files_size(), 0);
+        assert_eq!(Murphy::files_size(), 0);
         assert_eq!(Balances::free_balance(&reserved_pot), 16297);
     });
 }
@@ -1168,14 +1168,14 @@ fn do_calculate_reward_should_fail_due_to_not_live() {
         let _ = Balances::make_free_balance_be(&merchant, 20000);
 
         // collateral is 60 < 121 reward
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 6000));
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 6000));
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -1199,7 +1199,7 @@ fn do_calculate_reward_should_fail_due_to_not_live() {
 
         register(&legal_pk, LegalCode::get());
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -1217,9 +1217,9 @@ fn do_calculate_reward_should_fail_due_to_not_live() {
         );
 
         run_to_block(1506);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -1258,15 +1258,15 @@ fn do_calculate_reward_should_work_for_more_replicas() {
         let merchants = vec![merchant.clone(), charlie.clone(), dave.clone(), eve.clone(), ferdie.clone()];
         for who in merchants.iter() {
             let _ = Balances::make_free_balance_be(&who, 20_000_000);
-            assert_ok!(Market::register(Origin::signed(who.clone()), 6_000_000));
+            assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -1289,11 +1289,11 @@ fn do_calculate_reward_should_work_for_more_replicas() {
         let legal_pk = legal_wr_info.curr_pk.clone();
 
         add_who_into_replica(&cid, file_size, ferdie.clone(), legal_pk.clone(), Some(303u32), None);
-        assert_eq!(Market::files_size(), file_size as u128);
+        assert_eq!(Murphy::files_size(), file_size as u128);
         add_who_into_replica(&cid, file_size, charlie.clone(), legal_pk.clone(), Some(403u32), None);
-        assert_eq!(Market::files_size(), (file_size * 2) as u128);
+        assert_eq!(Murphy::files_size(), (file_size * 2) as u128);
         add_who_into_replica(&cid, file_size, dave.clone(), legal_pk.clone(), Some(503u32), None);
-        assert_eq!(Market::files_size(), (file_size * 3) as u128);
+        assert_eq!(Murphy::files_size(), (file_size * 3) as u128);
 
         register(&legal_pk, LegalCode::get());
 
@@ -1312,11 +1312,11 @@ fn do_calculate_reward_should_work_for_more_replicas() {
                 legal_wr_info.sig
             ));
 
-        assert_eq!(Market::files_size(), (file_size * 4) as u128);
+        assert_eq!(Murphy::files_size(), (file_size * 4) as u128);
 
         add_who_into_replica(&cid, file_size, eve.clone(), legal_pk.clone(), Some(503u32), None);
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -1365,8 +1365,8 @@ fn do_calculate_reward_should_work_for_more_replicas() {
         );
         run_to_block(503);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -1414,23 +1414,23 @@ fn do_calculate_reward_should_work_for_more_replicas() {
             })
         );
 
-        assert_eq!(Market::merchant_ledgers(&ferdie), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&ferdie), MerchantLedger {
             collateral: 6_000_000,
             reward: 1169
         });
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6_000_000,
             reward: 1169
         });
-        assert_eq!(Market::merchant_ledgers(&charlie), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&charlie), MerchantLedger {
             collateral: 6_000_000,
             reward: 1169
         });
-        assert_eq!(Market::merchant_ledgers(&dave), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&dave), MerchantLedger {
             collateral: 6_000_000,
             reward: 1169
         });
-        assert_eq!(Market::merchant_ledgers(&eve), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&eve), MerchantLedger {
             collateral: 6_000_000,
             reward: 0
         });
@@ -1457,15 +1457,15 @@ fn do_calculate_reward_should_only_pay_the_groups() {
         let merchants = vec![merchant.clone(), charlie.clone(), dave.clone(), eve.clone(), ferdie.clone()];
         for who in merchants.iter() {
             let _ = Balances::make_free_balance_be(&who, 20_000_000);
-            assert_ok!(Market::register(Origin::signed(who.clone()), 6_000_000));
+            assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -1498,11 +1498,11 @@ fn do_calculate_reward_should_only_pay_the_groups() {
             group: None
         });
         add_who_into_replica(&cid, file_size, ferdie.clone(), hex::decode("11").unwrap(), Some(303u32), Some(BTreeSet::from_iter(vec![charlie.clone(), ferdie.clone()].into_iter())));
-        assert_eq!(Market::files_size(), file_size as u128);
+        assert_eq!(Murphy::files_size(), file_size as u128);
         add_who_into_replica(&cid, file_size, charlie.clone(), hex::decode("22").unwrap(), Some(403u32), Some(BTreeSet::from_iter(vec![charlie.clone(), ferdie.clone()].into_iter())));
-        assert_eq!(Market::files_size(), file_size as u128);
+        assert_eq!(Murphy::files_size(), file_size as u128);
         add_who_into_replica(&cid, file_size, dave.clone(), hex::decode("33").unwrap(), Some(503u32), None);
-        assert_eq!(Market::files_size(), (file_size * 2) as u128);
+        assert_eq!(Murphy::files_size(), (file_size * 2) as u128);
 
         register(&legal_pk, LegalCode::get());
 
@@ -1521,11 +1521,11 @@ fn do_calculate_reward_should_only_pay_the_groups() {
                 legal_wr_info.sig
             ));
 
-        assert_eq!(Market::files_size(), (file_size * 3) as u128);
+        assert_eq!(Murphy::files_size(), (file_size * 3) as u128);
 
         add_who_into_replica(&cid, file_size, eve.clone(), legal_pk.clone(), Some(503u32), None);
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -1577,8 +1577,8 @@ fn do_calculate_reward_should_only_pay_the_groups() {
         <tars::ReportedInSlot>::insert(hex::decode("11").unwrap(), 0, true);
         <tars::ReportedInSlot>::insert(hex::decode("22").unwrap(), 0, true);
         <tars::ReportedInSlot>::insert(hex::decode("33").unwrap(), 0, true);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -1626,24 +1626,24 @@ fn do_calculate_reward_should_only_pay_the_groups() {
             })
         );
 
-        assert_eq!(Market::merchant_ledgers(&ferdie), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&ferdie), MerchantLedger {
             collateral: 6_000_000,
             reward: 1169
         });
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6_000_000,
             reward: 1169
         });
         // charlie won't get payed
-        assert_eq!(Market::merchant_ledgers(&charlie), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&charlie), MerchantLedger {
             collateral: 6_000_000,
             reward: 0
         });
-        assert_eq!(Market::merchant_ledgers(&dave), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&dave), MerchantLedger {
             collateral: 6_000_000,
             reward: 1169
         });
-        assert_eq!(Market::merchant_ledgers(&eve), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&eve), MerchantLedger {
             collateral: 6_000_000,
             reward: 1169
         });
@@ -1671,15 +1671,15 @@ fn insert_replica_should_work_for_complex_scenario() {
         let merchants = vec![merchant.clone(), charlie.clone(), dave.clone(), eve.clone(), ferdie.clone(), zikun.clone()];
         for who in merchants.iter() {
             let _ = Balances::make_free_balance_be(&who, 20_000_000);
-            assert_ok!(Market::register(Origin::signed(who.clone()), 6_000_000));
+            assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -1703,7 +1703,7 @@ fn insert_replica_should_work_for_complex_scenario() {
 
         add_who_into_replica(&cid, file_size, ferdie.clone(), legal_pk.clone(), Some(503u32), None);
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -1728,7 +1728,7 @@ fn insert_replica_should_work_for_complex_scenario() {
 
         add_who_into_replica(&cid, file_size, charlie.clone(), legal_pk.clone(), Some(303u32), None);
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -1759,7 +1759,7 @@ fn insert_replica_should_work_for_complex_scenario() {
 
         add_who_into_replica(&cid, file_size, dave.clone(), legal_pk.clone(), Some(103u32), None);
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -1811,9 +1811,9 @@ fn insert_replica_should_work_for_complex_scenario() {
                 legal_wr_info.sig
             ));
 
-        assert_eq!(Market::files_size(), (file_size * 4) as u128);
+        assert_eq!(Murphy::files_size(), (file_size * 4) as u128);
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -1854,7 +1854,7 @@ fn insert_replica_should_work_for_complex_scenario() {
             })
         );
         add_who_into_replica(&cid, file_size, eve.clone(), legal_pk.clone(), Some(703u32), None);
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -1902,7 +1902,7 @@ fn insert_replica_should_work_for_complex_scenario() {
         );
 
         add_who_into_replica(&cid, file_size, zikun.clone(), legal_pk.clone(), Some(255u32), None);
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -1985,14 +1985,14 @@ fn clear_trash_should_work() {
         let _ = Balances::make_free_balance_be(&source, 20000);
         let _ = Balances::make_free_balance_be(&merchant, 20000);
 
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 6000));
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 6000));
 
         for cid in file_lists.clone().iter() {
-            assert_ok!(Market::place_storage_order(
+            assert_ok!(Murphy::place_storage_order(
                 Origin::signed(source.clone()), cid.clone(),
                 file_size, 0
             ));
-            assert_eq!(Market::files(&cid).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -2019,7 +2019,7 @@ fn clear_trash_should_work() {
         }
 
         for cid in file_lists.clone().iter() {
-            assert_eq!(Market::files(&cid).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
                 FileInfo {
                     file_size,
                     expired_on: 1303,
@@ -2045,52 +2045,52 @@ fn clear_trash_should_work() {
         run_to_block(1500);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 1200, true);
         // close files one by one
-        assert_ok!(Market::calculate_reward(Origin::signed(merchant.clone()), cid1.clone()));
-        assert_eq!(Market::used_trash_i(&cid1).unwrap_or_default(), UsedInfo {
+        assert_ok!(Murphy::calculate_reward(Origin::signed(merchant.clone()), cid1.clone()));
+        assert_eq!(Murphy::used_trash_i(&cid1).unwrap_or_default(), UsedInfo {
             used_size: file_size * 2,
             reported_group_count: 1,
             groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
         });
 
-        assert_ok!(Market::calculate_reward(Origin::signed(merchant.clone()), cid2.clone()));
-        assert_eq!(Market::used_trash_i(&cid2).unwrap_or_default(), UsedInfo {
+        assert_ok!(Murphy::calculate_reward(Origin::signed(merchant.clone()), cid2.clone()));
+        assert_eq!(Murphy::used_trash_i(&cid2).unwrap_or_default(), UsedInfo {
             used_size: file_size * 2,
             reported_group_count: 1,
             groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
         });
 
-        assert_ok!(Market::calculate_reward(Origin::signed(merchant.clone()), cid3.clone()));
-        assert_eq!(Market::used_trash_ii(&cid3).unwrap_or_default(), UsedInfo {
+        assert_ok!(Murphy::calculate_reward(Origin::signed(merchant.clone()), cid3.clone()));
+        assert_eq!(Murphy::used_trash_ii(&cid3).unwrap_or_default(), UsedInfo {
             used_size: file_size * 2,
             reported_group_count: 1,
             groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
         });
 
-        assert_ok!(Market::calculate_reward(Origin::signed(merchant.clone()), cid4.clone()));
-        assert_eq!(Market::used_trash_ii(&cid4).unwrap_or_default(), UsedInfo {
+        assert_ok!(Murphy::calculate_reward(Origin::signed(merchant.clone()), cid4.clone()));
+        assert_eq!(Murphy::used_trash_ii(&cid4).unwrap_or_default(), UsedInfo {
             used_size: file_size * 2,
             reported_group_count: 1,
             groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
         });
-        assert_eq!(Market::used_trash_i(&cid1), None);
-        assert_eq!(Market::used_trash_i(&cid2), None);
+        assert_eq!(Murphy::used_trash_i(&cid1), None);
+        assert_eq!(Murphy::used_trash_i(&cid2), None);
 
-        assert_ok!(Market::calculate_reward(Origin::signed(merchant.clone()), cid5.clone()));
-        assert_eq!(Market::used_trash_i(&cid5).unwrap_or_default(), UsedInfo {
-            used_size: file_size * 2,
-            reported_group_count: 1,
-            groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
-        });
-
-        assert_ok!(Market::calculate_reward(Origin::signed(merchant.clone()), cid6.clone()));
-        assert_eq!(Market::used_trash_i(&cid6).unwrap_or_default(), UsedInfo {
+        assert_ok!(Murphy::calculate_reward(Origin::signed(merchant.clone()), cid5.clone()));
+        assert_eq!(Murphy::used_trash_i(&cid5).unwrap_or_default(), UsedInfo {
             used_size: file_size * 2,
             reported_group_count: 1,
             groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
         });
 
-        assert_eq!(Market::used_trash_ii(&cid3), None);
-        assert_eq!(Market::used_trash_ii(&cid4), None);
+        assert_ok!(Murphy::calculate_reward(Origin::signed(merchant.clone()), cid6.clone()));
+        assert_eq!(Murphy::used_trash_i(&cid6).unwrap_or_default(), UsedInfo {
+            used_size: file_size * 2,
+            reported_group_count: 1,
+            groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
+        });
+
+        assert_eq!(Murphy::used_trash_ii(&cid3), None);
+        assert_eq!(Murphy::used_trash_ii(&cid4), None);
     });
 }
 
@@ -2100,32 +2100,32 @@ fn update_price_should_work() {
     new_test_ext().execute_with(|| {
         // generate 50 blocks first
         // 0 / 0 => None => decrease
-        Market::update_file_price();
-        assert_eq!(Market::file_price(), 990);
+        Murphy::update_file_price();
+        assert_eq!(Murphy::file_price(), 990);
 
         run_to_block(50);
         // first class storage is 0
         <tars::Free>::put(10000);
         <tars::ReportedFilesSize>::put(10000);
         assert_eq!(Tars::get_total_capacity(), 20000);
-        Market::update_file_price();
-        assert_eq!(Market::file_price(), 980);
+        Murphy::update_file_price();
+        assert_eq!(Murphy::file_price(), 980);
 
         // first class storage is 11000 => increase 1%
         FilesSize::put(11000);
-        Market::update_file_price();
-        assert_eq!(Market::file_price(), 990);
+        Murphy::update_file_price();
+        assert_eq!(Murphy::file_price(), 990);
 
         // price is 40 and cannot decrease
         <FilePrice<Test>>::put(40);
         FilesSize::put(10);
-        Market::update_file_price();
-        assert_eq!(Market::file_price(), 40);
+        Murphy::update_file_price();
+        assert_eq!(Murphy::file_price(), 40);
 
         // price is 40 and will increase by 1
         FilesSize::put(20000);
-        Market::update_file_price();
-        assert_eq!(Market::file_price(), 41);
+        Murphy::update_file_price();
+        assert_eq!(Murphy::file_price(), 41);
     });
 }
 
@@ -2142,22 +2142,22 @@ fn withdraw_staking_pot_should_work() {
         let cid =
             hex::decode("4e2883ddcbc77cf19979770d756fd332d0c8f815f9de646636169e460e6af6ff").unwrap();
         let file_size = 100; // should less than
-        let reserved_pot = Market::reserved_pot();
-        let staking_pot = Market::staking_pot();
-        let storage_pot = Market::storage_pot();
-        assert_eq!(Market::withdraw_staking_pot(), 0);
+        let reserved_pot = Murphy::reserved_pot();
+        let staking_pot = Murphy::staking_pot();
+        let storage_pot = Murphy::storage_pot();
+        assert_eq!(Murphy::withdraw_staking_pot(), 0);
         assert_eq!(Balances::free_balance(&staking_pot), 0);
         let _ = Balances::make_free_balance_be(&source, 20000);
         let _ = Balances::make_free_balance_be(&merchant, 200);
 
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 60));
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 60));
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -2177,7 +2177,7 @@ fn withdraw_staking_pot_should_work() {
         assert_eq!(Balances::free_balance(&staking_pot), 1440);
         assert_eq!(Balances::free_balance(&storage_pot), 360);
 
-        assert_eq!(Market::withdraw_staking_pot(), 1439);
+        assert_eq!(Murphy::withdraw_staking_pot(), 1439);
         assert_eq!(Balances::free_balance(&staking_pot), 1);
     });
 }
@@ -2200,19 +2200,19 @@ fn scenario_test_for_reported_file_size_is_not_same_with_file_size() {
         let file_size = 100; // should less than merchant
         let reported_file_size_cid1 = 90;
         let reported_file_size_cid2 = 1000;
-        let storage_pot = Market::storage_pot();
+        let storage_pot = Murphy::storage_pot();
         let _ = Balances::make_free_balance_be(&storage_pot, 1);
         let _ = Balances::make_free_balance_be(&source, 20000);
         let _ = Balances::make_free_balance_be(&merchant, 20000);
 
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 6000));
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 6000));
 
         for cid in file_lists.clone().iter() {
-            assert_ok!(Market::place_storage_order(
+            assert_ok!(Murphy::place_storage_order(
                 Origin::signed(source.clone()), cid.clone(),
                 file_size, 0
             ));
-            assert_eq!(Market::files(&cid).unwrap_or_default(), (
+            assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
                 FileInfo {
                     file_size,
                     expired_on: 0,
@@ -2237,7 +2237,7 @@ fn scenario_test_for_reported_file_size_is_not_same_with_file_size() {
         register(&legal_pk, LegalCode::get());
         // reported_file_size_cid1 = 90 < 100 => update file size in file info
         add_who_into_replica(&cid1, reported_file_size_cid1, merchant.clone(), legal_pk.clone(), None, None);
-        assert_eq!(Market::files(&cid1).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid1).unwrap_or_default(), (
             FileInfo {
                 file_size: reported_file_size_cid1,
                 expired_on: 1303,
@@ -2261,8 +2261,8 @@ fn scenario_test_for_reported_file_size_is_not_same_with_file_size() {
         assert_eq!(Balances::free_balance(&storage_pot), 721);
         // reported_file_size_cid2 = 1000 > 100 => close this file
         add_who_into_replica(&cid2, reported_file_size_cid2, merchant.clone(), legal_pk.clone(), None, None);
-        assert_eq!(Market::files(&cid2).is_none(), true);
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::files(&cid2).is_none(), true);
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6000,
             reward: 360
         });
@@ -2288,13 +2288,13 @@ fn double_place_storage_order_file_size_check_should_work() {
         let _ = Balances::make_free_balance_be(&source, 20000);
         let _ = Balances::make_free_balance_be(&merchant, 20000);
 
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 6000));
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 6000));
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid1.clone(),
             file_size, 0
         ));
-        assert_eq!(Market::files(&cid1).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid1).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -2316,7 +2316,7 @@ fn double_place_storage_order_file_size_check_should_work() {
         let legal_pk = legal_wr_info.curr_pk.clone();
         register(&legal_pk, LegalCode::get());
         add_who_into_replica(&cid1, reported_file_size_cid1, merchant.clone(), legal_pk.clone(), None, None);
-        assert_eq!(Market::files(&cid1).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid1).unwrap_or_default(), (
             FileInfo {
                 file_size: reported_file_size_cid1,
                 expired_on: 1303,
@@ -2339,7 +2339,7 @@ fn double_place_storage_order_file_size_check_should_work() {
         );
 
         // 80 < 100 => throw an error
-        assert_noop!(Market::place_storage_order(
+        assert_noop!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid1.clone(), 80, 0),
             DispatchError::Module {
                 index: 3,
@@ -2349,12 +2349,12 @@ fn double_place_storage_order_file_size_check_should_work() {
         );
 
         // 12000000 > 100. Only need amount for 100
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid1.clone(),
             12000000, 0
         ));
 
-        assert_eq!(Market::files(&cid1).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid1).unwrap_or_default(), (
             FileInfo {
                 file_size: reported_file_size_cid1,
                 expired_on: 1303,
@@ -2393,23 +2393,23 @@ fn place_storage_order_for_expired_file_should_inherit_the_status() {
         let dave = DAVE;
         let eve = EVE;
 
-        let staking_pot = Market::staking_pot();
-        let reserved_pot = Market::reserved_pot();
+        let staking_pot = Murphy::staking_pot();
+        let reserved_pot = Murphy::reserved_pot();
         assert_eq!(Balances::free_balance(&staking_pot), 0);
         assert_eq!(Balances::free_balance(&reserved_pot), 0);
         let _ = Balances::make_free_balance_be(&source, 20_000_000);
         let merchants = vec![merchant.clone(), charlie.clone(), dave.clone(), eve.clone()];
         for who in merchants.iter() {
             let _ = Balances::make_free_balance_be(&who, 20_000_000);
-            assert_ok!(Market::register(Origin::signed(who.clone()), 6_000_000));
+            assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -2448,9 +2448,9 @@ fn place_storage_order_for_expired_file_should_inherit_the_status() {
                 legal_wr_info.sig
             ));
 
-        assert_eq!(Market::files_size(), file_size as u128);
+        assert_eq!(Murphy::files_size(), file_size as u128);
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -2474,8 +2474,8 @@ fn place_storage_order_for_expired_file_should_inherit_the_status() {
 
         run_to_block(503);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -2496,14 +2496,14 @@ fn place_storage_order_for_expired_file_should_inherit_the_status() {
                 groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
             })
         );
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6_000_000,
             reward: 4679
         });
 
         add_who_into_replica(&cid, file_size, charlie.clone(), legal_pk.clone(), None, None);
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -2534,11 +2534,11 @@ fn place_storage_order_for_expired_file_should_inherit_the_status() {
 
         run_to_block(1803);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 1500, true);
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 2303,
@@ -2567,15 +2567,15 @@ fn place_storage_order_for_expired_file_should_inherit_the_status() {
             })
         );
 
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6_000_000,
             reward: 14038
         });
-        assert_eq!(Market::merchant_ledgers(&charlie), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&charlie), MerchantLedger {
             collateral: 6_000_000,
             reward: 9359
         });
-        assert_eq!(Market::files_size(), file_size as u128);
+        assert_eq!(Murphy::files_size(), file_size as u128);
         assert_eq!(Balances::free_balance(&reserved_pot), 26000);
     });
 }
@@ -2596,23 +2596,23 @@ fn place_storage_order_for_expired_file_should_make_it_pending_if_replicas_is_ze
         let dave = DAVE;
         let eve = EVE;
 
-        let staking_pot = Market::staking_pot();
-        let reserved_pot = Market::reserved_pot();
+        let staking_pot = Murphy::staking_pot();
+        let reserved_pot = Murphy::reserved_pot();
         assert_eq!(Balances::free_balance(&staking_pot), 0);
         assert_eq!(Balances::free_balance(&reserved_pot), 0);
         let _ = Balances::make_free_balance_be(&source, 20_000_000);
         let merchants = vec![merchant.clone(), charlie.clone(), dave.clone(), eve.clone()];
         for who in merchants.iter() {
             let _ = Balances::make_free_balance_be(&who, 20_000_000);
-            assert_ok!(Market::register(Origin::signed(who.clone()), 6_000_000));
+            assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -2651,9 +2651,9 @@ fn place_storage_order_for_expired_file_should_make_it_pending_if_replicas_is_ze
                 legal_wr_info.sig
             ));
 
-        assert_eq!(Market::files_size(), file_size as u128);
+        assert_eq!(Murphy::files_size(), file_size as u128);
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -2677,8 +2677,8 @@ fn place_storage_order_for_expired_file_should_make_it_pending_if_replicas_is_ze
 
         run_to_block(503);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 0, true);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -2699,14 +2699,14 @@ fn place_storage_order_for_expired_file_should_make_it_pending_if_replicas_is_ze
                 groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
             })
         );
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 6_000_000,
             reward: 4679
         });
 
         add_who_into_replica(&cid, file_size, charlie.clone(), legal_pk.clone(), None, None);
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -2734,13 +2734,13 @@ fn place_storage_order_for_expired_file_should_make_it_pending_if_replicas_is_ze
                 groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
             })
         );
-        Market::delete_replica(&merchant, &cid, &legal_pk);
-        Market::delete_replica(&charlie, &cid, &legal_pk);
+        Murphy::delete_replica(&merchant, &cid, &legal_pk);
+        Murphy::delete_replica(&charlie, &cid, &legal_pk);
 
         run_to_block(903);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
         // calculated_at should be updated
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -2759,11 +2759,11 @@ fn place_storage_order_for_expired_file_should_make_it_pending_if_replicas_is_ze
 
         run_to_block(1803);
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -2799,15 +2799,15 @@ fn dynamic_used_size_should_work() {
         let merchants = vec![merchant.clone()];
         for who in merchants.iter() {
             let _ = Balances::make_free_balance_be(&who, 20_000_000);
-            assert_ok!(Market::register(Origin::signed(who.clone()), 6_000_000));
+            assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -2832,7 +2832,7 @@ fn dynamic_used_size_should_work() {
         for _ in 0..10 {
             add_who_into_replica(&cid, file_size, merchant.clone(), legal_pk.clone(), Some(303u32), None);
         }
-        assert_eq!(Market::files(&cid).unwrap_or_default().1,
+        assert_eq!(Murphy::files(&cid).unwrap_or_default().1,
             UsedInfo {
                 used_size: file_size * 2,
                 reported_group_count: 10,
@@ -2842,7 +2842,7 @@ fn dynamic_used_size_should_work() {
         for _ in 0..10 {
             add_who_into_replica(&cid, file_size, merchant.clone(), legal_pk.clone(), Some(303u32), None);
         }
-        assert_eq!(Market::files(&cid).unwrap_or_default().1,
+        assert_eq!(Murphy::files(&cid).unwrap_or_default().1,
            UsedInfo {
                used_size: file_size * 4,
                reported_group_count: 20,
@@ -2852,7 +2852,7 @@ fn dynamic_used_size_should_work() {
         for _ in 0..200 {
             add_who_into_replica(&cid, file_size, merchant.clone(), legal_pk.clone(), Some(303u32), None);
         }
-        assert_eq!(Market::files(&cid).unwrap_or_default().1,
+        assert_eq!(Murphy::files(&cid).unwrap_or_default().1,
            UsedInfo {
                used_size: 0,
                reported_group_count: 220,
@@ -2860,9 +2860,9 @@ fn dynamic_used_size_should_work() {
            }
         );
         for _ in 0..140 {
-            Market::delete_replica(&merchant, &cid, &legal_pk);
+            Murphy::delete_replica(&merchant, &cid, &legal_pk);
         }
-        assert_eq!(Market::files(&cid).unwrap_or_default().1,
+        assert_eq!(Murphy::files(&cid).unwrap_or_default().1,
            UsedInfo {
                used_size: 0,
                reported_group_count: 219, // This would never happen in the real world.
@@ -2888,15 +2888,15 @@ fn delete_used_size_should_work() {
         let merchants = vec![merchant.clone()];
         for who in merchants.iter() {
             let _ = Balances::make_free_balance_be(&who, 20_000_000);
-            assert_ok!(Market::register(Origin::signed(who.clone()), 6_000_000));
+            assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -2922,16 +2922,16 @@ fn delete_used_size_should_work() {
             <tars::ReportedInSlot>::insert(key.clone(), 0, true);
             expected_groups.insert(key.clone(), true);
         }
-        assert_eq!(Market::files(&cid).unwrap_or_default().1,
+        assert_eq!(Murphy::files(&cid).unwrap_or_default().1,
            UsedInfo {
                used_size: file_size * 4,
                reported_group_count: 20,
                groups: expected_groups.clone()
            }
         );
-        Market::delete_replica(&merchant, &cid, &hex::decode("10").unwrap());
+        Murphy::delete_replica(&merchant, &cid, &hex::decode("10").unwrap());
         expected_groups.remove(&hex::decode("10").unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default().1,
+        assert_eq!(Murphy::files(&cid).unwrap_or_default().1,
            UsedInfo {
                used_size: file_size * 4,
                reported_group_count: 19,
@@ -2944,9 +2944,9 @@ fn delete_used_size_should_work() {
             <tars::ReportedInSlot>::insert(key.clone(), 300, true);
             expected_groups.insert(key.clone(), true);
         }
-        Market::delete_replica(&merchant, &cid, &hex::decode("21").unwrap()); // delete 21. 21 won't be deleted twice.
+        Murphy::delete_replica(&merchant, &cid, &hex::decode("21").unwrap()); // delete 21. 21 won't be deleted twice.
         expected_groups.remove(&hex::decode("21").unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default().1,
+        assert_eq!(Murphy::files(&cid).unwrap_or_default().1,
            UsedInfo {
                used_size: file_size * 4,
                reported_group_count: 18, // this should be nine instead of eight.
@@ -2971,23 +2971,23 @@ fn files_size_should_not_be_decreased_twice() {
         let charlie = CHARLIE;
         let dave = DAVE;
 
-        let staking_pot = Market::staking_pot();
-        let reserved_pot = Market::reserved_pot();
+        let staking_pot = Murphy::staking_pot();
+        let reserved_pot = Murphy::reserved_pot();
         assert_eq!(Balances::free_balance(&staking_pot), 0);
         assert_eq!(Balances::free_balance(&reserved_pot), 0);
         let _ = Balances::make_free_balance_be(&source, 20_000_000);
         let merchants = vec![merchant.clone(), charlie.clone(), dave.clone()];
         for who in merchants.iter() {
             let _ = Balances::make_free_balance_be(&who, 20_000_000);
-            assert_ok!(Market::register(Origin::signed(who.clone()), 6_000_000));
+            assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -3026,16 +3026,16 @@ fn files_size_should_not_be_decreased_twice() {
                 legal_wr_info.sig
             ));
 
-        assert_eq!(Market::files_size(), file_size as u128);
+        assert_eq!(Murphy::files_size(), file_size as u128);
         run_to_block(503);
         add_who_into_replica(&cid, file_size, charlie.clone(), legal_pk.clone(), None, None);
         run_to_block(603);
         add_who_into_replica(&cid, file_size, dave.clone(), hex::decode("11").unwrap(), None, None);
-        assert_eq!(Market::files_size(), (file_size * 3) as u128);
+        assert_eq!(Murphy::files_size(), (file_size * 3) as u128);
         run_to_block(703);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 300, true);
-        Market::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        Murphy::do_calculate_reward(&cid, System::block_number().try_into().unwrap());
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -3069,9 +3069,9 @@ fn files_size_should_not_be_decreased_twice() {
                 groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true), (hex::decode("11").unwrap(), false)].into_iter())
             })
         );
-        assert_eq!(Market::files_size(), file_size as u128);
-        Market::delete_replica(&dave, &cid, &hex::decode("11").unwrap()); // delete 11. 11 won't be deleted twice.
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files_size(), file_size as u128);
+        Murphy::delete_replica(&dave, &cid, &hex::decode("11").unwrap()); // delete 11. 11 won't be deleted twice.
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -3100,7 +3100,7 @@ fn files_size_should_not_be_decreased_twice() {
                 groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true)].into_iter())
             })
         );
-        assert_eq!(Market::files_size(), file_size as u128);
+        assert_eq!(Murphy::files_size(), file_size as u128);
     });
 }
 
@@ -3118,7 +3118,7 @@ fn clear_same_file_in_trash_should_work() {
         let charlie = CHARLIE;
         let dave = DAVE;
 
-        let storage_pot = Market::storage_pot();
+        let storage_pot = Murphy::storage_pot();
         assert_eq!(Balances::free_balance(&storage_pot), 0);
         let _ = Balances::make_free_balance_be(&storage_pot, 1);
 
@@ -3126,15 +3126,15 @@ fn clear_same_file_in_trash_should_work() {
         let merchants = vec![merchant.clone(), charlie.clone(), dave.clone()];
         for who in merchants.iter() {
             let _ = Balances::make_free_balance_be(&who, 20_000_000);
-            assert_ok!(Market::register(Origin::signed(who.clone()), 6_000_000));
+            assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -3180,28 +3180,28 @@ fn clear_same_file_in_trash_should_work() {
         run_to_block(1803);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 1500, true);
         <tars::ReportedInSlot>::insert(hex::decode("11").unwrap(), 1500, true);
-        assert_ok!(Market::calculate_reward(Origin::signed(merchant.clone()), cid.clone()));
+        assert_ok!(Murphy::calculate_reward(Origin::signed(merchant.clone()), cid.clone()));
 
         // Prepare a file in the trash
-        assert_eq!(Market::files(&cid).is_none(), true);
-        assert_eq!(Market::used_trash_i(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).is_none(), true);
+        assert_eq!(Murphy::used_trash_i(&cid).unwrap_or_default(), (
             UsedInfo {
                 used_size: file_size * 2,
                 reported_group_count: 1,
                 groups: BTreeMap::from_iter(vec![(legal_pk.clone(), true), (hex::decode("11").unwrap(), true)].into_iter())
             })
         );
-        assert_eq!(Market::used_trash_mapping_i(legal_pk.clone()), file_size * 2);
-        assert_eq!(Market::used_trash_mapping_i(hex::decode("11").unwrap()), file_size * 2);
-        assert_eq!(Market::used_trash_size_i(), 1);
+        assert_eq!(Murphy::used_trash_mapping_i(legal_pk.clone()), file_size * 2);
+        assert_eq!(Murphy::used_trash_mapping_i(hex::decode("11").unwrap()), file_size * 2);
+        assert_eq!(Murphy::used_trash_size_i(), 1);
 
         // place a same storage order
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 0,
@@ -3218,10 +3218,10 @@ fn clear_same_file_in_trash_should_work() {
             })
         );
         // trash has been cleared.
-        assert_eq!(Market::used_trash_i(&cid).is_none(), true);
-        assert_eq!(Market::used_trash_mapping_i(legal_pk.clone()), 0);
-        assert_eq!(Market::used_trash_mapping_i(hex::decode("11").unwrap()), 0);
-        assert_eq!(Market::used_trash_size_i(), 0);
+        assert_eq!(Murphy::used_trash_i(&cid).is_none(), true);
+        assert_eq!(Murphy::used_trash_mapping_i(legal_pk.clone()), 0);
+        assert_eq!(Murphy::used_trash_mapping_i(hex::decode("11").unwrap()), 0);
+        assert_eq!(Murphy::used_trash_size_i(), 0);
     });
 }
 
@@ -3240,7 +3240,7 @@ fn reward_liquidator_should_work() {
         let merchant = BOB;
         let charlie = CHARLIE;
 
-        let storage_pot = Market::storage_pot();
+        let storage_pot = Murphy::storage_pot();
         assert_eq!(Balances::free_balance(&storage_pot), 0);
         let _ = Balances::make_free_balance_be(&storage_pot, 1);
 
@@ -3248,24 +3248,24 @@ fn reward_liquidator_should_work() {
         let merchants = vec![merchant.clone()];
         for who in merchants.iter() {
             let _ = Balances::make_free_balance_be(&who, 20_000_000);
-            assert_ok!(Market::register(Origin::signed(who.clone()), 6_000_000));
+            assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
         assert_noop!(
-            Market::calculate_reward(Origin::signed(charlie.clone()), cid.clone()),
+            Murphy::calculate_reward(Origin::signed(charlie.clone()), cid.clone()),
             DispatchError::Module {
                 index: 3,
                 error: 8,
                 message: Some("FileNotExist")
         });
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
 
         assert_noop!(
-            Market::calculate_reward(Origin::signed(charlie.clone()), cid.clone()),
+            Murphy::calculate_reward(Origin::signed(charlie.clone()), cid.clone()),
             DispatchError::Module {
                 index: 3,
                 error: 9,
@@ -3295,7 +3295,7 @@ fn reward_liquidator_should_work() {
         ));
 
         assert_noop!(
-            Market::calculate_reward(Origin::signed(charlie.clone()), cid.clone()),
+            Murphy::calculate_reward(Origin::signed(charlie.clone()), cid.clone()),
             DispatchError::Module {
                 index: 3,
                 error: 9,
@@ -3304,12 +3304,12 @@ fn reward_liquidator_should_work() {
 
         run_to_block(2503);
         // 20% would be rewarded to liquidator charlie
-        assert_ok!(Market::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
+        assert_ok!(Murphy::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
         assert_eq!(Balances::free_balance(&charlie), 4680);
-        assert_eq!(Market::files(&cid).is_none(), true);
-        assert_eq!(Market::used_trash_i(&cid).is_some(), true);
+        assert_eq!(Murphy::files(&cid).is_none(), true);
+        assert_eq!(Murphy::used_trash_i(&cid).is_some(), true);
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -3317,10 +3317,10 @@ fn reward_liquidator_should_work() {
         add_who_into_replica(&cid, file_size, merchant.clone(), legal_pk.clone(), None, None);
 
         run_to_block(4000); // 3503 - 4503 => no reward to liquidator charlie
-        assert_ok!(Market::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
+        assert_ok!(Murphy::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
         assert_eq!(Balances::free_balance(&charlie), 4680);
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -3328,7 +3328,7 @@ fn reward_liquidator_should_work() {
         add_who_into_replica(&cid, file_size, merchant.clone(), legal_pk.clone(), None, None);
 
         run_to_block(8000); // expired_on 6000 => all reward to liquidator charlie
-        assert_ok!(Market::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
+        assert_ok!(Murphy::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
         assert_eq!(Balances::free_balance(&charlie), 28080);
     });
 }
@@ -3341,7 +3341,7 @@ fn reward_merchant_should_work() {
 
         let merchant = MERCHANT;
         let alice = ALICE;
-        let storage_pot = Market::storage_pot();
+        let storage_pot = Murphy::storage_pot();
         let _ = Balances::make_free_balance_be(&storage_pot, 121);
 
         <self::MerchantLedgers<Test>>::insert(&merchant, MerchantLedger {
@@ -3349,15 +3349,15 @@ fn reward_merchant_should_work() {
             reward: 120
         });
 
-        assert_ok!(Market::reward_merchant(Origin::signed(merchant.clone())));
-        assert_eq!(Market::merchant_ledgers(&merchant), MerchantLedger {
+        assert_ok!(Murphy::reward_merchant(Origin::signed(merchant.clone())));
+        assert_eq!(Murphy::merchant_ledgers(&merchant), MerchantLedger {
             collateral: 180,
             reward: 0
         });
         assert_eq!(Balances::free_balance(&merchant), 120);
         assert_eq!(Balances::free_balance(&storage_pot), 1);
         assert_noop!(
-            Market::reward_merchant(
+            Murphy::reward_merchant(
                 Origin::signed(merchant)
             ),
             DispatchError::Module {
@@ -3368,7 +3368,7 @@ fn reward_merchant_should_work() {
         );
 
         assert_noop!(
-            Market::reward_merchant(
+            Murphy::reward_merchant(
                 Origin::signed(alice)
             ),
             DispatchError::Module {
@@ -3392,22 +3392,22 @@ fn set_global_switch_should_work() {
         let cid =
             hex::decode("4e2883ddcbc77cf19979770d756fd332d0c8f815f9de646636169e460e6af6ff").unwrap();
         let file_size = 100; // should less than
-        let staking_pot = Market::staking_pot();
+        let staking_pot = Murphy::staking_pot();
         assert_eq!(Balances::free_balance(&staking_pot), 0);
         let _ = Balances::make_free_balance_be(&source, 20000);
         let _ = Balances::make_free_balance_be(&merchant, 200);
 
-        assert_ok!(Market::register(Origin::signed(merchant.clone()), 60));
+        assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 60));
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
-        assert_ok!(Market::set_market_switch(
+        assert_ok!(Murphy::set_murphy_switch(
             Origin::root(),
             false
         ));
-        assert_noop!(Market::place_storage_order(
+        assert_noop!(Murphy::place_storage_order(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ),
@@ -3433,8 +3433,8 @@ fn renew_file_should_work() {
         let merchant = BOB;
         let charlie = CHARLIE;
 
-        let storage_pot = Market::storage_pot();
-        let reserved_pot = Market::reserved_pot();
+        let storage_pot = Murphy::storage_pot();
+        let reserved_pot = Murphy::reserved_pot();
         assert_eq!(Balances::free_balance(&storage_pot), 0);
         assert_eq!(Balances::free_balance(&reserved_pot), 0);
         let _ = Balances::make_free_balance_be(&storage_pot, 1);
@@ -3443,18 +3443,18 @@ fn renew_file_should_work() {
         let merchants = vec![merchant.clone()];
         for who in merchants.iter() {
             let _ = Balances::make_free_balance_be(&who, 20_000_000);
-            assert_ok!(Market::register(Origin::signed(who.clone()), 6_000_000));
+            assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
         assert_noop!(
-            Market::add_prepaid(Origin::signed(source.clone()), cid.clone(), 400_000),
+            Murphy::add_prepaid(Origin::signed(source.clone()), cid.clone(), 400_000),
             DispatchError::Module {
                 index: 3,
                 error: 8,
                 message: Some("FileNotExist")
         });
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -3481,9 +3481,9 @@ fn renew_file_should_work() {
                 legal_wr_info.sig
         ));
 
-        assert_ok!(Market::add_prepaid(Origin::signed(source.clone()), cid.clone(), 400_000));
+        assert_ok!(Murphy::add_prepaid(Origin::signed(source.clone()), cid.clone(), 400_000));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 1303,
@@ -3507,9 +3507,9 @@ fn renew_file_should_work() {
 
         run_to_block(2503);
         // 20% would be rewarded to liquidator charlie
-        assert_ok!(Market::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
+        assert_ok!(Murphy::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
 
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 2303,
@@ -3533,13 +3533,13 @@ fn renew_file_should_work() {
 
 
         assert_eq!(Balances::free_balance(&charlie), 11180);
-        assert_eq!(Market::used_trash_i(&cid).is_none(), true);
+        assert_eq!(Murphy::used_trash_i(&cid).is_none(), true);
         assert_eq!(Balances::free_balance(&reserved_pot), 26000);
 
         run_to_block(8000); // expired_on 2303 => all reward to liquidator charlie
-        assert_ok!(Market::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
+        assert_ok!(Murphy::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
         assert_eq!(Balances::free_balance(&charlie), 59800); // 42120 + 11180 + 6500
-        assert_eq!(Market::files(&cid).unwrap_or_default(), (
+        assert_eq!(Murphy::files(&cid).unwrap_or_default(), (
             FileInfo {
                 file_size,
                 expired_on: 3303,
@@ -3561,12 +3561,12 @@ fn renew_file_should_work() {
             })
         );
         assert_eq!(Balances::free_balance(&reserved_pot), 39000);
-        assert_eq!(Market::used_trash_i(&cid).is_none(), true);
+        assert_eq!(Murphy::used_trash_i(&cid).is_none(), true);
         run_to_block(9000); // expired_on 3303 => all reward to liquidator charlie
-        assert_ok!(Market::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
+        assert_ok!(Murphy::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
         assert_eq!(Balances::free_balance(&charlie), 83200); // 42120 + 11180 + 6500 + 23400
-        assert_eq!(Market::used_trash_i(&cid).is_some(), true);
-        assert_eq!(Market::files(&cid).is_none(), true);
+        assert_eq!(Murphy::used_trash_i(&cid).is_some(), true);
+        assert_eq!(Murphy::files(&cid).is_none(), true);
         assert_eq!(Balances::free_balance(&reserved_pot), 166000); // 39000 + 127000
     });
 }
@@ -3585,8 +3585,8 @@ fn storage_pot_should_be_balanced() {
         let merchant = BOB;
         let charlie = CHARLIE;
 
-        let storage_pot = Market::storage_pot();
-        let reserved_pot = Market::reserved_pot();
+        let storage_pot = Murphy::storage_pot();
+        let reserved_pot = Murphy::reserved_pot();
         let _ = Balances::make_free_balance_be(&storage_pot, 1);
         assert_eq!(Balances::free_balance(&storage_pot), 1);
         assert_eq!(Balances::free_balance(&reserved_pot), 0);
@@ -3595,10 +3595,10 @@ fn storage_pot_should_be_balanced() {
         let merchants = vec![merchant.clone()];
         for who in merchants.iter() {
             let _ = Balances::make_free_balance_be(&who, 20_000_000);
-            assert_ok!(Market::register(Origin::signed(who.clone()), 6_000_000));
+            assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Market::place_storage_order(
+        assert_ok!(Murphy::place_storage_order(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -3626,20 +3626,20 @@ fn storage_pot_should_be_balanced() {
                 legal_wr_info.sig
         ));
 
-        assert_ok!(Market::add_prepaid(Origin::signed(source.clone()), cid.clone(), 400_000));
+        assert_ok!(Murphy::add_prepaid(Origin::signed(source.clone()), cid.clone(), 400_000));
         assert_eq!(Balances::free_balance(&storage_pot), 423401);
 
         run_to_block(2503);
         // 20% would be rewarded to liquidator charlie
-        assert_ok!(Market::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
+        assert_ok!(Murphy::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
         assert_eq!(Balances::free_balance(&storage_pot), 305621);
 
         run_to_block(8000); // expired_on 6000 => all reward to liquidator charlie
-        assert_ok!(Market::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
+        assert_ok!(Murphy::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
         assert_eq!(Balances::free_balance(&storage_pot), 150401);
 
         run_to_block(9000);
-        assert_ok!(Market::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
+        assert_ok!(Murphy::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
         assert_eq!(Balances::free_balance(&storage_pot), 1);
         assert_eq!(Balances::free_balance(&reserved_pot), 166000); // 39000 + 127000
     });

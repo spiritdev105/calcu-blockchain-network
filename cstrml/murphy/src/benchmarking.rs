@@ -12,7 +12,7 @@ use sp_std::vec;
 const SEED: u32 = 0;
 const ACCOUNT_INIT_BALANCE: u32 = 1_000_000_000;
 
-use crate::Module as Market;
+use crate::Module as Murphy;
 
 fn create_funded_user<T: Config>(string: &'static str, n: u32) -> T::AccountId {
     let user = account(string, n, SEED);
@@ -21,7 +21,7 @@ fn create_funded_user<T: Config>(string: &'static str, n: u32) -> T::AccountId {
     user
 }
 
-fn build_market_file<T: Config>(user: &T::AccountId, pub_key: &Vec<u8>, file_size: u64, valid_at: BlockNumber, expired_on: BlockNumber, calculated_at: BlockNumber, amount: u32)
+fn build_murphy_file<T: Config>(user: &T::AccountId, pub_key: &Vec<u8>, file_size: u64, valid_at: BlockNumber, expired_on: BlockNumber, calculated_at: BlockNumber, amount: u32)
     -> (FileInfo<T::AccountId, BalanceOf<T>>, UsedInfo)
 {
     let used_info = UsedInfo {
@@ -56,7 +56,7 @@ benchmarks! {
         let user = create_funded_user::<T>("user", 100);
     }: _(RawOrigin::Signed(user.clone()), T::Currency::minimum_balance() * 10u32.into())
     verify {
-        assert_eq!(Market::<T>::merchant_ledgers(&user), MerchantLedger {
+        assert_eq!(Murphy::<T>::merchant_ledgers(&user), MerchantLedger {
             collateral: T::Currency::minimum_balance() * 10u32.into(),
             reward: 0u32.into()
         });
@@ -64,10 +64,10 @@ benchmarks! {
 
     add_collateral {
         let user = create_funded_user::<T>("user", 100);
-        Market::<T>::register(RawOrigin::Signed(user.clone()).into(), T::Currency::minimum_balance() * 10u32.into()).expect("Something wrong during registering");
+        Murphy::<T>::register(RawOrigin::Signed(user.clone()).into(), T::Currency::minimum_balance() * 10u32.into()).expect("Something wrong during registering");
     }: _(RawOrigin::Signed(user.clone()), T::Currency::minimum_balance() * 10u32.into())
     verify {
-        assert_eq!(Market::<T>::merchant_ledgers(&user), MerchantLedger {
+        assert_eq!(Murphy::<T>::merchant_ledgers(&user), MerchantLedger {
             collateral: T::Currency::minimum_balance() * 20u32.into(),
             reward: 0u32.into()
         });
@@ -75,10 +75,10 @@ benchmarks! {
 
     cut_collateral {
         let user = create_funded_user::<T>("user", 100);
-        Market::<T>::register(RawOrigin::Signed(user.clone()).into(), T::Currency::minimum_balance() * 100u32.into()).expect("Something wrong during registering");
+        Murphy::<T>::register(RawOrigin::Signed(user.clone()).into(), T::Currency::minimum_balance() * 100u32.into()).expect("Something wrong during registering");
     }: _(RawOrigin::Signed(user.clone()), T::Currency::minimum_balance() * 10u32.into())
     verify {
-        assert_eq!(Market::<T>::merchant_ledgers(&user), MerchantLedger {
+        assert_eq!(Murphy::<T>::merchant_ledgers(&user), MerchantLedger {
             collateral: T::Currency::minimum_balance() * 90u32.into(),
             reward: 0u32.into()
         });
@@ -89,11 +89,11 @@ benchmarks! {
         let cid = vec![0];
         let file_size: u64 = 10;
         let pub_key = vec![1];
-        <self::Files<T>>::insert(&cid, build_market_file::<T>(&user, &pub_key, file_size, 300, 1000, 400, 1000));
+        <self::Files<T>>::insert(&cid, build_murphy_file::<T>(&user, &pub_key, file_size, 300, 1000, 400, 1000));
         system::Module::<T>::set_block_number(600u32.into());
     }: _(RawOrigin::Signed(user.clone()), cid.clone(), file_size, T::Currency::minimum_balance() * 10u32.into())
     verify {
-        assert_eq!(Market::<T>::files(&cid).unwrap_or_default().0.calculated_at, 600);
+        assert_eq!(Murphy::<T>::files(&cid).unwrap_or_default().0.calculated_at, 600);
     }
 
     calculate_reward {
@@ -101,12 +101,12 @@ benchmarks! {
         let cid = vec![0];
         let file_size: u64 = 10;
         let pub_key = vec![1];
-        <self::Files<T>>::insert(&cid, build_market_file::<T>(&user, &pub_key, file_size, 300, 1000, 400, 1000));
+        <self::Files<T>>::insert(&cid, build_murphy_file::<T>(&user, &pub_key, file_size, 300, 1000, 400, 1000));
         system::Module::<T>::set_block_number(2600u32.into());
         <T as crate::Config>::Currency::make_free_balance_be(&crate::Module::<T>::storage_pot(), 2000u32.into());
     }: _(RawOrigin::Signed(user.clone()), cid.clone())
     verify {
-        assert_eq!(Market::<T>::used_trash_i(&cid).is_some(), true);
+        assert_eq!(Murphy::<T>::used_trash_i(&cid).is_some(), true);
     }
 
 }

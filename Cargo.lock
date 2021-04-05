@@ -737,7 +737,7 @@ dependencies = [
  "cstrml-balances",
  "cstrml-candy",
  "cstrml-claims",
- "cstrml-market",
+ "cstrml-murphy",
  "cstrml-staking",
  "cstrml-tars",
  "cstrml-tars-benchmarking",
@@ -1283,7 +1283,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "cstrml-market"
+name = "cstrml-murphy"
 version = "0.11.1"
 dependencies = [
  "cst-primitives",
@@ -1335,7 +1335,7 @@ dependencies = [
  "base64 0.12.3",
  "cst-primitives",
  "cstrml-balances",
- "cstrml-market",
+ "cstrml-murphy",
  "frame-support",
  "frame-system",
  "hex",
@@ -1357,7 +1357,7 @@ version = "0.11.1"
 dependencies = [
  "cst-primitives",
  "cstrml-balances",
- "cstrml-market",
+ "cstrml-murphy",
  "cstrml-tars",
  "frame-benchmarking",
  "frame-support",

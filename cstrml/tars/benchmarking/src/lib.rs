@@ -9,7 +9,7 @@ use frame_support::traits::Currency;
 use frame_support::storage::StorageMap;
 use sp_runtime::traits::{StaticLookup, Zero};
 use codec::Decode;
-use market::{UsedInfo, FileInfo, Replica};
+use murphy::{UsedInfo, FileInfo, Replica};
 use primitives::*;
 use sp_std::{vec, prelude::*, collections::{btree_set::BTreeSet, btree_map::BTreeMap}, iter::FromIterator};
 
@@ -17,7 +17,7 @@ const SEED: u32 = 0;
 const EXPIRE_BLOCK_NUMBER: u32 = 2000;
 
 pub struct Module<T: Config>(tars::Module<T>);
-pub trait Config: market::Config + tars::Config {}
+pub trait Config: murphy::Config + tars::Config {}
 pub type Balance = u64;
 
 #[cfg(test)]
@@ -131,7 +131,7 @@ fn legal_work_report_with_deleted_files() -> ReportWorksInfo {
     }
 }
 
-fn add_market_files<T: Config>(files: Vec<(MerkleRoot, u64, u64)>, user: T::AccountId, pub_key: Vec<u8>) {
+fn add_murphy_files<T: Config>(files: Vec<(MerkleRoot, u64, u64)>, user: T::AccountId, pub_key: Vec<u8>) {
     for (file, file_size, _) in files.clone().iter() {
         let used_info = UsedInfo {
             used_size: *file_size,
@@ -152,15 +152,15 @@ fn add_market_files<T: Config>(files: Vec<(MerkleRoot, u64, u64)>, user: T::Acco
             file_size: *file_size,
             expired_on: 1000,
             calculated_at: 400,
-            amount: <T as market::Config>::Currency::minimum_balance() * 1000000000u32.into(),
+            amount: <T as murphy::Config>::Currency::minimum_balance() * 1000000000u32.into(),
             prepaid: Zero::zero(),
             reported_replica_count: 0,
             replicas
         };
-        <market::Files<T>>::insert(file, (file_info, used_info));
+        <murphy::Files<T>>::insert(file, (file_info, used_info));
     }
-    let storage_value = <T as market::Config>::Currency::minimum_balance() * 10000000u32.into();
-    <T as market::Config>::Currency::make_free_balance_be(&market::Module::<T>::storage_pot(), storage_value);
+    let storage_value = <T as murphy::Config>::Currency::minimum_balance() * 10000000u32.into();
+    <T as murphy::Config>::Currency::make_free_balance_be(&murphy::Module::<T>::storage_pot(), storage_value);
 }
 
 benchmarks! {
@@ -235,8 +235,8 @@ benchmarks! {
         let target_block_number:T::BlockNumber = 300u32.into();
         <system::BlockHash<T>>::insert(target_block_number, fake_bh);
 
-        // Prepare Files in market
-        add_market_files::<T>(wr.added_files.clone(), caller.clone(), wr.curr_pk.clone());
+        // Prepare Files in murphy
+        add_murphy_files::<T>(wr.added_files.clone(), caller.clone(), wr.curr_pk.clone());
     }: {
         tars::Module::<T>::report_works(
             RawOrigin::Signed(caller.clone()).into(),
@@ -274,8 +274,8 @@ benchmarks! {
         let target_block_number:T::BlockNumber = 300u32.into();
         <system::BlockHash<T>>::insert(target_block_number, fake_bh);
 
-        // Prepare Files in market
-        add_market_files::<T>(wr.added_files.clone(), caller.clone(), wr.curr_pk.clone());
+        // Prepare Files in murphy
+        add_murphy_files::<T>(wr.added_files.clone(), caller.clone(), wr.curr_pk.clone());
 
         // Report works at 300
         tars::Module::<T>::report_works(
