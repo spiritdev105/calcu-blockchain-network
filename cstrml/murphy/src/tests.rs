@@ -147,7 +147,7 @@ fn cut_collateral_should_fail_due_to_reward() {
 
 /// Place storage order test cases
 #[test]
-fn place_storage_order_should_work() {
+fn upload_should_work() {
     new_test_ext().execute_with(|| {
         // generate 50 blocks first
         run_to_block(50);
@@ -167,7 +167,7 @@ fn place_storage_order_should_work() {
 
         assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 60));
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -195,7 +195,7 @@ fn place_storage_order_should_work() {
 }
 
 #[test]
-fn place_storage_order_should_fail_due_to_too_large_file_size() {
+fn upload_should_fail_due_to_too_large_file_size() {
     new_test_ext().execute_with(|| {
         // generate 50 blocks first
         run_to_block(50);
@@ -213,7 +213,7 @@ fn place_storage_order_should_fail_due_to_too_large_file_size() {
 
         assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 60));
 
-        assert_noop!(Murphy::place_storage_order(
+        assert_noop!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ),
@@ -230,7 +230,7 @@ fn place_storage_order_should_fail_due_to_too_large_file_size() {
 // 1. Add amount
 // 2. Extend duration
 // 3. Extend replicas
-fn place_storage_order_should_work_for_extend_scenarios() {
+fn upload_should_work_for_extend_scenarios() {
     new_test_ext().execute_with(|| {
         // generate 50 blocks first
         run_to_block(50);
@@ -250,7 +250,7 @@ fn place_storage_order_should_work_for_extend_scenarios() {
         assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 6_000_000));
 
         // 1. New storage order
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -277,7 +277,7 @@ fn place_storage_order_should_work_for_extend_scenarios() {
         run_to_block(250);
         
         // 2. Add amount for sOrder not begin should work
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -372,7 +372,7 @@ fn place_storage_order_should_work_for_extend_scenarios() {
 
         // 3. Extend duration should work
         run_to_block(600);
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -401,7 +401,7 @@ fn place_storage_order_should_work_for_extend_scenarios() {
 
         // 4. Extend replicas should work
         run_to_block(800);
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 200
         ));
@@ -436,7 +436,7 @@ fn place_storage_order_should_work_for_extend_scenarios() {
 // Payout should be triggered by:
 // 1. Delete file(covered by tars module)
 // 2. Calculate reward
-// 3. Place started storage order(covered by `place_storage_order_should_work_for_extend_scenarios`)
+// 3. Place started storage order(covered by `upload_should_work_for_extend_scenarios`)
 fn do_calculate_reward_should_work() {
     new_test_ext().execute_with(|| {
         // generate 50 blocks first
@@ -458,7 +458,7 @@ fn do_calculate_reward_should_work() {
         assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 6_000_000));
 
         // 1. New storage order
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -576,7 +576,7 @@ fn do_calculate_reward_should_fail_due_to_insufficient_collateral() {
 
         assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 70_000));
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -723,7 +723,7 @@ fn do_calculate_reward_should_move_file_to_trash_due_to_expired() {
 
         assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 6_000_000));
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -833,7 +833,7 @@ fn do_calculate_reward_should_work_in_complex_timeline() {
             assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -1170,7 +1170,7 @@ fn do_calculate_reward_should_fail_due_to_not_live() {
         // collateral is 60 < 121 reward
         assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 6000));
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -1261,7 +1261,7 @@ fn do_calculate_reward_should_work_for_more_replicas() {
             assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -1460,7 +1460,7 @@ fn do_calculate_reward_should_only_pay_the_groups() {
             assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -1674,7 +1674,7 @@ fn insert_replica_should_work_for_complex_scenario() {
             assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -1988,7 +1988,7 @@ fn clear_trash_should_work() {
         assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 6000));
 
         for cid in file_lists.clone().iter() {
-            assert_ok!(Murphy::place_storage_order(
+            assert_ok!(Murphy::upload(
                 Origin::signed(source.clone()), cid.clone(),
                 file_size, 0
             ));
@@ -2152,7 +2152,7 @@ fn withdraw_staking_pot_should_work() {
 
         assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 60));
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -2208,7 +2208,7 @@ fn scenario_test_for_reported_file_size_is_not_same_with_file_size() {
         assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 6000));
 
         for cid in file_lists.clone().iter() {
-            assert_ok!(Murphy::place_storage_order(
+            assert_ok!(Murphy::upload(
                 Origin::signed(source.clone()), cid.clone(),
                 file_size, 0
             ));
@@ -2273,7 +2273,7 @@ fn scenario_test_for_reported_file_size_is_not_same_with_file_size() {
 
 /// reported file size is not same with file size
 #[test]
-fn double_place_storage_order_file_size_check_should_work() {
+fn double_upload_file_size_check_should_work() {
     new_test_ext().execute_with(|| {
         // generate 50 blocks first
         run_to_block(50);
@@ -2290,7 +2290,7 @@ fn double_place_storage_order_file_size_check_should_work() {
 
         assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 6000));
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid1.clone(),
             file_size, 0
         ));
@@ -2339,7 +2339,7 @@ fn double_place_storage_order_file_size_check_should_work() {
         );
 
         // 80 < 100 => throw an error
-        assert_noop!(Murphy::place_storage_order(
+        assert_noop!(Murphy::upload(
             Origin::signed(source.clone()), cid1.clone(), 80, 0),
             DispatchError::Module {
                 index: 3,
@@ -2349,7 +2349,7 @@ fn double_place_storage_order_file_size_check_should_work() {
         );
 
         // 12000000 > 100. Only need amount for 100
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid1.clone(),
             12000000, 0
         ));
@@ -2379,7 +2379,7 @@ fn double_place_storage_order_file_size_check_should_work() {
 }
 
 #[test]
-fn place_storage_order_for_expired_file_should_inherit_the_status() {
+fn upload_for_expired_file_should_inherit_the_status() {
     new_test_ext().execute_with(|| {
         // generate 50 blocks first
         run_to_block(50);
@@ -2404,7 +2404,7 @@ fn place_storage_order_for_expired_file_should_inherit_the_status() {
             assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -2534,7 +2534,7 @@ fn place_storage_order_for_expired_file_should_inherit_the_status() {
 
         run_to_block(1803);
         <tars::ReportedInSlot>::insert(legal_pk.clone(), 1500, true);
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -2582,7 +2582,7 @@ fn place_storage_order_for_expired_file_should_inherit_the_status() {
 
 
 #[test]
-fn place_storage_order_for_expired_file_should_make_it_pending_if_replicas_is_zero() {
+fn upload_for_expired_file_should_make_it_pending_if_replicas_is_zero() {
     new_test_ext().execute_with(|| {
         // generate 50 blocks first
         run_to_block(50);
@@ -2607,7 +2607,7 @@ fn place_storage_order_for_expired_file_should_make_it_pending_if_replicas_is_ze
             assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -2759,7 +2759,7 @@ fn place_storage_order_for_expired_file_should_make_it_pending_if_replicas_is_ze
 
         run_to_block(1803);
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -2802,7 +2802,7 @@ fn dynamic_used_size_should_work() {
             assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -2891,7 +2891,7 @@ fn delete_used_size_should_work() {
             assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -2982,7 +2982,7 @@ fn files_size_should_not_be_decreased_twice() {
             assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -3129,7 +3129,7 @@ fn clear_same_file_in_trash_should_work() {
             assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -3196,7 +3196,7 @@ fn clear_same_file_in_trash_should_work() {
         assert_eq!(Murphy::used_trash_size_i(), 1);
 
         // place a same storage order
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ));
@@ -3259,7 +3259,7 @@ fn reward_liquidator_should_work() {
                 message: Some("FileNotExist")
         });
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -3309,7 +3309,7 @@ fn reward_liquidator_should_work() {
         assert_eq!(Murphy::files(&cid).is_none(), true);
         assert_eq!(Murphy::used_trash_i(&cid).is_some(), true);
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -3320,7 +3320,7 @@ fn reward_liquidator_should_work() {
         assert_ok!(Murphy::calculate_reward(Origin::signed(charlie.clone()), cid.clone()));
         assert_eq!(Balances::free_balance(&charlie), 4680);
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -3399,7 +3399,7 @@ fn set_global_switch_should_work() {
 
         assert_ok!(Murphy::register(Origin::signed(merchant.clone()), 60));
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -3407,7 +3407,7 @@ fn set_global_switch_should_work() {
             Origin::root(),
             false
         ));
-        assert_noop!(Murphy::place_storage_order(
+        assert_noop!(Murphy::upload(
             Origin::signed(source), cid.clone(),
             file_size, 0
         ),
@@ -3454,7 +3454,7 @@ fn renew_file_should_work() {
                 message: Some("FileNotExist")
         });
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
@@ -3598,7 +3598,7 @@ fn storage_pot_should_be_balanced() {
             assert_ok!(Murphy::register(Origin::signed(who.clone()), 6_000_000));
         }
 
-        assert_ok!(Murphy::place_storage_order(
+        assert_ok!(Murphy::upload(
             Origin::signed(source.clone()), cid.clone(),
             file_size, 0
         ));
