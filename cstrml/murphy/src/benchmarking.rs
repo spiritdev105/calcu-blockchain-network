@@ -84,7 +84,7 @@ benchmarks! {
         });
     }
 
-    place_storage_order {
+    upload {
         let user = create_funded_user::<T>("user", 100);
         let cid = vec![0];
         let file_size: u64 = 10;
@@ -139,9 +139,9 @@ mod tests {
     }
 
     #[test]
-    fn place_storage_order() {
+    fn upload() {
         new_test_ext().execute_with(|| {
-            assert_ok!(test_benchmark_place_storage_order::<Test>());
+            assert_ok!(test_benchmark_upload::<Test>());
         });
     }
 
