@@ -61,7 +61,7 @@ pub trait WeightInfo {
     fn register() -> Weight;
     fn add_collateral() -> Weight;
     fn cut_collateral() -> Weight;
-    fn place_storage_order() -> Weight;
+    fn upload() -> Weight;
     fn calculate_reward() -> Weight;
     fn reward_merchant() -> Weight;
 }
@@ -540,8 +540,8 @@ decl_module! {
         }
 
         /// Place a storage order
-        #[weight = T::WeightInfo::place_storage_order()]
-        pub fn place_storage_order(
+        #[weight = T::WeightInfo::upload()]
+        pub fn upload(
             origin,
             cid: MerkleRoot,
             reported_file_size: u64,
@@ -589,7 +589,7 @@ decl_module! {
         }
 
         /// Place a storage order
-        #[weight = T::WeightInfo::place_storage_order()]
+        #[weight = T::WeightInfo::upload()]
         pub fn add_prepaid(
             origin,
             cid: MerkleRoot,
