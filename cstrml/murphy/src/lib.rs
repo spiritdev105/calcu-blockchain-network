@@ -83,7 +83,9 @@ pub struct FileInfo<AccountId, Balance> {
     pub reported_replica_count: u32,
     // The replica list
     // TODO: restrict the length of this replica
-    pub replicas: Vec<Replica<AccountId>>
+    pub replicas: Vec<Replica<AccountId>>,
+    // Is NFT element
+    pub is_nft: bool
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, Encode, Decode, Default)]
@@ -545,7 +547,8 @@ decl_module! {
             origin,
             cid: MerkleRoot,
             reported_file_size: u64,
-            #[compact] tips: BalanceOf<T>
+            #[compact] tips: BalanceOf<T>,
+            is_nft: bool
         ) -> DispatchResult {
             // 1. Service should be available right now.
             ensure!(Self::murphy_switch(), Error::<T>::PlaceOrderNotAvailable);
@@ -577,7 +580,7 @@ decl_module! {
             Self::do_calculate_reward(&cid, curr_bn);
 
             // 7. three scenarios: new file, extend time(refresh time)
-            Self::upsert_new_file_info(&cid, &amount, &curr_bn, charged_file_size);
+            Self::upsert_new_file_info(&cid, &amount, &curr_bn, charged_file_size, is_nft);
 
             // 8. Update storage price.
             #[cfg(not(test))]
@@ -951,7 +954,7 @@ impl<T: Config> Module<T> {
         }
     }
 
-    fn upsert_new_file_info(cid: &MerkleRoot, amount: &BalanceOf<T>, curr_bn: &BlockNumber, file_size: u64) {
+    fn upsert_new_file_info(cid: &MerkleRoot, amount: &BalanceOf<T>, curr_bn: &BlockNumber, file_size: u64, is_nft: bool) {
         // Extend expired_on
         if let Some((mut file_info, used_info)) = Self::files(cid) {
             // expired_on < calculated_at => file is not live yet. This situation only happen for new file.
@@ -981,7 +984,8 @@ impl<T: Config> Module<T> {
                 amount: amount.clone(),
                 prepaid: Zero::zero(),
                 reported_replica_count: 0u32,
-                replicas: vec![]
+                replicas: vec![],
+                is_nft
             };
             let used_info = UsedInfo {
                 used_size: 0,
