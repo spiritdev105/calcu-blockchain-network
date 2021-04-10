@@ -155,7 +155,8 @@ fn add_murphy_files<T: Config>(files: Vec<(MerkleRoot, u64, u64)>, user: T::Acco
             amount: <T as murphy::Config>::Currency::minimum_balance() * 1000000000u32.into(),
             prepaid: Zero::zero(),
             reported_replica_count: 0,
-            replicas
+            replicas,
+            is_nft: false
         };
         <murphy::Files<T>>::insert(file, (file_info, used_info));
     }
