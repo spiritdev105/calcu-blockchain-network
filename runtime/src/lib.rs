@@ -686,11 +686,6 @@ impl balances::Config for Runtime {
     type MaxLocks = MaxLocks;
 }
 
-impl candy::Config for Runtime {
-    type Event = Event;
-    type Balance = Balance;
-}
-
 parameter_types! {
 	pub Prefix: &'static [u8] = b"Pay CALs to the Calcu account:";
 }
@@ -832,8 +827,7 @@ construct_runtime! {
         // Sudo. Last module. Usable initially, but removed once governance enabled.
         Sudo: pallet_sudo::{Module, Call, Storage, Config<T>, Event<T>},
 
-        // Token candy and claims bridge
-        Candy: candy::{Module, Call, Storage, Event<T>},
+        // Token claims bridge
         Claims: claims::{Module, Call, Storage, Event<T>, ValidateUnsigned},
     }
 }
