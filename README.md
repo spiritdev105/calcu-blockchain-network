@@ -1,7 +1,6 @@
 # Calculus Blockchain Network
 
-Unlimited Space Beyond Imagination
----
+** Unlimited Space Beyond Imagination **
 Disrupting the world of data storage with Decentralized Storage Network of Calculus
 
 ## Build
