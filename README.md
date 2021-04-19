@@ -4,6 +4,8 @@
 > 
 > Disrupting the world of data storage with Decentralized Storage Network of Calculus
 
+![calcu-hd-diagram](https://user-images.githubusercontent.com/82827335/115270075-8d0f5980-a16e-11eb-9c4c-ba561f8c88db.png)
+
 ## Build
 ```shell
 cargo build --release
