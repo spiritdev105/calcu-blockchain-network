@@ -665,7 +665,7 @@ checksum = "631ae5198c9be5e753e5cc215e1bd73c2b466a3565173db433f52bb9d3e66dba"
 
 [[package]]
 name = "calcu"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "calcu-rpc",
  "calcu-runtime",
@@ -703,7 +703,7 @@ dependencies = [
 
 [[package]]
 name = "calcu-rpc"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "calcu-runtime",
  "cst-primitives",
@@ -731,7 +731,7 @@ dependencies = [
 
 [[package]]
 name = "calcu-runtime"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "cst-primitives",
  "frame-benchmarking",
@@ -1223,7 +1223,7 @@ dependencies = [
 
 [[package]]
 name = "cst-primitives"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -4349,7 +4349,7 @@ dependencies = [
 
 [[package]]
 name = "pallets-balances"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "cst-primitives",
  "frame-benchmarking",
@@ -4366,7 +4366,7 @@ dependencies = [
 
 [[package]]
 name = "pallets-candy"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -4380,7 +4380,7 @@ dependencies = [
 
 [[package]]
 name = "pallets-claims"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -4398,7 +4398,7 @@ dependencies = [
 
 [[package]]
 name = "pallets-murphy"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "cst-primitives",
  "frame-benchmarking",
@@ -4418,7 +4418,7 @@ dependencies = [
 
 [[package]]
 name = "pallets-staking"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "cst-primitives",
  "frame-benchmarking",
@@ -4444,7 +4444,7 @@ dependencies = [
 
 [[package]]
 name = "pallets-tars"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "base64 0.12.3",
  "cst-primitives",
@@ -4467,7 +4467,7 @@ dependencies = [
 
 [[package]]
 name = "pallets-tars-benchmarking"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "cst-primitives",
  "frame-benchmarking",
@@ -4504,9 +4504,9 @@ dependencies = [
 
 [[package]]
 name = "parity-multiaddr"
-version = "0.11.1"
+version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2c6805f98667a3828afb2ec2c396a8d610497e8d546f5447188aae47c5a79ec"
+checksum = "58341485071825827b7f03cf7efd1cb21e6a709bea778fb50227fd45d2f361b4"
 dependencies = [
  "arrayref",
  "bs58",
