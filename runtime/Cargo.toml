@@ -70,16 +70,16 @@ frame-system-rpc-runtime-api = { default-features = false, version = "3.0.0" }
 pallet-transaction-payment-rpc-runtime-api = { default-features = false, version = "3.0.0" }
 
 # calcu runtime modules
-balances = { package = "cstrml-balances", path = "../cstrml/balances", default-features = false, version = "0.11.1" }
-candy = { package = "cstrml-candy", path = "../cstrml/candy", default-features = false, version = "0.11.1"  }
-claims = { package = "cstrml-claims", path = "../cstrml/claims", default-features = false, version = "0.11.1" }
-murphy = { package = "cstrml-murphy", path = "../cstrml/murphy", default-features = false, version = "0.11.1" }
+balances = { package = "pallets-balances", path = "../pallets/balances", default-features = false, version = "0.11.1" }
+candy = { package = "pallets-candy", path = "../pallets/candy", default-features = false, version = "0.11.1"  }
+claims = { package = "pallets-claims", path = "../pallets/claims", default-features = false, version = "0.11.1" }
+murphy = { package = "pallets-murphy", path = "../pallets/murphy", default-features = false, version = "0.11.1" }
 primitives = { package = "cst-primitives", path = "../primitives", default-features = false, version = "0.11.1" }
-tars = { package = "cstrml-tars", path = "../cstrml/tars", default-features = false, version = "0.11.1" }
-staking = { package = "cstrml-staking", path = "../cstrml/staking", default-features = false, version = "0.11.1" }
+tars = { package = "pallets-tars", path = "../pallets/tars", default-features = false, version = "0.11.1" }
+staking = { package = "pallets-staking", path = "../pallets/staking", default-features = false, version = "0.11.1" }
 
 # calcu benchmark dependencies
-tars-benchmarking = { package = "cstrml-tars-benchmarking", path = "../cstrml/tars/benchmarking", default-features = false, optional = true, version = "0.11.1" }
+tars-benchmarking = { package = "pallets-tars-benchmarking", path = "../pallets/tars/benchmarking", default-features = false, optional = true, version = "0.11.1" }
 
 [features]
 default = ["std"]

@@ -1,5 +1,5 @@
 [package]
-name = "cstrml-tars-benchmarking"
+name = "pallets-tars"
 version = "0.11.1"
 authors = ["calcuio"]
 edition = "2018"
@@ -9,8 +9,10 @@ repository = "https://github.com/calcuio/calcu/"
 
 [dependencies]
 # third party dependencies
-codec = { default-features = false, package = "parity-scale-codec", features = ["derive"], version = "2.0.0" }
+codec = { default-features = false, package = "parity-scale-codec", version = "2.0.0" }
 serde = { optional = true, version = "1.0.116" }
+base64 = { default-features = false, features = ["alloc"], version = "0.12.2" }
+p256 = { default-features = false, features = ["ecdsa"], version = "0.5.1" }
 
 # substrate frame dependencies
 frame-support = { default-features = false, version = "3.0.0" }
@@ -22,13 +24,16 @@ sp-io = { default-features = false, version = "3.0.0" }
 sp-runtime = { default-features = false, version = "3.0.0" }
 sp-std = { default-features = false, version = "3.0.0" }
 
-frame-benchmarking = { version = "3.0.0", default-features = false }
-
 # calcu runtime modules
-primitives = { package = "cst-primitives", path = "../../../primitives", default-features = false }
-murphy = { package = "cstrml-murphy", path = "../../murphy", default-features = false }
-tars = { package = "cstrml-tars", path = "../../tars", default-features = false }
-balances = { package = "cstrml-balances", path = "../../balances", default-features = false }
+primitives = { package = "cst-primitives", path = "../../primitives", default-features = false }
+webpki = { package = "webpki", path = "../../utils/webpki", default-features = false }
+serde_json = { package = "serde_json_no_std", path = "../../utils/serde_json_no_std", default-features = false, features = ["alloc"] }
+
+[dev-dependencies]
+keyring = { package = "sp-keyring", version = "3.0.0" }
+balances = { package = "pallets-balances", path = "../balances" }
+murphy = { package = "pallets-murphy", path = "../murphy" }
+hex = "0.4.2"
 
 [features]
 default = ["std"]
@@ -42,12 +47,5 @@ std = [
     "sp-std/std",
     "frame-system/std",
     "primitives/std",
-    "frame-benchmarking/std",
-    "tars/std",
-    "murphy/std",
-    "balances/std"
+    "webpki/std"
 ]
-
-[dev-dependencies]
-hex = "0.4.2"
-keyring = { package = "sp-keyring", version = "3.0.0" }

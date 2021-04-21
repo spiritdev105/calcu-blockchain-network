@@ -11,13 +11,13 @@ exclude = [
 ]
 
 members = [
-    'cstrml/balances',
-    'cstrml/candy',
-    'cstrml/claims',
-    'cstrml/staking',
-    'cstrml/tars',
-    'cstrml/murphy',
-    'cstrml/tars/benchmarking',
+    'pallets/balances',
+    'pallets/candy',
+    'pallets/claims',
+    'pallets/staking',
+    'pallets/tars',
+    'pallets/murphy',
+    'pallets/tars/benchmarking',
     'runtime',
     'rpc',
     'node',
