@@ -1,5 +1,5 @@
 [package]
-name = "cstrml-murphy"
+name = "pallets-murphy"
 version = "0.11.1"
 authors = ["calcuio"]
 edition = "2018"
@@ -47,6 +47,6 @@ runtime-benchmarks = [
 
 [dev-dependencies]
 hex = "0.4.2"
-tars = { package = "cstrml-tars", path = "../tars" }
-balances = { package = "cstrml-balances", path = "../balances" }
+tars = { package = "pallets-tars", path = "../tars" }
+balances = { package = "pallets-balances", path = "../balances" }
 frame-benchmarking = "3.0.0"

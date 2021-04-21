@@ -1,5 +1,5 @@
 [package]
-name = "cstrml-candy"
+name = "pallets-candy"
 version = "0.11.1"
 authors = ["calcuio"]
 edition = "2018"
