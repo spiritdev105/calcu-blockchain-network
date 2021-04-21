@@ -4,7 +4,7 @@ version = "0.21.4"
 authors = ["calcuio"]
 edition = "2018"
 license = "GPL-3.0"
-homepage = "https://calcu.network"
+homepage = "https://calcu.io"
 repository = "https://github.com/calcuio/calcu/"
 
 [dependencies]

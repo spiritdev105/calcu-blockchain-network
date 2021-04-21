@@ -5,7 +5,7 @@ name = "calcu-runtime"
 version = "0.21.4"
 build = "build.rs"
 license = "GPL-3.0"
-homepage = "https://calcu.network"
+homepage = "https://calcu.io"
 repository = "https://github.com/calcuio/calcu/"
 
 [build-dependencies]
