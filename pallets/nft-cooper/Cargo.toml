@@ -8,23 +8,23 @@ edition = "2018"
 serde = { version = "1.0.111", optional = true }
 codec = { package = "parity-scale-codec", version = "2.0.0", default-features = false }
 enumflags2 = { version = "0.6.3" }
-sp-core = { version = "3.0.0", default-features = false, path = "../../primitives/core" }
-sp-std = { version = "3.0.0", default-features = false, path = "../../primitives/std" }
-sp-runtime = { version = "3.0.0", default-features = false, path = "../../primitives/runtime" }
-frame-support = { version = "3.0.0", default-features = false, path = "../../frame/support" }
-frame-system = { version = "3.0.0", default-features = false, path = "../../frame/system" }
-pallet-proxy = { version = "3.0.0", default-features = false, path = "../../frame/proxy" }
-pallet-timestamp = { version = "3.0.0", default-features = false, path = "../../frame/timestamp" }
-orml-traits = { version = "0.4.1-dev", default-features = false, path = "../orml-traits" }
-orml-nft = { version = "0.4.1-dev", default-features = false, path = "../orml-nft" }
+sp-core = { version = "3.0.0", default-features = false }
+sp-std = { version = "3.0.0", default-features = false }
+sp-runtime = { version = "3.0.0", default-features = false }
+frame-support = { version = "3.0.0", default-features = false }
+frame-system = { version = "3.0.0", default-features = false}
+pallet-proxy = { version = "3.0.0", default-features = false }
+pallet-timestamp = { version = "3.0.0", default-features = false }
+orml-traits = { version = "0.4.0", default-features = false }
+orml-nft = { version = "0.4.0"}
 nft-config = { default-features = false, path = "../nft-config" }
 
 [dev-dependencies]
-sp-io = { version = "3.0.0", path = "../../primitives/io" }
-pallet-balances = { version = "3.0.0", path = "../../frame/balances" }
-pallet-utility = { version = "3.0.0", path = "../../frame/utility" }
-orml-currencies = { version = "0.4.1-dev", path = "../orml-currencies" }
-orml-tokens = { version = "0.4.1-dev", path = "../orml-tokens" }
+sp-io = { version = "3.0.0" }
+pallet-balances = { version = "3.0.0" }
+pallet-utility = { version = "3.0.0" }
+orml-currencies = { version = "0.4.0"}
+orml-tokens =  { version = "0.4.0"}
 
 [features]
 default = ["std"]
