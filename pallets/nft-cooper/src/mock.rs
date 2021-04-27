@@ -4,7 +4,7 @@ use super::*;
 
 use orml_currencies::BasicCurrencyAdapter;
 use sp_core::constants_types::*;
-use crate as nftmart_nft;
+use crate as nft_cooper;
 use codec::{Decode, Encode};
 use frame_support::{
 	construct_runtime, parameter_types,
@@ -158,23 +158,23 @@ impl orml_currencies::Config for Runtime {
 impl orml_nft::Config for Runtime {
 	type ClassId = sp_core::constants_types::ClassId;
 	type TokenId = sp_core::constants_types::TokenId;
-	type ClassData = nftmart_nft::ClassData<BlockNumberOf<Self>>;
-	type TokenData = nftmart_nft::TokenData<BlockNumberOf<Self>>;
+	type ClassData = nft_cooper::ClassData<BlockNumberOf<Self>>;
+	type TokenData = nft_cooper::TokenData<BlockNumberOf<Self>>;
 }
 
 parameter_types! {
 	pub const CreateClassDeposit: Balance = 50;
 	pub const CreateTokenDeposit: Balance = 10;
 	pub const MetaDataByteDeposit: Balance = 1;
-	pub const NftModuleId: ModuleId = ModuleId(*b"nftmart*");
+	pub const NFTModuleId: ModuleId = ModuleId(*b"nft_cooper*");
 }
 
-impl nftmart_nft::Config for Runtime {
+impl nft_cooper::Config for Runtime {
 	type Event = Event;
 	type CreateClassDeposit = CreateClassDeposit;
 	type MetaDataByteDeposit = MetaDataByteDeposit;
 	type CreateTokenDeposit = CreateTokenDeposit;
-	type ModuleId = NftModuleId;
+	type ModuleId = NFTModuleId;
 	type Currency = Balances;
 	type MultiCurrency = Currencies;
 	type CategoryId = sp_core::constants_types::CategoryId;
@@ -203,7 +203,7 @@ construct_runtime!(
 		Currencies: orml_currencies::{Module, Call, Event<T>},
 		OrmlNFT: orml_nft::{Module, Storage, Config<T>},
 		NFTConfig: nftconf::{Module, Call, Event<T>},
-		Nftmart: nftmart_nft::{Module, Call, Event<T>},
+		NFTCooper: nft_cooper::{Module, Call, Event<T>},
 	}
 );
 

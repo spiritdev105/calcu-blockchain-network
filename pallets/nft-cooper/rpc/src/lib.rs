@@ -4,17 +4,17 @@ use jsonrpc_core::{Error as RpcError, ErrorCode, Result};
 use jsonrpc_derive::rpc;
 use sp_runtime::{generic::BlockId, traits::{Block as BlockT}};
 use sp_api::ProvideRuntimeApi;
-pub use nftmart_rpc_runtime_api::NFTCooperApi as NFTCooperRuntimeApi;
+pub use nft_cooper_rpc_runtime_api::NFTCooperApi as NFTCooperRuntimeApi;
 
 #[rpc]
 pub trait NFTCooperApi {
-	#[rpc(name = "nftmart_mintTokenDeposit")]
+	#[rpc(name = "nft_cooper_mintTokenDeposit")]
 	fn mint_token_deposit(&self, metadata_len: u32, quantity: u32) -> Result<(String, String)>;
 
-	#[rpc(name = "nftmart_createClassDeposit")]
+	#[rpc(name = "nft_cooper_createClassDeposit")]
 	fn create_class_deposit(&self, metadata_len: u32, name_len: u32, description_len: u32) -> Result<(String, String)>;
 
-	#[rpc(name = "nftmart_addClassAdminDeposit")]
+	#[rpc(name = "nft_cooper_addClassAdminDeposit")]
 	fn add_class_admin_deposit(&self, admin_count: u32) -> Result<String>;
 }
 
@@ -58,12 +58,12 @@ where
 		$ curl http://localhost:9933 -H "Content-Type:application/json;charset=utf-8" -d   '{
 		 "jsonrpc":"2.0",
 		  "id":1,
-		  "method":"nftmart_mintTokenDeposit",
+		  "method":"nft_cooper_mintTokenDeposit",
 		  "params": [4, 3]
 		}'
 		{"jsonrpc":"2.0","result":["1040000000000","3120000000000"],"id":1}
 		$ websocat ws://localhost:9944
-		{"id":1,"jsonrpc":"2.0","method":"nftmart_mintTokenDeposit","params":[4, 3]}
+		{"id":1,"jsonrpc":"2.0","method":"nft_cooper_mintTokenDeposit","params":[4, 3]}
 		{"jsonrpc":"2.0","result":["1040000000000","3120000000000"],"id":1}
 	 */
 	fn mint_token_deposit(&self, metadata_len: u32, quantity: u32) -> Result<(String, String)> {
