@@ -13,8 +13,7 @@ use sp_core::constants_types::{Balance, ACCURACY};
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 use sp_runtime::{
-	traits::{CheckedAdd, Bounded,
-			 AccountIdConversion, StaticLookup, Zero, One, AtLeast32BitUnsigned},
+	traits::{CheckedAdd, Bounded, AccountIdConversion, StaticLookup, Zero, One, AtLeast32BitUnsigned},
 	ModuleId, RuntimeDebug, SaturatedConversion,
 };
 use codec::FullCodec;
@@ -58,11 +57,8 @@ pub struct ClassData<BlockNumber> {
 	/// The minimum balance to create class
 	#[codec(compact)]
 	pub deposit: Balance,
-	/// Property of all tokens in this class.
 	pub properties: Properties,
-	/// Name of class.
 	pub name: Vec<u8>,
-	/// Description of class.
 	pub description: Vec<u8>,
 	#[codec(compact)]
 	pub create_block: BlockNumber,
@@ -205,7 +201,7 @@ pub mod module {
 	pub trait Config: frame_system::Config +
 		orml_nft::Config<ClassData = ClassData<BlockNumberOf<Self>>, TokenData = TokenData<BlockNumberOf<Self>>> +
 		pallet_proxy::Config +
-		nftmart_config::Config
+		nftconf::Config
 	{
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 
@@ -602,7 +598,7 @@ pub mod module {
 		#[transactional]
 		pub fn create_class(origin: OriginFor<T>, metadata: NFTMetadata, name: Vec<u8>, description: Vec<u8>, properties: Properties) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
-			ensure!(nftmart_config::Pallet::<T>::account_whitelist(&who).is_some(), Error::<T>::AccountNotInWhitelist);
+			ensure!(nftconf::Pallet::<T>::account_whitelist(&who).is_some(), Error::<T>::AccountNotInWhitelist);
 
 			// TODO: pass constants from runtime configuration.
 			ensure!(name.len() <= 20, Error::<T>::NameTooLong);
@@ -651,7 +647,7 @@ pub mod module {
 		) -> DispatchResultWithPostInfo {
 			let who = ensure_signed(origin)?;
 			let to = T::Lookup::lookup(to)?;
-			ensure!(nftmart_config::Pallet::<T>::account_whitelist(&to).is_some(), Error::<T>::AccountNotInWhitelist);
+			ensure!(nftconf::Pallet::<T>::account_whitelist(&to).is_some(), Error::<T>::AccountNotInWhitelist);
 
 			ensure!(quantity >= 1, Error::<T>::InvalidQuantity);
 			let class_info = orml_nft::Module::<T>::classes(class_id).ok_or(Error::<T>::ClassIdNotFound)?;

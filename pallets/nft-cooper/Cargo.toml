@@ -1,8 +1,10 @@
 [package]
 name = "nft-cooper"
 version = "3.0.0"
-authors = ["NFTMart Developers"]
+authors = ["calcuio"]
 edition = "2018"
+homepage = "https://calcu.io"
+repository = "https://github.com/calcuio/calcu/"
 
 [dependencies]
 serde = { version = "1.0.111", optional = true }
