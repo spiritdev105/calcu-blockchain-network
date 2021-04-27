@@ -1,16 +1,15 @@
 [package]
-name = "nftmart-rpc-runtime-api"
+name = "nft-cooper-rpc-runtime-api"
 version = "3.0.0"
-authors = ["NFTMart Developers"]
+authors = ["calcuio"]
 edition = "2018"
-
-[package.metadata.docs.rs]
-targets = ["x86_64-unknown-linux-gnu"]
+homepage = "https://calcu.io"
+repository = "https://github.com/calcuio/calcu/"
 
 [dependencies]
-sp-api = { version = "3.0.0", default-features = false, path = "../../../../primitives/api" }
-sp-std = { version = "3.0.0", default-features = false, path = "../../../../primitives/std" }
-sp-core = { version = "3.0.0", default-features = false, path = "../../../../primitives/core" }
+sp-api = { version = "3.0.0", default-features = false }
+sp-std = { version = "3.0.0", default-features = false}
+sp-core = { version = "3.0.0", default-features = false }
 nft-cooper = { version = "3.0.0", default-features = false, path = "../../../nft-cooper" }
 
 [features]

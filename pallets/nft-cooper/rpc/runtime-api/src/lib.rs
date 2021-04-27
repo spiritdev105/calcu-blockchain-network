@@ -2,11 +2,11 @@
 
 pub use sp_core::constants_types::Balance;
 pub use sp_std::vec::Vec;
-pub use nftmart_nft::NFTMetadata;
+pub use nft_cooper::NFTMetadata;
 
 sp_api::decl_runtime_apis! {
 	/// The helper API to calculate deposit.
-	pub trait NFTMartApi {
+	pub trait NFTCooperApi {
 		/// mint_token_deposit
 		fn mint_token_deposit(metadata_len: u32, quantity: u32) -> (Balance, Balance);
 		/// add_class_admin_deposit

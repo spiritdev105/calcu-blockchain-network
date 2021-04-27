@@ -4,10 +4,10 @@ use jsonrpc_core::{Error as RpcError, ErrorCode, Result};
 use jsonrpc_derive::rpc;
 use sp_runtime::{generic::BlockId, traits::{Block as BlockT}};
 use sp_api::ProvideRuntimeApi;
-pub use nftmart_rpc_runtime_api::NFTMartApi as NFTMartRuntimeApi;
+pub use nftmart_rpc_runtime_api::NFTCooperApi as NFTCooperRuntimeApi;
 
 #[rpc]
-pub trait NFTMartApi {
+pub trait NFTCooperApi {
 	#[rpc(name = "nftmart_mintTokenDeposit")]
 	fn mint_token_deposit(&self, metadata_len: u32, quantity: u32) -> Result<(String, String)>;
 
@@ -18,14 +18,14 @@ pub trait NFTMartApi {
 	fn add_class_admin_deposit(&self, admin_count: u32) -> Result<String>;
 }
 
-/// A struct that implements the [`NFTMartApi`].
-pub struct NFTMart<C, P> {
+/// A struct that implements the [`NFTCooperApi`].
+pub struct NFTCooper<C, P> {
 	client: Arc<C>,
 	_marker: std::marker::PhantomData<P>,
 }
 
-impl<C, P> NFTMart<C, P> {
-	/// Create new `NFTMart` with the given reference to the client.
+impl<C, P> NFTCooper<C, P> {
+	/// Create new `NFTCooper` with the given reference to the client.
 	pub fn new(client: Arc<C>) -> Self {
 		Self { client, _marker: Default::default() }
 	}
@@ -48,11 +48,11 @@ impl From<Error> for i64 {
 	}
 }
 
-impl<C, Block> NFTMartApi for NFTMart<C, Block>
+impl<C, Block> NFTCooperApi for NFTCooper<C, Block>
 where
 	Block: BlockT,
 	C: 'static + ProvideRuntimeApi<Block> + HeaderBackend<Block>,
-	C::Api: NFTMartRuntimeApi<Block>,
+	C::Api: NFTCooperRuntimeApi<Block>,
 {
 	/*
 		$ curl http://localhost:9933 -H "Content-Type:application/json;charset=utf-8" -d   '{

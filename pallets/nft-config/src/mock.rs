@@ -1,7 +1,7 @@
 #![cfg(test)]
 
 use sp_core::constants_types::*;
-use crate as nftmart_config;
+use crate as nftconf;
 use codec::{Decode, Encode};
 use frame_support::{
 	construct_runtime, parameter_types,
@@ -118,7 +118,7 @@ impl pallet_proxy::Config for Runtime {
 	type AnnouncementDepositFactor = AnnouncementDepositFactor;
 }
 
-impl nftmart_config::Config for Runtime {
+impl nftconf::Config for Runtime {
 	type Event = Event;
 }
 
@@ -137,7 +137,7 @@ construct_runtime!(
 		Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
 		Proxy: pallet_proxy::{Module, Call, Storage, Event<T>},
 		Utility: pallet_utility::{Module, Call, Event},
-		NftmartConfig: nftmart_config::{Module, Call, Event<T>},
+		NFTConfig: nftconf::{Module, Call, Event<T>},
 	}
 );
 
