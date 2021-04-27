@@ -19,7 +19,7 @@
 // --wasm-execution
 // compiled
 // --output
-// ../cstrml/tars/src/weight.rs
+// ../pallets/tars/src/weight.rs
 
 
 #![allow(unused_parens)]

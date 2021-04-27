@@ -1,10 +1,10 @@
 [package]
-name = "cstrml-balances"
-version = "0.11.1"
+name = "pallets-balances"
+version = "0.21.4"
 authors = ["calcuio"]
 edition = "2018"
 license = "GPL-3.0"
-homepage = "https://calcu.network"
+homepage = "https://calcu.io"
 repository = "https://github.com/calcuio/calcu/"
 
 [package.metadata.docs.rs]

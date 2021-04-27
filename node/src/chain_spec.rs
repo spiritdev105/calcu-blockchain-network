@@ -1,8 +1,7 @@
 // Copyright (C) 2019-2021 Calcu Network Technologies Ltd.
 // This file is part of Calcu.
 
-use hex_literal::hex;
-use sp_core::{Pair, Public, sr25519, crypto::UncheckedInto};
+use sp_core::{Pair, Public, sr25519};
 use calcu_runtime::{
     AuthorityDiscoveryId, BalancesConfig, GenesisConfig, ImOnlineId,
     AuthorityDiscoveryConfig, SessionConfig, SessionKeys, StakerStatus,
@@ -10,7 +9,7 @@ use calcu_runtime::{
     ElectionsConfig, CouncilConfig, TechnicalCommitteeConfig, DemocracyConfig,
     WASM_BINARY
 };
-use cstrml_staking::Forcing;
+use pallets_staking::Forcing;
 use sp_finality_grandpa::AuthorityId as GrandpaId;
 use sp_consensus_babe::AuthorityId as BabeId;
 use primitives::{constants::currency::CALS, *};

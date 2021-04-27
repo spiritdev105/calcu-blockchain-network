@@ -1,10 +1,10 @@
 [package]
-name = "cstrml-tars"
-version = "0.11.1"
+name = "pallets-tars"
+version = "0.21.4"
 authors = ["calcuio"]
 edition = "2018"
 license = "GPL-3.0"
-homepage = "https://calcu.network"
+homepage = "https://calcu.io"
 repository = "https://github.com/calcuio/calcu/"
 
 [dependencies]
@@ -31,8 +31,8 @@ serde_json = { package = "serde_json_no_std", path = "../../utils/serde_json_no_
 
 [dev-dependencies]
 keyring = { package = "sp-keyring", version = "3.0.0" }
-balances = { package = "cstrml-balances", path = "../balances" }
-murphy = { package = "cstrml-murphy", path = "../murphy" }
+balances = { package = "pallets-balances", path = "../balances" }
+murphy = { package = "pallets-murphy", path = "../murphy" }
 hex = "0.4.2"
 
 [features]

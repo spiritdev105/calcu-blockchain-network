@@ -665,18 +665,18 @@ checksum = "631ae5198c9be5e753e5cc215e1bd73c2b466a3565173db433f52bb9d3e66dba"
 
 [[package]]
 name = "calcu"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "calcu-rpc",
  "calcu-runtime",
  "cst-primitives",
- "cstrml-staking",
- "cstrml-tars",
  "frame-benchmarking",
  "frame-benchmarking-cli",
  "futures 0.3.13",
  "hex-literal",
  "log",
+ "pallets-staking",
+ "pallets-tars",
  "sc-authority-discovery",
  "sc-basic-authorship",
  "sc-cli",
@@ -703,7 +703,7 @@ dependencies = [
 
 [[package]]
 name = "calcu-rpc"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "calcu-runtime",
  "cst-primitives",
@@ -731,16 +731,9 @@ dependencies = [
 
 [[package]]
 name = "calcu-runtime"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "cst-primitives",
- "cstrml-balances",
- "cstrml-candy",
- "cstrml-claims",
- "cstrml-murphy",
- "cstrml-staking",
- "cstrml-tars",
- "cstrml-tars-benchmarking",
  "frame-benchmarking",
  "frame-executive",
  "frame-support",
@@ -771,6 +764,13 @@ dependencies = [
  "pallet-transaction-payment-rpc-runtime-api",
  "pallet-treasury",
  "pallet-utility",
+ "pallets-balances",
+ "pallets-candy",
+ "pallets-claims",
+ "pallets-murphy",
+ "pallets-staking",
+ "pallets-tars",
+ "pallets-tars-benchmarking",
  "parity-scale-codec",
  "serde",
  "sp-api",
@@ -1223,151 +1223,12 @@ dependencies = [
 
 [[package]]
 name = "cst-primitives"
-version = "0.11.1"
+version = "0.21.4"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
  "serde",
  "sp-core",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
-name = "cstrml-balances"
-version = "0.11.1"
-dependencies = [
- "cst-primitives",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "pallet-transaction-payment",
- "parity-scale-codec",
- "serde",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
-name = "cstrml-candy"
-version = "0.11.1"
-dependencies = [
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "serde",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
-name = "cstrml-claims"
-version = "0.11.1"
-dependencies = [
- "cstrml-balances",
- "frame-support",
- "frame-system",
- "hex-literal",
- "parity-scale-codec",
- "rustc-hex",
- "serde",
- "serde_derive",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
-name = "cstrml-murphy"
-version = "0.11.1"
-dependencies = [
- "cst-primitives",
- "cstrml-balances",
- "cstrml-tars",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "hex",
- "parity-scale-codec",
- "serde",
- "serde_json",
- "sp-core",
- "sp-io",
- "sp-runtime",
- "sp-std",
-]
-
-[[package]]
-name = "cstrml-staking"
-version = "0.11.1"
-dependencies = [
- "cst-primitives",
- "cstrml-balances",
- "cstrml-tars",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "pallet-authorship",
- "pallet-session",
- "pallet-timestamp",
- "parity-scale-codec",
- "rand_chacha 0.2.2",
- "safe-mix",
- "serde",
- "sp-core",
- "sp-io",
- "sp-keyring",
- "sp-runtime",
- "sp-staking",
- "sp-std",
- "substrate-test-utils",
-]
-
-[[package]]
-name = "cstrml-tars"
-version = "0.11.1"
-dependencies = [
- "base64 0.12.3",
- "cst-primitives",
- "cstrml-balances",
- "cstrml-murphy",
- "frame-support",
- "frame-system",
- "hex",
- "p256",
- "parity-scale-codec",
- "serde",
- "serde_json_no_std",
- "sp-core",
- "sp-io",
- "sp-keyring",
- "sp-runtime",
- "sp-std",
- "webpki 0.21.0",
-]
-
-[[package]]
-name = "cstrml-tars-benchmarking"
-version = "0.11.1"
-dependencies = [
- "cst-primitives",
- "cstrml-balances",
- "cstrml-murphy",
- "cstrml-tars",
- "frame-benchmarking",
- "frame-support",
- "frame-system",
- "hex",
- "parity-scale-codec",
- "serde",
- "sp-core",
- "sp-io",
- "sp-keyring",
  "sp-runtime",
  "sp-std",
 ]
@@ -4487,6 +4348,145 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallets-balances"
+version = "0.21.4"
+dependencies = [
+ "cst-primitives",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-transaction-payment",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallets-candy"
+version = "0.21.4"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallets-claims"
+version = "0.21.4"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "hex-literal",
+ "pallets-balances",
+ "parity-scale-codec",
+ "rustc-hex",
+ "serde",
+ "serde_derive",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallets-murphy"
+version = "0.21.4"
+dependencies = [
+ "cst-primitives",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "hex",
+ "pallets-balances",
+ "pallets-tars",
+ "parity-scale-codec",
+ "serde",
+ "serde_json",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallets-staking"
+version = "0.21.4"
+dependencies = [
+ "cst-primitives",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-authorship",
+ "pallet-session",
+ "pallet-timestamp",
+ "pallets-balances",
+ "pallets-tars",
+ "parity-scale-codec",
+ "rand_chacha 0.2.2",
+ "safe-mix",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-keyring",
+ "sp-runtime",
+ "sp-staking",
+ "sp-std",
+ "substrate-test-utils",
+]
+
+[[package]]
+name = "pallets-tars"
+version = "0.21.4"
+dependencies = [
+ "base64 0.12.3",
+ "cst-primitives",
+ "frame-support",
+ "frame-system",
+ "hex",
+ "p256",
+ "pallets-balances",
+ "pallets-murphy",
+ "parity-scale-codec",
+ "serde",
+ "serde_json_no_std",
+ "sp-core",
+ "sp-io",
+ "sp-keyring",
+ "sp-runtime",
+ "sp-std",
+ "webpki 0.21.0",
+]
+
+[[package]]
+name = "pallets-tars-benchmarking"
+version = "0.21.4"
+dependencies = [
+ "cst-primitives",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "hex",
+ "pallets-balances",
+ "pallets-murphy",
+ "pallets-tars",
+ "parity-scale-codec",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-keyring",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "parity-db"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4504,9 +4504,9 @@ dependencies = [
 
 [[package]]
 name = "parity-multiaddr"
-version = "0.11.1"
+version = "0.11.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2c6805f98667a3828afb2ec2c396a8d610497e8d546f5447188aae47c5a79ec"
+checksum = "58341485071825827b7f03cf7efd1cb21e6a709bea778fb50227fd45d2f361b4"
 dependencies = [
  "arrayref",
  "bs58",
