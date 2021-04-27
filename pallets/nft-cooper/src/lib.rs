@@ -13,8 +13,7 @@ use sp_core::constants_types::{Balance, ACCURACY};
 #[cfg(feature = "std")]
 use serde::{Deserialize, Serialize};
 use sp_runtime::{
-	traits::{CheckedAdd, Bounded,
-			 AccountIdConversion, StaticLookup, Zero, One, AtLeast32BitUnsigned},
+	traits::{CheckedAdd, Bounded, AccountIdConversion, StaticLookup, Zero, One, AtLeast32BitUnsigned},
 	ModuleId, RuntimeDebug, SaturatedConversion,
 };
 use codec::FullCodec;
@@ -58,11 +57,8 @@ pub struct ClassData<BlockNumber> {
 	/// The minimum balance to create class
 	#[codec(compact)]
 	pub deposit: Balance,
-	/// Property of all tokens in this class.
 	pub properties: Properties,
-	/// Name of class.
 	pub name: Vec<u8>,
-	/// Description of class.
 	pub description: Vec<u8>,
 	#[codec(compact)]
 	pub create_block: BlockNumber,
