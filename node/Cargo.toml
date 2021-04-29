@@ -1,11 +1,11 @@
 [package]
 name = "calcu"
-version = "0.11.1"
+version = "0.21.4"
 authors = ["calcuio"]
 build = "build.rs"
 edition = "2018"
 license = "GPL-3.0"
-homepage = "https://calcu.network"
+homepage = "https://calcu.io"
 repository = "https://github.com/calcuio/calcu/"
 
 [[bin]]
@@ -45,11 +45,11 @@ frame-benchmarking-cli = { optional = true, version = "3.0.0" }
 frame-benchmarking = "3.0.0"
 
 # calcu runtime modules
-calcu-runtime = { path = "../runtime", version = "0.11.1" }
-cstrml-staking = { path = "../cstrml/staking", version = "0.11.1" }
-cstrml-tars = { path = "../cstrml/tars", version = "0.11.1" }
-primitives = { package = "cst-primitives", path = "../primitives", version = "0.11.1" }
-calcu-rpc = { path =  "../rpc", version = "0.11.1" }
+calcu-runtime = { path = "../runtime", version = "0.21.4" }
+pallets-staking = { path = "../pallets/staking", version = "0.21.4" }
+pallets-tars = { path = "../pallets/tars", version = "0.21.4" }
+primitives = { package = "cst-primitives", path = "../primitives", version = "0.21.4" }
+calcu-rpc = { path =  "../rpc", version = "0.21.4" }
 
 [build-dependencies]
 substrate-build-script-utils = "3.0.0"

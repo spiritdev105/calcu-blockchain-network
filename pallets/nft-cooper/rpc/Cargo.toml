@@ -1,0 +1,16 @@
+[package]
+name = "nft-cooper-rpc"
+version = "3.0.0"
+authors = ["calcuio"]
+edition = "2018"
+homepage = "https://calcu.io"
+repository = "https://github.com/calcuio/calcu/"
+
+[dependencies]
+jsonrpc-core = "15.1.0"
+jsonrpc-core-client = "15.1.0"
+jsonrpc-derive = "15.1.0"
+sp-runtime = { version = "3.0.0",  }
+sp-api = { default-features = false, version = "3.0.0" }
+sp-blockchain = { default-features = false, version = "3.0.0"}
+nft-cooper-rpc-runtime-api = { default-features = false, version = "3.0.0", path = "./runtime-api" }
