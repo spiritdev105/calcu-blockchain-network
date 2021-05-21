@@ -1,6 +1,6 @@
 [package]
-name = "nft-cooper"
-version = "3.0.0"
+name = "pallets-nft-cooper"
+version = "0.21.4"
 authors = ["calcuio"]
 edition = "2018"
 homepage = "https://calcu.io"
@@ -19,7 +19,7 @@ pallet-proxy = { version = "3.0.0", default-features = false }
 pallet-timestamp = { version = "3.0.0", default-features = false }
 orml-traits = { version = "0.4.0", default-features = false }
 orml-nft = { version = "0.4.0"}
-nft-config = { default-features = false, path = "../nft-config" }
+nft-config = { package = "pallets-nft-config", default-features = false, path = "../nft-config" }
 
 [dev-dependencies]
 sp-io = { version = "3.0.0" }
