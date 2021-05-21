@@ -81,7 +81,7 @@ primitives = { package = "cst-primitives", path = "../primitives", default-featu
 tars = { package = "pallets-tars", path = "../pallets/tars", default-features = false, version = "0.21.4" }
 staking = { package = "pallets-staking", path = "../pallets/staking", default-features = false, version = "0.21.4" }
 # nft-config = { package = "pallets-nft-config", path = "../pallets/nft-config", default-features = false, version = "0.21.4" }
-# nft-cooper = { package = "pallets-nft", path = "../pallets/nft-cooper", default-features = false, version = "0.21.4" }
+# nft-cooper = { package = "pallets-nft-cooper", path = "../pallets/nft-cooper", default-features = false, version = "0.21.4" }
 
 # calcu benchmark dependencies
 tars-benchmarking = { package = "pallets-tars-benchmarking", path = "../pallets/tars/benchmarking", default-features = false, optional = true, version = "0.21.4" }
